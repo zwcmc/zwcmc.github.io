@@ -330,7 +330,7 @@ $$
 pdf_Y(y_1,y_2,\cdots,y_n) = \frac{pdf_X(x_1,x_2,\cdots,x_n)}{|J_T|} \tag{1}
 $$
 
-其中， $|J_T|$ 是矩阵 $J_T$ 的**行列式**。
+其中， $\|J_T\|$ 是矩阵 $J_T$ 的**行列式**。
 
 以三维空间下的球坐标为例，如下图所示：
 
@@ -354,7 +354,7 @@ J_T = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-$J_T$ 矩阵的行列式 $|J_T| = r^2 \sin{\theta}$ 。代入等式(1)，得：
+$J_T$ 矩阵的行列式 $\|J_T\| = r^2 \sin{\theta}$ 。代入等式(1)，得：
 
 $$ pdf(r,\theta,\phi) = r^2 \sin{\theta} \cdot pdf(x,y,z) $$
 
@@ -633,7 +633,7 @@ $$ pdf(\theta,\phi) = \frac{a^2}{\pi (1 + (m \cdot n)^2 (a^2 - 1))^2} \cos{\thet
 
 $$ pdf(\theta) = \int_{0}^{2\pi} pdf(\theta,\phi) d\phi = \frac{2a^2}{(1 + \cos^2{\theta}(a^2 - 1))^2} \cos{\theta} \sin{\theta} $$
 
-再计算条件概率密度函数 $pdf(\phi | \theta)$ ：
+再计算条件概率密度函数 $pdf(\phi \| \theta)$ ：
 
 $$ pdf(\phi | \theta) = \frac{pdf(\theta, \phi)}{pdf(\theta)} = \frac{1}{2\pi} $$
 
