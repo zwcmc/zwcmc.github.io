@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Unity中的LinearEyeDepth和Linear01Depth推导"
-date:   2024-07-03 16:16:00 +0800
+date:   2023-07-03 16:16:00 +0800
 category: Unity
 ---
 
@@ -99,7 +99,7 @@ $$
 
 继续做映射，把 `z` 的范围映射到 $[0, 1]$，推导如下：
 
-![00_z_to_0_1_opengl](/assets/images/2024/2024-07-03-LinearEyeDepthAndLinear01DepthInUnity/00_z_to_0_1_opengl.jpg)
+![00_z_to_0_1_opengl](/assets/images/2023/2023-07-03-LinearEyeDepthAndLinear01DepthInUnity/00_z_to_0_1_opengl.jpg)
 
 得到经过投影变换和透视除法后的非线性存储在深度纹理中的深度 $z_{d}$ 为：
 
@@ -123,7 +123,7 @@ $$
 
 这是在 OpenGL 的环境下的推导结果，在 DirectX，Vulkan，Metal 环境下，NDC空间下的 `z` 范围为 $[0, 1]$，但在上面的推导过程中，已经把 OpenGL 下 $[-1, 1]$ 的深度值转换到 $[0, 1]$ 了，所以最终计算的结果是一样的。推导过程如下：
 
-![01_z_to_0_1_not_opengl](/assets/images/2024/2024-07-03-LinearEyeDepthAndLinear01DepthInUnity/01_z_to_0_1_not_opengl.png)
+![01_z_to_0_1_not_opengl](/assets/images/2023/2023-07-03-LinearEyeDepthAndLinear01DepthInUnity/01_z_to_0_1_not_opengl.jpeg)
 
 还有一种情况就是反向Z。反向Z其实就是在NDC空间，`z` 的值是 $[1, 0]$ ，也就是在Near处 `z` 为 1，而在Far处，`z` 为 0。可以理解为：
 
@@ -133,7 +133,7 @@ $$
 
 推导如下：
 
-![02_z_to_1_0_not_opengl](/assets/images/2024/2024-07-03-LinearEyeDepthAndLinear01DepthInUnity/02_z_to_1_0_not_opengl.jpg)
+![02_z_to_1_0_not_opengl](/assets/images/2023/2023-07-03-LinearEyeDepthAndLinear01DepthInUnity/02_z_to_1_0_not_opengl.jpg)
 
 可见和源码中的`_ZBufferParams` 的 `z` 和 `w` 分量注释是一样的，推导正确。
 

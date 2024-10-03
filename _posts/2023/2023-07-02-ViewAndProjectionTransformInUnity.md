@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Unity中的视图变换和投影变换"
-date:   2024-07-02 16:16:00 +0800
+date:   2023-07-02 16:16:00 +0800
 category: Unity
 ---
 
@@ -11,15 +11,15 @@ category: Unity
 
 在Unity中，约定使用的是 **左手坐标系** ，即 $\text{+x}$ 方向指向右方， $\text{+y}$ 方向指向上方， $\text{+z}$ 方向指向的是物体的前方。如下图所示， 相机的世界坐标为 `(0, 0, 0)` ，Cube的世界坐标为 `(0, 0, 1.5)` ：
 
-![00_unity_worldspace_coordinates](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/00_unity_worldspace_coordinates.png)
+![00_unity_worldspace_coordinates](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/00_unity_worldspace_coordinates.jpeg)
 
 而在观察空间中，Unity 使用的是右手坐标系，即： $\text{+x}$ 方向指向右方， $\text{+y}$ 方向指向上方， $\text{-z}$ 方向指向的是物体的前方，[官网文档](https://docs.unity3d.com/2021.3/Documentation/ScriptReference/Camera-worldToCameraMatrix.html)中也有说明：***Note that camera space matches OpenGL convention: camera's forward is the negative Z axis. This is different from Unity's convention, where forward is the positive Z axis.***。所以在 Unity 中，经过观察矩阵变换后， $z$ 坐标的值会被取反。看下面的例子，相机参数如下：
 
-![01_camera_properties](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/01_camera_properties.png)
+![01_camera_properties](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/01_camera_properties.png)
 
 相机在 `(0, 0, 0)` 的位置，不做任何旋转，此时输出的观察矩阵是：
 
-![02_view_matrix](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/02_view_matrix.png)
+![02_view_matrix](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/02_view_matrix.png)
 
 可以看到，观察空间的 $\text{z}$ 的方向和世界坐标系下的 $\text{z}$ 的方向是相反的。知道这个以后，在后面的投影变换中，就需要带入负的 $\text{z}$ 值来验证正确性。
 
@@ -27,7 +27,7 @@ category: Unity
 
 相机的基本属性如下：
 
-![03_view_matrix_camera_properties](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/03_view_matrix_camera_properties.png)
+![03_view_matrix_camera_properties](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/03_view_matrix_camera_properties.png)
 
 在C#中用代码验证：
 
@@ -88,11 +88,11 @@ Debug.LogError(finalViewMatrix);
 
 输出结果为：
 
-![04_console_view_matrix](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/04_console_view_matrix.png)
+![04_console_view_matrix](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/04_console_view_matrix.png)
 
 和Unity中输出的结果一致，验证正确：
 
-![05_gpu_view_matrix](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/05_gpu_view_matrix.png)
+![05_gpu_view_matrix](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/05_gpu_view_matrix.png)
 
 ## 正交投影和透视投影
 
@@ -106,7 +106,7 @@ Debug.LogError(finalViewMatrix);
 
 相机参数如下：
 
-![06_orthographic_camera_properties](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/06_orthographic_camera_properties.png)
+![06_orthographic_camera_properties](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/06_orthographic_camera_properties.png)
 
 根据 Near，Far，Size 和 Aspect 可以确定正交投影矩阵，**其中需要注意的是，Size 定义的是正交投影视锥体一半的高度（Half Height）**， 所以矩阵中的计算从 $\frac{2}{\text{Size} * 2}$ 简化成 $\frac{1}{\text{Size}}$ ， $\frac{1}{\text{Aspect} * \text{Size}}$ 也是同理。 在 OpenGL 环境下(转换后 `z` 映射到 `[-1, 1]` )，矩阵如下：
 
@@ -128,7 +128,7 @@ float aspectRatio = (float)camera.pixelWidth / camera.pixelHeight;
 
 计算输出得到 Aspect 为：
 
-![07_orthographic_camera_aspect](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/07_orthographic_camera_aspect.png)
+![07_orthographic_camera_aspect](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/07_orthographic_camera_aspect.png)
 
 根据相机参数可以知道 Size = 5，Near = 1，Far = 4，则计算出来的正交投影矩阵为：
 
@@ -156,7 +156,7 @@ $$
 
 和 Unity 中输出的 VP 矩阵是一样的，公式验证正确：
 
-![08_orthographic_view_projection_matrix_opengl](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/08_orthographic_view_projection_matrix_opengl.png)
+![08_orthographic_view_projection_matrix_opengl](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/08_orthographic_view_projection_matrix_opengl.png)
 
 再来看非 OpenGL 环境呢？也就是上面说的把 `z` 映射到 `[0, 1]` ，而且由于反向Z，所以需要 Near 近平面 `z` 为 `1`，Far 远平面 `z` 为 `0` 。只有 `z` 是不一样的，所以矩阵需要变化的是 `m22` 和 `m23` 项，推导如下：
 
@@ -229,17 +229,17 @@ $$
 
 此时 Unity 中输出的矩阵为：
 
-![09_orthographic_view_projection_matrix_not_opengl](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/09_orthographic_view_projection_matrix_not_opengl.png)
+![09_orthographic_view_projection_matrix_not_opengl](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/09_orthographic_view_projection_matrix_not_opengl.png)
 
 发现有一点点不一样，那就是矩阵的 `m11` 项是 `-0.2`，但是上面计算出来的是 `0.2`，[这是因为在非 OpenGL 环境下，y 轴的坐标方向是向下的](https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/)，而 OpenGL 环境下 y 轴是向上的，所以这里做了取反的计算。
 
-![10_negative_y_not_opengl](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/10_negative_y_not_opengl.png)
+![10_negative_y_not_opengl](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/10_negative_y_not_opengl.png)
 
 ### 透视投影
 
 相机参数如下：
 
-![11_perspective_camera_properties](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/11_perspective_camera_properties.png)
+![11_perspective_camera_properties](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/11_perspective_camera_properties.png)
 
 根据 Near，Far，FOV 和 Aspect 可以确定正交投影矩阵，在OpenGL环境下(转换后 `z` 映射到 `[-1, 1]` )，矩阵如下：
 
@@ -255,7 +255,7 @@ $$
 
 其中，Aspect 是 1.600666：
 
-![12_perspective_camera_aspect](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/12_perspective_camera_aspect.png)
+![12_perspective_camera_aspect](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/12_perspective_camera_aspect.png)
 
 然后，FOV 为60度，Near 为1，Far 为4，其中， $\cot{(\frac{FOV}{2})}$ 可以通过如下代码求得：
 
@@ -266,7 +266,7 @@ float cotHalfFov = Mathf.Cos(HalfFovRadians)/Mathf.Sin(HalfFovRadians);
 
 输出结果为：
 
-![13_perspective_camera_cot_half_fov](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/13_perspective_camera_cot_half_fov.png)
+![13_perspective_camera_cot_half_fov](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/13_perspective_camera_cot_half_fov.png)
 
 带入相机相关参数后可以计算出透视投影矩阵为：
 
@@ -294,7 +294,7 @@ $$
 
 和 Unity 中输出的 VP 矩阵是一样的，公式验证正确：
 
-![14_perspective_view_projection_matrix_opengl](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/14_perspective_view_projection_matrix_opengl.png)
+![14_perspective_view_projection_matrix_opengl](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/14_perspective_view_projection_matrix_opengl.png)
 
 继续来看非 OpenGL 环境，和正交投影一样，也是变换后的 `z` 的范围不一样，而且因为反向Z的原因，Near 近平面 `z` 为 `1`，Far 远平面 `z` 为 `0`，所以也是只需要变化矩阵的 `m22` 和 `m23` 项，推导过程：
 
@@ -372,7 +372,7 @@ $$
 
 此时 Unity 中输出的矩阵为：
 
-![15_perspective_view_projection_matrix_not_opengl](/assets/images/2024/2024-07-02-ViewAndProjectionTransformInUnity/15_perspective_view_projection_matrix_not_opengl.png)
+![15_perspective_view_projection_matrix_not_opengl](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/15_perspective_view_projection_matrix_not_opengl.png)
 
 矩阵的 `m11` 项是反的这个问题上面已经解释了，这里就不再说明。
 
