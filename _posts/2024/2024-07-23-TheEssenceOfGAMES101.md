@@ -2,7 +2,7 @@
 layout: post
 title:  "GAMES101知识精炼"
 date:   2024-07-23 16:16:00 +0800
-categories:
+category: Rendering
 ---
 
 总结 [GAMES101](https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html) 的知识点，以及一些扩展知识点。

@@ -2,7 +2,7 @@
 layout: post
 title:  "渲染学习笔记"
 date:   2024-03-04 16:16:00 +0800
-categories: 
+category: Rendering
 ---
 
 ## 说明

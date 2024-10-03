@@ -2,7 +2,7 @@
 layout: post
 title:  "蒙特卡罗积分"
 date:   2024-06-24 16:16:00 +0800
-categories:
+category: Math
 ---
 
 **蒙特卡罗积分（Monte Carlo Integration）**，是指采用 **蒙特卡罗法（Monte Carlo Methods）** 来估计积分。蒙特卡罗法是一类算法的统称，估计积分只是其中的一个应用，而积分计算在图形渲染中起到非常重要的作用。

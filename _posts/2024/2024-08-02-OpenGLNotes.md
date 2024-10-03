@@ -2,7 +2,7 @@
 layout: post
 title:  "OpenGL学习笔记"
 date:   2024-07-31 16:16:00 +0800
-categories:
+category: OpenGL
 ---
 
 语言为 C++，因为要兼容 macOS，所以 OpenGL 版本为 4.1

@@ -2,7 +2,7 @@
 layout: post
 title:  "Unity中的LinearEyeDepth和Linear01Depth推导"
 date:   2024-07-03 16:16:00 +0800
-categories:
+category: Unity
 ---
 
 先看这2个函数：

@@ -2,7 +2,7 @@
 layout: post
 title:  "基于物理的渲染（PBR）理论"
 date:   2024-08-12 16:16:00 +0800
-categories:
+category: Rendering
 ---
 
 ## PBR 核心理论总结

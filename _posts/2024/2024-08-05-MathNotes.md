@@ -2,7 +2,7 @@
 layout: post
 title:  "数学笔记"
 date:   2024-07-31 16:16:00 +0800
-categories:
+category: Math
 ---
 
 ## 求简单矩阵(2x2，3x3)的逆矩阵

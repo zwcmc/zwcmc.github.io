@@ -2,7 +2,7 @@
 layout: post
 title:  "阴影贴图的原理以及相关的软阴影技术"
 date:   2024-08-21 16:16:00 +0800
-categories:
+category: Rendering
 ---
 
 ## 阴影贴图（Shadow mapping）原理
