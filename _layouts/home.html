@@ -25,7 +25,9 @@ layout: base
       {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
       {%- for post in posts -%}
       <li>
-        <span class="post-meta">{{ post.date | date: date_format }}</span>
+        <span class="post-meta">{{ post.date | date: date_format }}
+          - <i class="far fa-clock"></i> {% include reading_time.html %}
+        </span>
         <h3>
           <a class="post-link" href="{{ post.url | relative_url }}">
             {{ post.title | escape }}
@@ -34,6 +36,15 @@ layout: base
         {%- if site.show_excerpts -%}
           {{ post.excerpt }}
         {%- endif -%}
+
+        <div class="featured-img-container">
+          {% if post.image %}
+          <a href="{{ post.url | relative_url }}"><img src="{{ post.image | relative_url }}" /></a>
+          {% endif %}
+          {% if post.gif %}
+          <a href="{{ post.url | relative_url }}">{% include gif.html file = post.gif %}</a>
+          {% endif %}
+        </div>
       </li>
       {%- endfor -%}
     </ul>
