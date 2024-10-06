@@ -823,18 +823,6 @@ void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
 
 ---
 
-## Bloom
-
-<!-- TODO -->
-
----
-
-## SAO
-
-<!-- TODO -->
-
----
-
 ## SSR
 
 <!-- TODO -->
