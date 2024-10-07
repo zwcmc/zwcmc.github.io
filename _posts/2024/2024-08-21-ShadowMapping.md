@@ -5,6 +5,31 @@ date:   2024-08-21 16:16:00 +0800
 category: Rendering
 ---
 
+- [阴影贴图（Shadow mapping）原理](#阴影贴图shadow-mapping原理)
+  - [阴影贴图的一些常见问题](#阴影贴图的一些常见问题)
+    - [**透视锯齿（Perspective Aliasing）**](#透视锯齿perspective-aliasing)
+    - [**投影锯齿（Projective Aliasing）**](#投影锯齿projective-aliasing)
+    - [**阴影暗斑（Shadow Acne）**](#阴影暗斑shadow-acne)
+    - [**彼得潘效应（Peter Panning）**](#彼得潘效应peter-panning)
+  - [改善阴影贴图的一些技术](#改善阴影贴图的一些技术)
+    - [**基于斜率的深度偏移（Slope-Scale Depth Bias）**](#基于斜率的深度偏移slope-scale-depth-bias)
+    - [**提高深度缓冲区的精度或提高阴影贴图的分辨率**](#提高深度缓冲区的精度或提高阴影贴图的分辨率)
+    - [**计算合适的光源投影大小（Calculating a Tight Projection）**](#计算合适的光源投影大小calculating-a-tight-projection)
+    - [**计算适合的光源投影的近平面和远平面（Calculating the Near Plane and Far Plane）**](#计算适合的光源投影的近平面和远平面calculating-the-near-plane-and-far-plane)
+    - [**以纹素大小的增量来移动光源（Moving the Light in Texel-Sized Increments）**](#以纹素大小的增量来移动光源moving-the-light-in-texel-sized-increments)
+- [级联阴影（Cascaded Shadow Maps）](#级联阴影cascaded-shadow-maps)
+  - [分割摄像机视锥体的方法](#分割摄像机视锥体的方法)
+  - [摄像机视锥体覆盖的场景区域 Z 轴范围的大小影响级联区间的划分](#摄像机视锥体覆盖的场景区域-z-轴范围的大小影响级联区间的划分)
+  - [光源与摄像机的方向之间的关系会影响级联之间的重叠](#光源与摄像机的方向之间的关系会影响级联之间的重叠)
+  - [创建子视锥体](#创建子视锥体)
+  - [渲染级联阴影贴图](#渲染级联阴影贴图)
+  - [采样级联阴影贴图](#采样级联阴影贴图)
+- [硬阴影（Hard Shadows）与软阴影（Soft Shadows）](#硬阴影hard-shadows与软阴影soft-shadows)
+  - [Percentage Closer Filtering（PCF）](#percentage-closer-filteringpcf)
+    - [**双线性 PCF （Bilinear PCF）**](#双线性-pcf-bilinear-pcf)
+    - [**更大内核的 PCF**](#更大内核的-pcf)
+- [参考](#参考)
+
 ## 阴影贴图（Shadow mapping）原理
 
 阴影贴图（Shadow mapping）是实时渲染中常用的一种用以渲染场景阴影的技术，它最初是由 Lance Williams 于 1978 年在 “Casting curved shadows on curved surfaces” 这篇论文中提出的。阴影贴图的原理如下：

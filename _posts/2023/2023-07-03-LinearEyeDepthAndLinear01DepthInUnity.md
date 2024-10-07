@@ -5,6 +5,12 @@ date:   2023-07-03 16:16:00 +0800
 category: Unity
 ---
 
+- [Unity 中的这两个函数](#unity-中的这两个函数)
+- [LinearEyeDepth](#lineareyedepth)
+- [Linear01Depth](#linear01depth)
+
+### Unity 中的这两个函数
+
 先看这2个函数：
 
 ```c

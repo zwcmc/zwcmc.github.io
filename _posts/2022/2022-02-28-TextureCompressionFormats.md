@@ -5,6 +5,14 @@ date:   2022-02-28 02:03:00 PM +0800
 category: Others
 ---
 
+- [纹理压缩格式](#纹理压缩格式)
+- [ETC1 Compressed Texture Image Formats](#etc1-compressed-texture-image-formats)
+  - [ETC1S](#etc1s)
+  - [ETC1总结](#etc1总结)
+- [ETC2 Compressed Texture Image Formats](#etc2-compressed-texture-image-formats)
+  - [Format RGB ETC2](#format-rgb-etc2)
+  - [Format RGBA ETC2](#format-rgba-etc2)
+
 ## 纹理压缩格式
 
 [参考](https://www.khronos.org/registry/DataFormat/specs/1.3/dataformat.1.3.html#_introduction)

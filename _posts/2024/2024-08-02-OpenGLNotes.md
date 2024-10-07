@@ -7,6 +7,16 @@ category: OpenGL
 
 语言为 C++，因为要兼容 macOS，所以 OpenGL 版本为 4.1
 
+- [std140](#std140)
+- [伽马校正（Gamma Correction）](#伽马校正gamma-correction)
+  - [OpenGL 中怎么进行伽马校正](#opengl-中怎么进行伽马校正)
+  - [sRGB 纹理](#srgb-纹理)
+    - [对 sRGB 纹理转换到线性空间的方法](#对-srgb-纹理转换到线性空间的方法)
+- [GL\_TRIANGLE\_STRIP](#gl_triangle_strip)
+- [全屏渲染时，使用 3 个顶点的三角形覆盖整个屏幕](#全屏渲染时使用-3-个顶点的三角形覆盖整个屏幕)
+- [天空盒（Skybox）渲染中的一些技巧分析](#天空盒skybox渲染中的一些技巧分析)
+  - [Radiance HDR 渲染到立方体纹理](#radiance-hdr-渲染到立方体纹理)
+
 ## std140
 
 `std140` 是 OpenGL 中统一缓冲区块（Uniform Block）数据的对齐和布局的一种标准化格式，统一缓冲区块是一种用于在 CPU 和着色器之间高效传递一组统一变量的机制，它的数据存储在统一缓冲区对象（Uniform Buffer Object，UBO）中。统一缓冲区块的内容实际是存储在 GPU 上的一块全局内存，这块内存并不会保存它所持有的数据类型的信息，所以通过 `glBufferSubData` 方法更新对象数据时，需要告诉 OpenGL 这块内存的哪些部分对应着色器中的哪些统一变量，也就是设置每个变量的大小（以字节为单位，in bytes）以及它们在内存块开始位置的偏移量。

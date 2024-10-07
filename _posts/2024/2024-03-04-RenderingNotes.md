@@ -5,12 +5,6 @@ date:   2024-03-04 16:16:00 +0800
 category: Rendering
 ---
 
-## 说明
-
-在这里记录学习一些图形学中的概念、算法的学习笔记，记录完全随机。
-
----
-
 ## Normal Matrix(法线变换矩阵)
 
 法线向量是定义在模型空间中的，而光照计算一般情况下都是在世界空间进行的，所以就需要一个矩阵来把法线向量从模型空间转换到世界空间，这个矩阵就叫做法线变化矩阵。
@@ -140,8 +134,6 @@ $$
 - [The Normal Matrix](http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/)
 - [Unity Shaders Book Chapter 4](https://candycat1992.github.io/unity_shaders_book/unity_shaders_book_chapter_4.pdf)
 
----
-
 ## Alpha to Coverage
 
 <!-- Alpha to Coverage一般简称A2C或者是ATOC，是对Alpha Test做抗锯齿的一种技术。 -->
@@ -174,8 +166,6 @@ $$
 - [Alpha compositing](https://developer.arm.com/documentation/102073/0100/Alpha-compositing)
 - [Alpha to coverage](https://www.humus.name/index.php?page=3D&ID=61)
 - [ShaderLab command: AlphaToMask](https://docs.unity3d.com/2023.2/Documentation/Manual/SL-AlphaToMask.html)
-
----
 
 ## Fast Approximate Anti-aliasing (FXAA)
 
@@ -535,8 +525,6 @@ return half4(FXAATex(posM).rgb, 1.0);
 - [Implementing FXAA](https://blog.simonrodriguez.fr/articles/2016/07/implementing_fxaa.html)
 - [FXAA3_11](https://github.com/hghdev/NVIDIAGameWorks-GraphicsSamples/blob/master/samples/es3-kepler/FXAA/FXAA3_11.h)
 
----
-
 ## Normal Mapping without Precomputed Tangents
 
 在使用法线纹理时，因为法线纹理中存储的法线方向是在切线空间中的，所谓的切线空间如下图所示，其中，原点对应了顶点坐标，红色向量是切线方向（Tangent），绿色向量是副切线方向（Bitangent），蓝色向量是法线方向（Normal），这 3 个向量是正交的，它们之前互相垂直：
@@ -665,8 +653,6 @@ vec3 getNormal()
 }
 ```
 
----
-
 ## 通过一个四元数存储基础法线向量(0, 0, 1)、基础切线向量(1, 0, 0)与基础副切线向量(0, 1, 0)的旋转信息
 
 今天在看 [flament](https://github.com/google/filament) 源码时，看到一个有意思的算法：通过模型数据中的切线，副切线，法线信息，构建一个表示旋转的 `TBN` 矩阵，将此矩阵转换为四元数表示，最后将此四元数传入着色器中，在着色器中，通过此四元数对初始法线向量 `(0, 0, 1)` 和初始切线向量 `(1, 0, 0)` 进行旋转，得到模型空间中的法线和切线向量信息。其中，这个四元数的 `w` 分量的符号（sign，正或者负）还代表了切线向量的方向，因为切线空间必须是右手坐标系统（Right-hand coord system），而如果 $(\mathbf{n} \times \mathbf{t}) \cdot \mathbf{b} \leq 0.0$ 则代表此时的切线空间并不是右手坐标系统，需要根据 `w` 分量的符号将切线向量取反。
@@ -787,9 +773,7 @@ void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
 }
 ```
 
----
-
-## 计算法线变换矩阵的另一种方法
+<!-- ## 计算法线变换矩阵的另一种方法 -->
 
 <!-- TODO -->
 
@@ -813,24 +797,18 @@ void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
 * transposed inverse. He goes on to say that this difference is inconsequential, except when
 * mirroring is involved. -->
 
-在之前的笔记中，有说到[法线变换矩阵](#normal-matrix法线变换矩阵)，经过推导使用的是 `transpose(inverse(M))` 矩阵。
+<!-- 在之前的笔记中，有说到[法线变换矩阵](#normal-matrix法线变换矩阵)，经过推导使用的是 `transpose(inverse(M))` 矩阵。
 
 - https://github.com/graphitemaster/normals_revisited
 - http://www.reedbeta.com/blog/normals-inverse-transpose-part-1/
 - https://www.shadertoy.com/view/3s33zj
 - FGED Volume 1, section 1.7.5 "Inverses of Small Matrices"
-- FGED Volume 1, section 3.2.2 "Transforming Normal Vectors"
+- FGED Volume 1, section 3.2.2 "Transforming Normal Vectors" -->
 
----
-
-## SSR
+<!-- ## SSR -->
 
 <!-- TODO -->
 
----
-
-## TAA
+<!-- ## TAA -->
 
 <!-- TODO -->
-
----
