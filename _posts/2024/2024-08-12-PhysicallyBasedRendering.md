@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "基于物理的渲染（PBR）理论"
-date:   2024-08-12 16:16:00 +0800
+date:   2024-08-12 16:16:00
 category: Rendering
 ---
 
@@ -490,7 +490,7 @@ $$
 
 以下为上述 Disney Diffuse 的 Shader 代码实现：
 
-```c
+```cpp
 // [Burley 2012, "Physically-Based Shading at Disney"]
 float3 Diffuse_Burley_Disney(float3 baseColor, float roughness, float NdotV, float NdotL, float LdotH)
 {
@@ -573,7 +573,7 @@ $$
 
 下面是 $\gamma = 1$ 和 $\gamma = 2$ 时 GTR 分布的 Shader 实现代码：
 
-```c
+```cpp
 // Generalized-Trowbridge-Reitz distribution
 float GTR1(float NdotH, float a)
 {
@@ -593,7 +593,7 @@ float GTR2(float NdotH, float a)
 
 以及各向异性的版本：
 
-```c
+```cpp
 float sqr(float x) { return x * x; }
 
 float GTR2_aniso(float NdotH, float HdotX, float HdotY, float ax, float ay)
@@ -619,7 +619,7 @@ $$
 
 下面是 Schlick Fresnel 的 Shader 实现代码：
 
-```c
+```cpp
 float SchlickFresnel(float u)
 {
     float m = clamp(1.0 - u, 0.0, 1.0);
@@ -652,7 +652,7 @@ $$
 
 几何项的 Shader 代码实现如下：
 
-```c
+```cpp
 // Smith GGX G项，各向同性版本
 float smithG_GGX(float NdotV, float alphaG)
 {
@@ -778,7 +778,7 @@ $$
 
 生成 Hammersley 序列的 Shader 代码：
 
-```c
+```cpp
 vec2 Hammersley2d(uint i, uint N) 
 {
     // Radical inverse based on http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
@@ -804,7 +804,7 @@ vec2 Hammersley2d(uint i, uint N)
 
 GGX 重要性采样生成偏向于微表面法线向量的 Shader 实现代码如下：
 
-```c
+```cpp
 vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 {
     // 参数 Xi 是生成的低差异 Hammersley 序列
@@ -916,7 +916,7 @@ $$
 
 下面是预计算环境贴图的 Shader 代码：
 
-```c
+```cpp
 void main()
 {
     // 片段法线方向
@@ -1030,7 +1030,7 @@ $$
 
   COD：Black Ops 2的做法，是通过数学工具Mathematica（http://www.wolfram.com/mathematica/） 中的数值积分拟合出曲线，即将UE4离线计算的这张 2D LUT 用如下函数进行了拟合：
 
-  ```c
+  ```cpp
   float3 EnvironmentBRDF( float g, float NoV, float3 rf0 )
   {
       float4 t = float4( 1/0.96, 0.475, (0.0275 - 0.25 * 0.04)/0.96, 0.25 );
@@ -1043,7 +1043,7 @@ $$
 
   需要注意的是，上面的方程是基于Blinn-Phong分布的结果，https://knarkowicz.wordpress.com/2014/12/27/analytical-dfg-term-for-ibl/ 一文中提出了基于GGX分布的EnvironmentBRDF解析版本：
 
-  ```c
+  ```cpp
   float3 EnvDFGLazarov( float3 specularColor, float gloss, float ndotv )
   {
       float4 p0 = float4( 0.5745, 1.548, -0.02397, 1.301 );

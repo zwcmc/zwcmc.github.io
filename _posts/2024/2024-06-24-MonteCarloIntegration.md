@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "蒙特卡罗积分"
-date:   2024-06-24 16:16:00 +0800
+date:   2024-06-24 16:16:00
 category: Math
 ---
 
@@ -163,7 +163,7 @@ $$ F_n(X) = \frac{b-a}{n} \sum_{k=1}^{n}f(X_k) $$
 
 为了演示的目的，我们设计一个用不停止代码来对上面的函数进行蒙特卡罗积分，此代码每秒随机采样1000个均匀的采样点，并计算最终积分的结果。代码如下：
 
-```c++
+```cpp
 #include <random>
 #include <time.h>
 #include <iostream>
@@ -412,7 +412,7 @@ $$ z = \cos{\theta} = \xi_1 $$
 
 UE4中的算法实现为：
 
-```c++
+```cpp
 float4 UniformSampleHemisphere( float2 E )
 {
     float Phi = 2 * PI * E.x;
@@ -454,7 +454,7 @@ $$ z = \cos{\theta} = \sqrt{\xi_1} $$
 
 UE4中的算法实现为：
 
-```c++
+```cpp
 float4 CosineSampleHemisphere( float2 E )
 {
     float Phi = 2 * PI * E.x;
@@ -519,7 +519,7 @@ $$ \xi_2 = \frac{\pi}{2} \sqrt{\xi} $$
 
 C++的实现代码如下：
 
-```c++
+```cpp
 #include <random>
 #include <time.h>
 #include <cmath>
@@ -671,7 +671,7 @@ $$ \theta = \cos^{-1} \sqrt{\frac{1-\xi_2}{(a^2 - 1)\xi_2 + 1}} $$
 
 UE4中GGX的重要性采样的代码如下所示，有没有豁然开朗的感觉：
 
-```c++
+```cpp
 float4 ImportanceSampleGGX( float2 E, float a2 )
 {
     float Phi = 2 * PI * E.x;
@@ -755,7 +755,7 @@ $$ \{ \frac{1}{10},\frac{2}{10},\frac{3}{10},\frac{4}{10},\frac{5}{10},\frac{6}{
 
 C++算法的实现代码为：
 
-```c++
+```cpp
 double van_der_corput(int x, int base)
 {
     double q = 0, bk = 1.0 / base;
@@ -786,7 +786,7 @@ Halton序列的收敛速度是 $O((\log{n})^N / n)$ ，而Hammersley序列的收
 ![07_mc](/assets/images/2024/2024-09-24-MonteCarloIntegration/07_mc.jpeg)
 ![08_mc](/assets/images/2024/2024-09-24-MonteCarloIntegration/08_mc.jpeg)
 
-```c++
+```cpp
 #include <cstdlib> 
 #include <cstdio> 
 #include <cmath> 

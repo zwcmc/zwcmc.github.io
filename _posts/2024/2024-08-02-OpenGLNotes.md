@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "OpenGL学习笔记"
-date:   2024-07-31 16:16:00 +0800
+date:   2024-07-31 16:16:00
 category: OpenGL
 ---
 

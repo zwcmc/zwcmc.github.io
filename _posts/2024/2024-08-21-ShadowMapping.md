@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "阴影贴图的原理以及相关的软阴影技术"
-date:   2024-08-21 16:16:00 +0800
+date:   2024-08-21 16:16:00
 category: Rendering
 ---
 
@@ -126,7 +126,7 @@ category: Rendering
 
 在 OpenGL 中，可以通过 `glPolygonOffset` 来应用基于斜率的深度偏移，其原理是通过屏幕坐标 `x` 和 `y` 的导数来得到 `x` 和 `y` 方向上的变化率，根据变化率计算出像素的倾斜程度，最终得到不同的深度偏移，使用的代码如下：
 
-```c
+```cpp
 glEnable(GL_POLYGON_OFFSET_FILL);
 
 // Usually the following works well
@@ -299,7 +299,7 @@ PCF的基本思想是从阴影贴图中多次采样，每次使用略有不同�
 
 在早期的硬件中，需要手动进行 4 次**点过滤（Point Filtering）**采样，并做双线性插值才能得到最终的阴影结果。在现代的硬件中都集成了此算法，只需要 1 次采样就可以得到同样的结果。下面举一个在 OpenGL 中使用的例子：
 
-```c
+```cpp
 // 设置阴影贴图的过滤方式为双线性
 glTexParameteri(m_Target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri(m_Target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -311,7 +311,7 @@ glTexParameteri(m_Target, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 
 在着色器中，只需要一次采样就可以得到双线性 PCF 的结果：
 
-```c
+```cpp
 uniform sampler2DShadow uShadowMap;
 
 ...
@@ -343,7 +343,7 @@ PCF 的主要思想是：对于场景中的某个转换到光源空间后的像�
 
 在 OpenGL 中实现的代码如下：
 
-```c
+```cpp
 void CalculateRightAndUpTexelDepthDeltas(in vec3 texShadowView, in mat3 shadowProjection, out float upTextDepthWeight, out float rightTextDepthWeight)
 {
     vec3 vShadowTexDDX = dFdx(texShadowView);

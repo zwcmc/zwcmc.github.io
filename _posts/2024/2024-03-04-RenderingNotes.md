@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "渲染学习笔记"
-date:   2024-03-04 16:16:00 +0800
+date:   2024-03-04 16:16:00
 category: Rendering
 ---
 
@@ -173,7 +173,7 @@ FXAA 是一种基于图像处理的抗锯齿算法，它的优点就是性能开
 
 一个像素的亮度是通过其 `R, G, B` 值来确定的，具体的算法如下：
 
-```c++
+```cpp
 float FXAALuma(float4 rgba)
 {
     return dot(rgba.xyz, float3(0.299, 0.587, 0.114));
@@ -191,7 +191,7 @@ float FXAALuma(float4 rgba)
 
 下面是具体的代码实现：
 
-```c++
+```cpp
 // Center pixel
 float2 posM = input.texcoord;
 
@@ -246,14 +246,14 @@ if (range < rangeMaxClamped)
 
 分别计算出水平和垂直的权重，比较它们的大小就可以判断锯齿边缘的方向，也就是后续需要混合的方向：
 
-```c++
+```cpp
 float horizontalWeight = abs((N + S) - 2.0 * M)) * 2.0 + abs((NE + SE) - 2.0 * E)) + abs((NW + SW) - 2.0 * W));
 float verticalWeight = abs((W + E) - 2.0 * M)) * 2.0 + abs((NW + NE) - 2.0 * N)) + abs((SW + SE) - 2.0 * S));
 ```
 
 代码如下：
 
-```c++
+```cpp
 float lumaNW = FXAALuma(FXAATexOff(posM, int2(-1, 1)));
 float lumaSE = FXAALuma(FXAATexOff(posM, int2(1, -1)));
 float lumaNE = FXAALuma(FXAATexOff(posM, int2(1, 1)));
@@ -290,7 +290,7 @@ bool horzSpan = edgeHorz >= edgeVert;
 抗锯齿的原理就是通过原像素和其相邻像素之一混合来实现的，现在知道了锯齿边缘的方向，也就是混合的方向，现在就要开始计算混合因子了，它有个名字叫做亚像素混合因子 (Subpixel Blend Factor)，计算混合因子是通过权重
 求原像素和相邻像素的平均，最后计算这个平均值和原像素亮度的差值来得到的：
 
-```c++
+```cpp
 // Total luminance of the neighborhood according to neighbor weights
 float subpixNSWE = lumaNS + lumaWE;
 float subpixNWSWNESE = lumaNWSW + lumaNESE;
@@ -311,7 +311,7 @@ float subpixH = subpixD * subpixD * FXAA_QUALITY__SUBPIX;
 得到了混合因子后，最后需要计算最终的具体混合方向，前面已经知道了锯齿边缘是水平的还是垂直的，但是水平还需要区分水平向右还是向左，垂直还需要区分向上还是向下，
 首先混合的单位步长是一个像素的长度，根据锯齿边缘是水平还是垂直选择 `U` 方向还是 `V` 方向的单位像素长度：
 
-```c++
+```cpp
 // Step length: horizontal edge, 1.0 / screenHeightInPixels, vertical edge, 1.0 / screenWidthInPixels
 float lengthSign = _SourceSize.z;
 if (horzSpan)
@@ -321,7 +321,7 @@ if (horzSpan)
 然后根据锯齿边缘方向两边的梯度变化来确定最终的混合方向，根据锯齿边缘的方向分别取不同的正方向和负方向，锯齿边缘是水平时，正方向为正上，负方向为正下；锯齿边缘是垂直时，正方形是正右，负方向是正左，再通过和
 中心像素的亮度值相减来得到正负两个方向的梯度变化，取更大的梯度变化方向为最终的混合方向：
 
-```c++
+```cpp
 // Calculate the gradient of positive direction and negative direction
 // N means positive direction and S means negative direction
 // horizontal edge: positive = north, negative = south, vertical edge: positive = east, negative = west
@@ -340,7 +340,7 @@ if (!pairN) lengthSign = -lengthSign;
 
 最后，就可以做混合了：
 
-```c++
+```cpp
 if (!horzSpan) posM.x += subpixH * lengthSign;
 if (horzSpan) posM.y += subpixH * lengthSign;
 return half4(FXAATex(posM).rgb, 1.0);
@@ -366,7 +366,7 @@ return half4(FXAATex(posM).rgb, 1.0);
 
 根据锯齿边缘水平还是垂直，偏移 0.5 个像素来确定搜索采样的起始 UV 坐标，以及定义每一次搜索的偏移大小：
 
-```c++
+```cpp
 // Determine the start UV coordinates on the edge between pixels, which is half step length away from the original UV coordinates
 float2 posB;
 posB.x = posM.x;
@@ -382,7 +382,7 @@ offNP.y = (horzSpan) ? 0.0 : _SourceSize.w;
 
 确定判断找到边缘的阈值，在这里是正、负方向上梯度变化的最大值的四分之一：
 
-```c++
+```cpp
 // Gradient threshold for determining that searching has gone off the edge
 float gradient = max(abs(gradientN), abs(gradientS));
 float gradientScaled = gradient * 1.0 / 4.0;
@@ -390,7 +390,7 @@ float gradientScaled = gradient * 1.0 / 4.0;
 
 第一次分别向正、负两个方向移动 UV 坐标并判断是否找到边缘：
 
-```c++
+```cpp
 // 根据设定好的步长，分别向正、负两个方向移动 UV 坐标
 float2 posN;
 posN.x = posB.x - offNP.x * FXAA_EDGE_SEARCH_STEP0;
@@ -425,7 +425,7 @@ bool doneNP = (!doneN) || (!doneP);
 
 持续搜索，具体的搜索次数和搜索步长取决于对性能上的考虑，更多的搜索次数以及更小的搜索步长会使结果更加准确，但同时也意味着更高的性能消耗：
 
-```c++
+```cpp
 UNITY_UNROLL
 for (int i = 0; i < FXAA_EXTRA_EDGE_SEARCH_STEPS && doneNP; ++i)
 {
@@ -471,7 +471,7 @@ for (int i = 0; i < FXAA_EXTRA_EDGE_SEARCH_STEPS && doneNP; ++i)
 
 下面是完整的代码：
 
-```c++
+```cpp
 // 分别到两个方向边缘的距离
 float dstN = posM.x - posN.x;
 float dstP = posP.x - posM.x;
@@ -505,7 +505,7 @@ float pixelOffsetGood = goodSpan ? pixelOffset : 0.0;
 
 最后，应用边缘混合因子和亚像素混合因为，取它们中更大的作为混合因子，偏移中心像素的 UV 坐标采样，得到抗锯齿的结果：
 
-```c++
+```cpp
 // Apply both edge and subpixel blending, use the largest blend factor of both
 float pixelOffsetSubpix = max(pixelOffsetGood, subpixH);
 
@@ -693,7 +693,7 @@ $$
 
 构建 `TBN` 矩阵的主要的算法在 `packTangentFrame` 方法中：
 
-```c++
+```cpp
 constexpr QUATERNION<T> MATH_PURE positive(const QUATERNION<T>& q)
 {
     return q.w < 0 ? -q : q;
@@ -735,7 +735,7 @@ constexpr TQuaternion<T> TMat33<T>::packTangentFrame(const TMat33<T>& m, size_t 
 
 其中 第一个 `3x3` 的矩阵 `m` 参数通过模型数据中的切线（tangent）、副切线（bitangent）和法线（normal）构成，返回的四元数传入顶点数据中：
 
-```c++
+```cpp
 quatf q = filament::math::details::TMat33<float>::packTangentFrame({tangent, bitangent, normal});
 asset.tangents.push_back(packSnorm16(q.xyzw));
 ```
@@ -751,7 +751,7 @@ asset.tangents.push_back(packSnorm16(q.xyzw));
 
 在着色器中，需要做的是通过这个四元数 `q` 来解析出模型空间的切线、副切线和法线数据，其中 `q` 就是计算好的代表旋转的四元数：
 
-```c++
+```cpp
 /**
  * Extracts the normal vector of the tangent frame encoded in the specified quaternion.
  */

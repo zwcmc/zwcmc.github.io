@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Unity中的LinearEyeDepth和Linear01Depth推导"
-date:   2023-07-03 16:16:00 +0800
+date:   2023-07-03 16:16:00
 category: Unity
 ---
 
@@ -13,7 +13,7 @@ category: Unity
 
 先看这2个函数：
 
-```c
+```hlsl
 // Z buffer to linear 0..1 depth (0 at camera position, 1 at far plane).
 // Does NOT work with orthographic projections.
 // Does NOT correctly handle oblique view frustums.
@@ -35,7 +35,7 @@ float LinearEyeDepth(float depth, float4 zBufferParam)
 
 其中，`zBufferParam` 是 `_ZBufferParams` ，定义在 UnityInput.hlsl 文件：
 
-```c
+```hlsl
 // Values used to linearize the Z buffer (http://www.humus.name/temp/Linearize%20depth.txt)
 // x = 1-far/near
 // y = far/near

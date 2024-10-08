@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "常见排序算法"
-date:   2022-02-16 12:16:00 PM +0800
+date:   2022-02-16 12:16:00 PM
 category: Algorithm
 ---
 
@@ -101,7 +101,7 @@ category: Algorithm
 
 **代码实现** ：
 
-```c++
+```cpp
 // 冒泡排序
 void BubbleSort(std::vector<int>& arr) {
     int n = arr.size();
@@ -151,7 +151,7 @@ void BubbleSort(std::vector<int>& arr) {
 
 **代码实现** ：
 
-```c++
+```cpp
 void SelectionSort(std::vector<int>& arr) {
     int n = arr.size();
     for (int i = 0; i < n - 1; ++i) {
@@ -203,7 +203,7 @@ void SelectionSort(std::vector<int>& arr) {
 
 **代码实现** ：
 
-```c++
+```cpp
 void InsertionSort(std::vector<int>& arr) {
     int n = arr.size();
     for (int i = 1; i < n; ++i) {
@@ -252,7 +252,7 @@ void InsertionSort(std::vector<int>& arr) {
 
 **代码实现** ：
 
-```c++
+```cpp
 // 合并两个子数组
 void Merge(std::vector<int>& arr, int left, int mid, int right) {
     int n1 = mid - left + 1;
@@ -363,7 +363,7 @@ void MergeSort(std::vector<int>& arr, int left, int right) {
 
 **代码实现** ：
 
-```c++
+```cpp
 // 进行数组的划分
 int Partition(std::vector<int>& arr, int low, int high) {
     int pivot = arr[high]; // 选择最后一个元素为基准值
@@ -442,7 +442,7 @@ void QuickSort(std::vector<int>& arr, int low, int high) {
 
 **代码实现** ：
 
-```c++
+```cpp
 // 维护堆性质
 void Heapify(std::vector<int>& arr, int n, int i) {
     int largest = i; // 初始化最大值为根节点
@@ -518,7 +518,7 @@ void HeapSort(std::vector<int>& arr) {
 
 **代码实现** ：
 
-```c++
+```cpp
 void ShellSort(std::vector<int>& arr) {
     int n = arr.size();
     // 选择步长序列，这里使用希尔增量
@@ -569,7 +569,7 @@ void ShellSort(std::vector<int>& arr) {
 
 **代码实现** ：
 
-```c++
+```cpp
 // 计数排序函数
 void CountingSort(std::vector<int>& arr) {
     // 如果数组为空，直接返回
@@ -651,7 +651,7 @@ void CountingSort(std::vector<int>& arr) {
 
 **代码实现** ：
 
-```c++
+```cpp
 // 桶排序
 void BucketSort(std::vector<int>& arr) {
     int n = arr.size();
@@ -718,7 +718,7 @@ void BucketSort(std::vector<int>& arr) {
 
 **代码实现** ：
 
-```c++
+```cpp
 // 获取数组中最大值的位数
 int GetMax(const std::vector<int>& arr) {
     int maxVal = *std::max_element(arr.begin(), arr.end());
