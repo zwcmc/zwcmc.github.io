@@ -5,7 +5,7 @@ date:   2024-03-04 16:16:00
 category: Rendering
 ---
 
-## Normal Matrix(法线变换矩阵)
+## (1) Normal Matrix(法线变换矩阵)
 
 法线向量是定义在模型空间中的，而光照计算一般情况下都是在世界空间进行的，所以就需要一个矩阵来把法线向量从模型空间转换到世界空间，这个矩阵就叫做法线变化矩阵。
 
@@ -125,16 +125,16 @@ $$
 
 可以知道如果模型变换中包含旋转，统一缩放和平移时，此时也可以直接使用模型矩阵左上角3x3部分的矩阵来变换法线向量，变换后的统一缩放系数影响的是法线向量的长度，而在计算光照时，需要的仅仅的法线向量的方向，也就是最终都会对法线向量进行归一化计算，它的长度变化并不需要关心。
 
-### 总结
+### 1.1 总结
 
 如果模型变换中包含旋转变换，统一变换，平移变换时，可以直接使用模型矩阵左上角 3x3 部分的矩阵来变换法线向量；而如果变换中包含了非统一缩放，此时就必须求解模型矩阵左上角 3x3 部分的矩阵的逆的转置来得到法线变换矩阵
 
-### 参考
+### 1.2 参考
 
 - [The Normal Matrix](http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/)
 - [Unity Shaders Book Chapter 4](https://candycat1992.github.io/unity_shaders_book/unity_shaders_book_chapter_4.pdf)
 
-## Alpha to Coverage
+## (2) Alpha to Coverage
 
 <!-- Alpha to Coverage一般简称A2C或者是ATOC，是对Alpha Test做抗锯齿的一种技术。 -->
 <!-- Alpha Test是一种很常见的技术，它的原理也很简单，在像素着色器中，alpha值低于设定阈值的像素将会直接被丢弃，在游戏中经常用来渲染树叶、草和头发等物体。而Alpha Blend也可以是 -->
@@ -157,7 +157,7 @@ $$
 
 ![04_alpha_to_coverage](/assets/images/2024/2024-03-04-RenderingNotes/04_alpha_to_coverage.png)
 
-### 参考
+### 2.1 参考
 
 - [Anti-aliased Alpha Test: The Esoteric Alpha To Coverage](https://bgolus.medium.com/anti-aliased-alpha-test-the-esoteric-alpha-to-coverage-8b177335ae4f)
 - [A Quick Overview of MSAA](https://therealmjp.github.io/posts/msaa-overview/)
@@ -167,365 +167,7 @@ $$
 - [Alpha to coverage](https://www.humus.name/index.php?page=3D&ID=61)
 - [ShaderLab command: AlphaToMask](https://docs.unity3d.com/2023.2/Documentation/Manual/SL-AlphaToMask.html)
 
-## Fast Approximate Anti-aliasing (FXAA)
-
-FXAA 是一种基于图像处理的抗锯齿算法，它的优点就是性能开销极小，而且有着不错的抗锯齿效果。它主要是通过混合具有高对比度的相邻像素来实现抗锯齿，下面就来看看这个算法的具体实现。
-
-一个像素的亮度是通过其 `R, G, B` 值来确定的，具体的算法如下：
-
-```cpp
-float FXAALuma(float4 rgba)
-{
-    return dot(rgba.xyz, float3(0.299, 0.587, 0.114));
-}
-```
-
-首先要做的，是找到那些与周围像素具有高对比度的像素，这是通过采样计算中心像素的亮度和此像素相邻的上、下、左和右四个像素的亮度来确定的，需要说明的是，中心像素指的是此像素着色器的当前像素。如下图：
-
-![15_FXAA_N_S_E_W_M](/assets/images/2024/2024-03-04-RenderingNotes/15_FXAA_N_S_E_W_M.png)
-
-采样这五个像素，并计算它们的亮度值，找到其中最大的亮度值和最小的亮度值，相减就可以得到中心像素周围像素的对比度，知道对比度后，通过过滤掉与相邻像素具有低对比度的像素，保留与相邻像素具有
-高对比度的像素，这些保留下来的与相邻像素具有高对比度的像素也就是需要做抗锯齿处理的锯齿边缘像素：
-
-![16_FXAA_HighContrastFilter](/assets/images/2024/2024-03-04-RenderingNotes/16_FXAA_HighContrastFilter.png)
-
-下面是具体的代码实现：
-
-```cpp
-// Center pixel
-float2 posM = input.texcoord;
-
-// Center sample
-half4 rgbyM = SAMPLE_TEXTURE2D_LOD(_BlitTexture, sampler_LinearClamp, posM, 0.0);
-
-// Luma of pixels around current pixel
-float lumaM = FXAALuma(rgbyM);
-float lumaS = FXAALuma(FXAATexOff(posM, int2(0, -1)));
-float lumaE = FXAALuma(FXAATexOff(posM, int2(1, 0)));
-float lumaN = FXAALuma(FXAATexOff(posM, int2(0, 1)));
-float lumaW = FXAALuma(FXAATexOff(posM, int2(-1, 0)));
-
-float maxSM = max(lumaS, lumaM);
-float minSM = min(lumaS, lumaM);
-float maxESM = max(lumaE, maxSM);
-float minESM = min(lumaE, minSM);
-float maxWN = max(lumaW, lumaN);
-float minWN = min(lumaW, lumaN);
-// Maximum luminance of pixels
-float rangeMax = max(maxWN, maxESM);
-// Minimum luminance of pixels
-float rangeMin = min(minWN, minESM);
-float rangeMaxScaled = rangeMax * FXAA_QUALITY__EDGE_THRESHOLD;
-// Get the edge
-float range = rangeMax - rangeMin;
-// Skip the pixel that its neighborhood does not have a high enough contrast
-float rangeMaxClamped = max(FXAA_QUALITY__EDGE_THRESHOLD_MIN, rangeMaxScaled);
-if (range < rangeMaxClamped)
-    return rgbyM;
-```
-
-![17_FXAA_Edge](/assets/images/2024/2024-03-04-RenderingNotes/17_FXAA_Edge.png)
-
-<center> 当没有通过对比度阈值检测时输出 0.0，通过对比度阈值检测时输出 range，可以看到锯齿边缘被过滤了出来 </center>
-
-<br/>
-
-过滤出锯齿边缘后，现在需要知道锯齿边缘的方向，锯齿边缘的方向可能是水平的，也有可能是垂直的，锯齿边缘的方向决定了最终混合的方向。如下图可能的锯齿边缘方向：
-
-![18_FXAA_BlendDirections](/assets/images/2024/2024-03-04-RenderingNotes/18_FXAA_BlendDirections.png)
-
-通过额外采样中心像素的左上，右上，左下和右下这四个像素并计算它们的亮度值来确定锯齿边缘的方向，而且因为不同的像素位置，所以它们贡献的权重也是不同的：
-
-额外的四个相邻的像素：
-
-![19_FXAA_NW_NE_SW_SE](/assets/images/2024/2024-03-04-RenderingNotes/19_FXAA_NW_NE_SW_SE.png)
-
-相邻像素的权重：
-
-![20_FXAA_NeighborWeights](/assets/images/2024/2024-03-04-RenderingNotes/20_FXAA_NeighborWeights.png)
-
-分别计算出水平和垂直的权重，比较它们的大小就可以判断锯齿边缘的方向，也就是后续需要混合的方向：
-
-```cpp
-float horizontalWeight = abs((N + S) - 2.0 * M)) * 2.0 + abs((NE + SE) - 2.0 * E)) + abs((NW + SW) - 2.0 * W));
-float verticalWeight = abs((W + E) - 2.0 * M)) * 2.0 + abs((NW + NE) - 2.0 * N)) + abs((SW + SE) - 2.0 * S));
-```
-
-代码如下：
-
-```cpp
-float lumaNW = FXAALuma(FXAATexOff(posM, int2(-1, 1)));
-float lumaSE = FXAALuma(FXAATexOff(posM, int2(1, -1)));
-float lumaNE = FXAALuma(FXAATexOff(posM, int2(1, 1)));
-float lumaSW = FXAALuma(FXAATexOff(posM, int2(-1, -1)));
-
-float lumaNS = lumaN + lumaS;
-float lumaWE = lumaW + lumaE;
-float edgeHorz1 = (-2.0 * lumaM) + lumaNS;
-float edgeVert1 = (-2.0 * lumaM) + lumaWE;
-
-float lumaNESE = lumaNE + lumaSE;
-float lumaNWNE = lumaNW + lumaNE;
-float edgeHorz2 = (-2.0 * lumaE) + lumaNESE;
-float edgeVert2 = (-2.0 * lumaN) + lumaNWNE;
-
-float lumaNWSW = lumaNW + lumaSW;
-float lumaSWSE = lumaSW + lumaSE;
-float edgeHorz4 = abs(edgeHorz1) * 2.0 + abs(edgeHorz2);
-float edgeVert4 = abs(edgeVert1) * 2.0 + abs(edgeVert2);
-
-float edgeHorz3 = (-2.0 * lumaW) + lumaNWSW;
-float edgeVert3 = (-2.0 * lumaS) + lumaSWSE;
-
-float edgeHorz = abs(edgeHorz3) + edgeHorz4;
-float edgeVert = abs(edgeVert3) + edgeVert4;
-
-bool horzSpan = edgeHorz >= edgeVert;
-```
-
-可以看到锯齿边缘的方向被区分了出来：
-
-![21_FXAA_HorizontalVertical](/assets/images/2024/2024-03-04-RenderingNotes/21_FXAA_HorizontalVertical.png)
-
-抗锯齿的原理就是通过原像素和其相邻像素之一混合来实现的，现在知道了锯齿边缘的方向，也就是混合的方向，现在就要开始计算混合因子了，它有个名字叫做亚像素混合因子 (Subpixel Blend Factor)，计算混合因子是通过权重
-求原像素和相邻像素的平均，最后计算这个平均值和原像素亮度的差值来得到的：
-
-```cpp
-// Total luminance of the neighborhood according to neighbor weights
-float subpixNSWE = lumaNS + lumaWE;
-float subpixNWSWNESE = lumaNWSW + lumaNESE;
-float subpixA = subpixNSWE * 2.0 + subpixNWSWNESE;
-
-// Calculate average of all adjacent neighbors and get the contrast between the middle and this average
-float subpixB = (subpixA * (1.0 / 12.0)) - lumaM;
-
-// Normalized the contrast, clamp the result to a maximum of 1
-float subpixRcpRange = 1.0 / range;
-float subpixC = saturate(abs(subpixB) * subpixRcpRange);
-
-// Make factor more smoother
-float subpixD = smoothstep(0, 1, subpixC);
-float subpixH = subpixD * subpixD * FXAA_QUALITY__SUBPIX;
-```
-
-得到了混合因子后，最后需要计算最终的具体混合方向，前面已经知道了锯齿边缘是水平的还是垂直的，但是水平还需要区分水平向右还是向左，垂直还需要区分向上还是向下，
-首先混合的单位步长是一个像素的长度，根据锯齿边缘是水平还是垂直选择 `U` 方向还是 `V` 方向的单位像素长度：
-
-```cpp
-// Step length: horizontal edge, 1.0 / screenHeightInPixels, vertical edge, 1.0 / screenWidthInPixels
-float lengthSign = _SourceSize.z;
-if (horzSpan)
-    lengthSign = _SourceSize.w;
-```
-
-然后根据锯齿边缘方向两边的梯度变化来确定最终的混合方向，根据锯齿边缘的方向分别取不同的正方向和负方向，锯齿边缘是水平时，正方向为正上，负方向为正下；锯齿边缘是垂直时，正方形是正右，负方向是正左，再通过和
-中心像素的亮度值相减来得到正负两个方向的梯度变化，取更大的梯度变化方向为最终的混合方向：
-
-```cpp
-// Calculate the gradient of positive direction and negative direction
-// N means positive direction and S means negative direction
-// horizontal edge: positive = north, negative = south, vertical edge: positive = east, negative = west
-if (!horzSpan)
-{
-    lumaN = lumaE;
-    lumaS = lumaW;
-}
-float gradientN = lumaN - lumaM;
-float gradientS = lumaS - lumaM;
-
-// Two direction gradients indicate step length direction
-bool pairN = abs(gradientN) >= abs(gradientS);
-if (!pairN) lengthSign = -lengthSign;
-```
-
-最后，就可以做混合了：
-
-```cpp
-if (!horzSpan) posM.x += subpixH * lengthSign;
-if (horzSpan) posM.y += subpixH * lengthSign;
-return half4(FXAATex(posM).rgb, 1.0);
-```
-
-下面是关闭和开启抗锯齿的效果对比：
-
-![22_FXAA_SubpixelBlendFactor_Off](/assets/images/2024/2024-03-04-RenderingNotes/22_FXAA_SubpixelBlendFactor_Off.png)
-
-![23_FXAA_SubpixelBlendFactor_On](/assets/images/2024/2024-03-04-RenderingNotes/23_FXAA_SubpixelBlendFactor_On.png)
-
-观察抗锯齿之后的效果，发现斜向的锯齿，抗锯齿效果其实不太好。这是因为亚像素混合因子是在中心像素周围 3x3 的像素块内确认的，并且假设锯齿边缘是完全垂直或者水平的，但实际情况下锯齿边缘往往远远
-大于 3 个像素的范围，像素可能位于这个倾斜锯齿边缘的某一部分，虽然局部来看是水平或者垂直的，但是真正的锯齿边缘是有一定长度和倾斜角度的。所以需要引入一个新的混合因子：边缘混合因子。
-
-计算边缘混合因子的原理是，从中心像素开始，沿着锯齿边缘的方向，分别向正、负两个方向一步步移动搜索 (水平的锯齿边缘搜索的正、负方向分别是正右和正左；垂直的锯齿边缘搜索的正、负方向分别是正上和正下)，
-当移动到的锯齿边缘上的某个像素和混合方向上的相邻像素的平均值与中心像素和混合方向上相邻像素的亮度平均值的梯度变化大于某个阈值时 (因为搜索次数是有限的，所以到达搜索上限也会停止继续移动搜索)，
-认为是找到了此锯齿边缘在这个搜索方向上的边缘。找到两个方向上的边缘后，取更靠近的一个方向，根据移动的距离计算出边缘混合因子。下面来看具体的代码实现：
-
-需要注意的是，利用纹理的双线性过滤的特性，可以把采样点移动到锯齿边缘上的像素和混合方向上相邻像素之间的边缘上，这样通过一次采样就可以得到它们之前的平均值。如下图，红色方框的像素，移动采样位置到绿色X处，这样一次采样
-就可以得到红色方框像素和混合方向上相邻正上方像素的平均值：
-
-![24_FXAA_SamplePoint](/assets/images/2024/2024-03-04-RenderingNotes/24_FXAA_SamplePoint.png)
-
-根据锯齿边缘水平还是垂直，偏移 0.5 个像素来确定搜索采样的起始 UV 坐标，以及定义每一次搜索的偏移大小：
-
-```cpp
-// Determine the start UV coordinates on the edge between pixels, which is half step length away from the original UV coordinates
-float2 posB;
-posB.x = posM.x;
-posB.y = posM.y;
-if (!horzSpan) posB.x += lengthSign * 0.5;
-if (horzSpan) posB.y += lengthSign * 0.5;
-
-// Search step offset
-float2 offNP;
-offNP.x = (!horzSpan) ? 0.0 : _SourceSize.z;
-offNP.y = (horzSpan) ? 0.0 : _SourceSize.w;
-```
-
-确定判断找到边缘的阈值，在这里是正、负方向上梯度变化的最大值的四分之一：
-
-```cpp
-// Gradient threshold for determining that searching has gone off the edge
-float gradient = max(abs(gradientN), abs(gradientS));
-float gradientScaled = gradient * 1.0 / 4.0;
-```
-
-第一次分别向正、负两个方向移动 UV 坐标并判断是否找到边缘：
-
-```cpp
-// 根据设定好的步长，分别向正、负两个方向移动 UV 坐标
-float2 posN;
-posN.x = posB.x - offNP.x * FXAA_EDGE_SEARCH_STEP0;
-posN.y = posB.y - offNP.y * FXAA_EDGE_SEARCH_STEP0;
-float2 posP;
-posP.x = posB.x + offNP.x * FXAA_EDGE_SEARCH_STEP0;
-posP.y = posB.y + offNP.y * FXAA_EDGE_SEARCH_STEP0;
-
-// 采样得到当前采样点两边的相邻像素的亮度平均值
-float lumaEndN = FXAALuma(FXAATex(posN));
-float lumaEndP = FXAALuma(FXAATex(posP));
-
-// 中心像素与混合方向上相邻像素的和
-float lumaNN = lumaN + lumaM;
-float lumaSS = lumaS + lumaM;
-if (!pairN)
-    lumaNN = lumaSS;
-
-// 计算与中心像素与其混合方向上相邻像素平均值的梯度变化
-lumaEndN -= lumaNN * 0.5;
-lumaEndP -= lumaNN * 0.5;
-
-// 当梯度变化大于阈值时，确定找到边缘
-bool doneN = abs(lumaEndN) >= gradientScaled;
-bool doneP = abs(lumaEndP) >= gradientScaled;
-
-// 是否有一个方向没有找到边缘
-bool doneNP = (!doneN) || (!doneP);
-```
-
-![25_FXAA_Search](/assets/images/2024/2024-03-04-RenderingNotes/25_FXAA_Search.png)
-
-持续搜索，具体的搜索次数和搜索步长取决于对性能上的考虑，更多的搜索次数以及更小的搜索步长会使结果更加准确，但同时也意味着更高的性能消耗：
-
-```cpp
-UNITY_UNROLL
-for (int i = 0; i < FXAA_EXTRA_EDGE_SEARCH_STEPS && doneNP; ++i)
-{
-    if (!doneN) posN.x -= offNP.x * SEARCH_STEPS[i];
-    if (!doneN) posN.y -= offNP.y * SEARCH_STEPS[i];
-    if (!doneP) posP.x += offNP.x * SEARCH_STEPS[i];
-    if (!doneP) posP.y += offNP.y * SEARCH_STEPS[i];
-
-    if (!doneN) lumaEndN = FXAALuma(FXAATex(posN));
-    if (!doneP) lumaEndP = FXAALuma(FXAATex(posP));
-    if (!doneN) lumaEndN -= lumaNN * 0.5;
-    if (!doneP) lumaEndP -= lumaNN * 0.5;
-
-    doneN = abs(lumaEndN) >= gradientScaled;
-    doneP = abs(lumaEndP) >= gradientScaled;
-
-    doneNP = (!doneN) || (!doneP);
-}
-```
-
-搜索结束后，得到中心像素距离两个方向上边缘的长度。取距离更小的方向，根据这个方向上的距离来计算边缘混合因子。最后还有一项额外的检查，要确保中心像素在混合方向上亮度值的梯度变化和在边缘混合方向上亮度值的梯度变化是相反的，只有满足
-这个才需要做边缘混合，看下图中的红色点标注的像素：
-
-![26_FXAA_RedGreen_0](/assets/images/2024/2024-03-04-RenderingNotes/26_FXAA_RedGreen_0.png)
-
-计算可以知道此时是一个水平的锯齿边缘，而且上方的绿色点标注的像素亮度值(1)是大于红色点像素的亮度值(0)的，所以此时的混合方向和搜索边缘的正、负两个方向如下：
-
-![27_FXAA_RedGreen_1](/assets/images/2024/2024-03-04-RenderingNotes/27_FXAA_RedGreen_1.png)
-
-在正方向上，1 次就找到了边缘，而在负方向上，搜索 7 次找到了边缘，取搜索次数更少的方向作为计算边缘混合因子的方向，即正方向，但此时，中心像素也就是红色点像素在混合方向上的亮度值变化梯度是 `0.0 - (0.0 + 1.0) * 0.5 = -0.5`，而
-正方向边缘的亮度值变化梯度是 `(0.0 + 0.0) * 0.5 - (0.0 + 1.0) * 0.5 = -0.5`，因为两个梯度变化是相同的，都为负，所以此红色点像素不做边缘混合。
-
-下面再看绿色点标注的像素，它的混合方向和搜索边缘的正、负两个方向如下：
-
-![28_FXAA_RedGreen_2](/assets/images/2024/2024-03-04-RenderingNotes/28_FXAA_RedGreen_2.png)
-
-绿色点像素也是在正方向上 1 次就找到了边缘，在负方向上 7 次找到了边缘，还是取正方向作为计算边缘混合因子的方向。此时，中心像素也就是绿色点像素在混合方向上亮度值变化的梯度是 `1.0 - (0.0 + 1.0) * 0.5 = 0.5`，正方向
-边缘的亮度值变化梯度是 `(0.0 + 0.0) * 0.5 - (1.0 + 0.0) * 0.5 = -0.5`，两个梯度变化是相反的，所以应用边缘混合。最终抗锯齿的效果如下图：
-
-![29_FXAA_RedGreen_3](/assets/images/2024/2024-03-04-RenderingNotes/29_FXAA_RedGreen_3.png)
-
-总结一下就是，***只有满足中心像素亮度值与搜索起点的亮度值的梯度变化和边缘混合方向上的边缘点与搜索起点的亮度值的梯度变化相反时，才需要应用边缘混合。其中，搜索起点的亮度值也就是中心像素亮度值与混合方向上相邻像素亮度值的平均值***。
-
-下面是完整的代码：
-
-```cpp
-// 分别到两个方向边缘的距离
-float dstN = posM.x - posN.x;
-float dstP = posP.x - posM.x;
-if (!horzSpan) dstN = posM.y - posN.y;
-if (!horzSpan) dstP = posP.y - posM.y;
-
-// 中心像素在混合方向上亮度变化梯度值
-float lumaMM = lumaM - lumaNN * 0.5;
-
-// 中心像素在混合方向上亮度变化梯度，是否小于0
-bool lumaMLTZero = lumaMM < 0.0;
-
-// 负方向上亮度变化梯度是否和中心像素在混合方向上亮度变化梯度相反
-bool goodSpanN = (lumaEndN < 0.0) != lumaMLTZero;
-// 正方向上亮度变化梯度是否和中心像素在混合方向上亮度变化梯度相反
-bool goodSpanP = (lumaEndP < 0.0) != lumaMLTZero;
-
-// 取距离边缘更近的方向作为边缘混合方向
-bool directionN = dstN < dstP;
-// 是否需要边缘混合
-bool goodSpan = directionN ? goodSpanN : goodSpanP;
-
-// 计算边缘混合因子
-// edgeBlendFactor = 0.5 - min(dstN, dstP) / (dstN + dstP)
-float spanLength = (dstP + dstN);
-float spanLengthRcp = 1.0 / spanLength;
-float dst = min(dstN, dstP);
-float pixelOffset = (dst * (-spanLengthRcp)) + 0.5;
-float pixelOffsetGood = goodSpan ? pixelOffset : 0.0;
-```
-
-最后，应用边缘混合因子和亚像素混合因为，取它们中更大的作为混合因子，偏移中心像素的 UV 坐标采样，得到抗锯齿的结果：
-
-```cpp
-// Apply both edge and subpixel blending, use the largest blend factor of both
-float pixelOffsetSubpix = max(pixelOffsetGood, subpixH);
-
-if (!horzSpan) posM.x += pixelOffsetSubpix * lengthSign;
-if (horzSpan) posM.y += pixelOffsetSubpix * lengthSign;
-
-return half4(FXAATex(posM).rgb, 1.0);
-```
-
-可以看到应用了边缘混合因子后，抗锯齿的效果提高了不少：
-
-![30_FXAA_SubpixelAndEdgeBlendFactor](/assets/images/2024/2024-03-04-RenderingNotes/30_FXAA_SubpixelAndEdgeBlendFactor.png)
-
-### 参考
-
-- [FXAA](https://catlikecoding.com/unity/tutorials/custom-srp/fxaa/#3.8)
-- [Implementing FXAA](https://blog.simonrodriguez.fr/articles/2016/07/implementing_fxaa.html)
-- [FXAA3_11](https://github.com/hghdev/NVIDIAGameWorks-GraphicsSamples/blob/master/samples/es3-kepler/FXAA/FXAA3_11.h)
-
-## Normal Mapping without Precomputed Tangents
+## (3) Normal Mapping without Precomputed Tangents
 
 在使用法线纹理时，因为法线纹理中存储的法线方向是在切线空间中的，所谓的切线空间如下图所示，其中，原点对应了顶点坐标，红色向量是切线方向（Tangent），绿色向量是副切线方向（Bitangent），蓝色向量是法线方向（Normal），这 3 个向量是正交的，它们之前互相垂直：
 
@@ -653,7 +295,7 @@ vec3 getNormal()
 }
 ```
 
-## 通过一个四元数存储基础法线向量(0, 0, 1)、基础切线向量(1, 0, 0)与基础副切线向量(0, 1, 0)的旋转信息
+## (4) 通过一个四元数存储基础法线向量 `(0,0,1)` 、基础切线向量 `(1,0,0)` 与基础副切线向量 `(0,1,0)` 的旋转信息
 
 今天在看 [flament](https://github.com/google/filament) 源码时，看到一个有意思的算法：通过模型数据中的切线，副切线，法线信息，构建一个表示旋转的 `TBN` 矩阵，将此矩阵转换为四元数表示，最后将此四元数传入着色器中，在着色器中，通过此四元数对初始法线向量 `(0, 0, 1)` 和初始切线向量 `(1, 0, 0)` 进行旋转，得到模型空间中的法线和切线向量信息。其中，这个四元数的 `w` 分量的符号（sign，正或者负）还代表了切线向量的方向，因为切线空间必须是右手坐标系统（Right-hand coord system），而如果 $(\mathbf{n} \times \mathbf{t}) \cdot \mathbf{b} \leq 0.0$ 则代表此时的切线空间并不是右手坐标系统，需要根据 `w` 分量的符号将切线向量取反。
 
@@ -680,8 +322,7 @@ $$
     0 \\
     0 \\
     1
-\end{bmatrix}
-=
+\end{bmatrix}=
 \begin{bmatrix}
     \mathbf{n}_x \\
     \mathbf{n}_y \\
