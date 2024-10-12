@@ -314,7 +314,7 @@ $$
 渲染方程的物理基础是能量守恒定律。在一个特定的位置和方向，出射光 $L_o$ 是自发光 $L_e$ 与反射光线之和，反射光线本身是在半球上各个方向的入射光 $L_i$ 之和乘以表面反射率及入射角。某一点 $\text{p}$ 的渲染方程可以表示为：
 
 $$
-L_o(\mathbf{p}, \omega_o) = L_e(\mathbf{p}, \omega_o) + \int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_r(\mathbf{p}, \omega_i, \omega_o)(n \cdot \omega_i)d\omega_i
+L_o(\mathbf{p}, \omega_o) = L_e(\mathbf{p}, \omega_o) + \int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_r(\mathbf{p}, \omega_i, \omega_o)(n \cdot \omega_i)\mathrm{d}\omega_i
 $$
 
 其中， $\omega_o$ 是出射方向，也可以理解为观察方向； $\omega_i$ 是光线的入射方向：
@@ -697,7 +697,7 @@ $$
 再来回顾一下渲染方程：
 
 $$
-L_o(\mathbf{p}, \omega_o) = L_e(\mathbf{p}, \omega_o) + \int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_r(\mathbf{p}, \omega_i, \omega_o)(n \cdot \omega_i)d\omega_i
+L_o(\mathbf{p}, \omega_o) = L_e(\mathbf{p}, \omega_o) + \int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_r(\mathbf{p}, \omega_i, \omega_o)(n \cdot \omega_i)\mathrm{d}\omega_i
 $$
 
 对于直接光照的计算，入射光线 $\omega_i$ 和出射方向（也就是观察方向） $\omega_o$ 是已知的，场景中的直接光照光源的数量也是已知的，所以直接光照的计算只需要计算渲染方程中被积函数部分，也就是 $L_i(\mathbf{p}, \omega_i)f_r(\mathbf{p}, \omega_i, \omega_o)(n \cdot \omega_i)$ ，而不需要做积分。而对于环境光照的计算，它需要求解半球 $\Omega$ 上所有入射方向（ $\omega_i$ ）的积分（对于某一个着色点 $\mathbf{p}$ 来说，来自周围环境的每个入射方向 $\omega_i$ 都有可能具有一定的辐射度）。因此，环境光照的计算涉及对整个半球 $\Omega$ 的积分，以考虑所有可能的间接光照。
@@ -854,7 +854,7 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 渲染方程是一切光照计算的基础，所以再次回顾一下渲染方程
 
 $$
-L_o(\mathbf{p}, \omega_o) = L_e(\mathbf{p}, \omega_o) + \int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_r(\mathbf{p}, \omega_i, \omega_o)(n \cdot \omega_i)d\omega_i
+L_o(\mathbf{p}, \omega_o) = L_e(\mathbf{p}, \omega_o) + \int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_r(\mathbf{p}, \omega_i, \omega_o)(n \cdot \omega_i)\mathrm{d}\omega_i
 $$
 
 对于反射积分部分中的 $f_r(\mathbf{p}, \omega_i, \omega_o)$ 就是 BRDF 反射方程：
@@ -866,8 +866,8 @@ $$
 那么反射积分可以写为如下公式，并拆分漫反射部分和镜面反射部分：
 
 $$
-\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)(f_d + \frac{DFG}{4(\mathbf{n} \cdot \omega_i)(\mathbf{n} \cdot \omega_o)})(\mathbf{n} \cdot \omega_i)d\omega_i =
-\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_d(\mathbf{n} \cdot \omega_i)d\omega_i + \int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)\frac{DFG}{4(\mathbf{n} \cdot \omega_i)(\mathbf{n} \cdot \omega_o)}(\mathbf{n} \cdot \omega_i)d\omega_i
+\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)(f_d + \frac{DFG}{4(\mathbf{n} \cdot \omega_i)(\mathbf{n} \cdot \omega_o)})(\mathbf{n} \cdot \omega_i)\mathrm{d}\omega_i =
+\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_d(\mathbf{n} \cdot \omega_i)\mathrm{d}\omega_i + \int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)\frac{DFG}{4(\mathbf{n} \cdot \omega_i)(\mathbf{n} \cdot \omega_o)}(\mathbf{n} \cdot \omega_i)\mathrm{d}\omega_i
 $$
 
 通过这样的变换，把环境光照拆分为两部分的积分，漫反射部分和镜面反射部分。
@@ -877,13 +877,13 @@ $$
 对于漫反射部分的环境光，先看看上面总结的积分公式：
 
 $$
-\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_d(\mathbf{n} \cdot \omega_i)d\omega_i
+\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)f_d(\mathbf{n} \cdot \omega_i)\mathrm{d}\omega_i
 $$
 
 $f_d$ 表示的是物体表面漫反射的一些属性，比如基础色，折射率等，与积分无关，所以可以把 $f_d$ 从积分中提出来：
 
 $$
-f_d\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)(\mathbf{n} \cdot \omega_i)d\omega_i
+f_d\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)(\mathbf{n} \cdot \omega_i)\mathrm{d}\omega_i
 $$
 
 至此，需要求解的积分问题就是来自半球 $\Omega$ 上的所有方向的辐射度的积分。如下图所示：
@@ -894,7 +894,7 @@ $$
 
 ![35_prefiltering](/assets/images/2024/2024-08-12-PhysicallyBasedRendering/35_prefiltering.jpeg)
 
-所以，可以通过预计算的方式提前计算好预过滤（Pre-filtered）的环境贴图，每个方向上的辐照度存储的都是这个方向对应的半球 $\Omega$ 上所有方向的环境辐照度的平均。在实时渲染中，通过一次采样，就得到了这个方向上对整个半球 $\Omega$ 上所有入射光的积分结果也就是上面公式中的 $\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)(\mathbf{n} \cdot \omega_i)d\omega_i$ 部分，然后再拿采样的结果与 $f_d$ 相乘，就得到了这个点的环境漫反射光照结果。
+所以，可以通过预计算的方式提前计算好预过滤（Pre-filtered）的环境贴图，每个方向上的辐照度存储的都是这个方向对应的半球 $\Omega$ 上所有方向的环境辐照度的平均。在实时渲染中，通过一次采样，就得到了这个方向上对整个半球 $\Omega$ 上所有入射光的积分结果也就是上面公式中的 $\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)(\mathbf{n} \cdot \omega_i)\mathrm{d}\omega_i$ 部分，然后再拿采样的结果与 $f_d$ 相乘，就得到了这个点的环境漫反射光照结果。
 
 如下图所示，需要对整个半球 $\Omega$ 上的立体角 $\omega_i$ 进行积分：
 
@@ -903,7 +903,7 @@ $$
 半球 $\Omega$ 上的立体角 $\omega_i$ 用球面坐标可以表示为 $(\theta, \phi)$ 的形式，而 $(\mathbf{n} \cdot \omega_i)$ 可以表示为 $\cos{\theta}$ ，新的积分公式也就是：
 
 $$
-f_d\int_{\phi=0}^{2\pi}\int_{\theta=0}^{\frac{\pi}{2}}L_i(\mathbf{p}, \phi_i, \theta_i)\cos{\theta}\sin{\theta}d\phi d\theta
+f_d\int_{\phi=0}^{2\pi}\int_{\theta=0}^{\frac{\pi}{2}}L_i(\mathbf{p}, \phi_i, \theta_i)\cos{\theta}\sin{\theta}\mathrm{d}\phi \mathrm{d}\theta
 $$
 
 上式中 $\theta$ 的范围是 `[0, π/2]` 是因为半球积分是围绕表面法线进行的，只计算朝向表面的光线的贡献。
@@ -911,7 +911,7 @@ $$
 最后，通过黎曼和方法（Riemann Sum）来预计算这个积分。而且累加完成后，还需要进行归一化处理，以获得正确的辐照度：因为半球的表面积为 $2\pi r^2$ ，其中 $r$ 是半径，在单位球的情况下， $r = 1$ ，因此半球的表面积为 $2\pi$ ，而在离散积分时，只考虑了半球的一部分（从 $\theta = 0$ 到 $\theta = \frac{\pi}{2}$ ），因此累加的结果还要乘以 $2\pi$ 的一半来归一化积分结果（在离散积分中，乘以 $\pi$ 可以使离散求和的结果更接近实际的连续积分结果）。最终的公式是：
 
 $$
-f_d \frac{\pi}{n1n2} \sum_{\phi=0}^{n1}\sum_{\theta=0}^{n2}L_i(\mathbf{p}, \phi_i, \theta_i)\cos{\theta}\sin{\theta}d\phi d\theta
+f_d \frac{\pi}{n1n2} \sum_{\phi=0}^{n1}\sum_{\theta=0}^{n2}L_i(\mathbf{p}, \phi_i, \theta_i)\cos{\theta}\sin{\theta}\mathrm{d}\phi \mathrm{d}\theta
 $$
 
 下面是预计算环境贴图的 Shader 代码：
@@ -961,7 +961,7 @@ void main()
 而对于镜面反射部分的环境光。先将蒙特卡罗积分公式带入方程可得：
 
 $$
-\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)\frac{DFG}{4(\mathbf{n} \cdot \omega_i)(\mathbf{n} \cdot \omega_o)}(\mathbf{n} \cdot \omega_i)d\omega_i \approx
+\int_{\Omega}^{}L_i(\mathbf{p}, \omega_i)\frac{DFG}{4(\mathbf{n} \cdot \omega_i)(\mathbf{n} \cdot \omega_o)}(\mathbf{n} \cdot \omega_i)\mathrm{d}\omega_i \approx
 \frac{1}{N}\sum_{k=1}^{N}\frac{L_i(l_k)f(l_k, v)\cos{\theta_{l_{k}}}}{p(l_k, v)}
 $$
 

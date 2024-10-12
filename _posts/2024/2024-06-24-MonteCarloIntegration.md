@@ -37,13 +37,13 @@ category: Math
 
 如果对于随机变量 $X$ 的累积分布函数 $cdf(x)$ ，存在非负数 $pdf(x)$ ，使对于任意实数 $x$ ，有
 
-$$ cdf(x) = \int_{-\infty}^{x} pdf(t) dt $$
+$$ cdf(x) = \int_{-\infty}^{x} pdf(t) \mathrm{d}t $$
 
 则称 $X$ 为**连续型随机变量**，其中函数 $pdf(x)$ 称为 $X$ 的**概率密度函数（Probability Distribution Function，PDF）**，概率密度函数 $pdf(x)$ 具有以下几个性质：
 
 - $pdf(x) \geq 0$ ；
-- $\int_{-\infty}^{+\infty} pdf(t) dt = 1$ ；
-- 对于任意实数 $x_1$ ， $x_2$ ， $(x_1 \leq x_2)$ ，有 $P\{x_1 < X \leq x_2\} = \int_{x_1}^{x_2} pdf(t) dt$ ；
+- $\int_{-\infty}^{+\infty} pdf(t) \mathrm{d}t = 1$ ；
+- 对于任意实数 $x_1$ ， $x_2$ ， $(x_1 \leq x_2)$ ，有 $P\{x_1 < X \leq x_2\} = \int_{x_1}^{x_2} pdf(t) \mathrm{d}t$ ；
 - 若 $pdf(x)$ 在点 $x$ 处连续，则有 $cdf'(x) = pdf(x)$ ；
 
 有三种重要的连续型随机变量：
@@ -66,11 +66,11 @@ $$
 
 对于连续型随机变量 $(X,Y)$ ，设它的概率密度函数为 $pdf(x,y)$ ， $X$ 是一个连续型随机变脸，其概率密度函数表示为：
 
-$$ pdf_X(x) = \int_{-\infty}^{+\infty} pdf(x,y) dy $$
+$$ pdf_X(x) = \int_{-\infty}^{+\infty} pdf(x,y) \mathrm{d}y $$
 
 类似的， $Y$ 也是一个连续型随机变量，其概率密度函数表示为：
 
-$$ pdf_Y(y) = \int_{-\infty}^{+\infty} pdf(x,y) dx $$
+$$ pdf_Y(y) = \int_{-\infty}^{+\infty} pdf(x,y) \mathrm{d}x $$
 
 分别称 $pdf_X(x)$ ， $pdf_Y(y)$ 为 $(X,Y)$ 关于 $X$ 与关于 $Y$ 的**边缘概率密度函数**。
 
@@ -78,7 +78,7 @@ $$ pdf_Y(y) = \int_{-\infty}^{+\infty} pdf(x,y) dx $$
 
 $$ pdf_{X|Y}(x|y) = \frac{pdf(x,y)}{pdf_Y(y)} $$
 
-设连续型随机变量 $X$ 的概率密度函数为 $pdf(x)$ ，积分 $\int_{-\infty}^{+\infty} x \cdot pdf(x) dx$ 的值为随机变量 $X$ 的**期望值（Expected Value）**，记为 $E(X)$ 。期望值是随机试验下所有那些可能结果的平均值，它有几个重要的性质：
+设连续型随机变量 $X$ 的概率密度函数为 $pdf(x)$ ，积分 $\int_{-\infty}^{+\infty} x \cdot pdf(x) \mathrm{d}x$ 的值为随机变量 $X$ 的**期望值（Expected Value）**，记为 $E(X)$ 。期望值是随机试验下所有那些可能结果的平均值，它有几个重要的性质：
 
 - 设 $C$ 是常数，则有 $E(C) = C$ ；
 - 设 $X$ 是一个随机变量， $C$ 是常数，则有 $E(CX) = CE(X)$ ；
@@ -236,11 +236,11 @@ $$ E[F_n(X)] $$
 
 $$ = E\Big[\frac{1}{n} \sum_{k=1}^{n} \frac{f(X_k)}{pdf(X_k)}\Big] $$
 
-$$ = \frac{1}{n} \sum_{k=1}^{n} \int \frac{f(x)}{pdf(x)} \cdot pdf(x) dx$$
+$$ = \frac{1}{n} \sum_{k=1}^{n} \int \frac{f(x)}{pdf(x)} \cdot pdf(x) \mathrm{d}x$$
 
-$$ = \frac{1}{n} \sum_{k=1}^{n} \int f(x) dx $$
+$$ = \frac{1}{n} \sum_{k=1}^{n} \int f(x) \mathrm{d}x $$
 
-$$ = \int f(x) dx $$
+$$ = \int f(x) \mathrm{d}x $$
 
 蒙特卡洛法的积分估计量的数学期望等于被积函数的积分真值，证明 $F_n(X)$ 是**无偏估计量**。
 
@@ -250,11 +250,11 @@ $$ \sigma^2[F_n(X)] $$
 
 $$ = \sigma^2 \Big[ \frac{1}{n} \sum_{k=1}^{n} \frac{f(X_k)}{p(X_k)} \Big] $$
 
-$$ = \frac{1}{n^2} \sum_{k=1}^{n} \int \Big(\frac{f(x)}{pdf(x)} - E(F_n(X))\Big)^2 \cdot pdf(x) dx $$
+$$ = \frac{1}{n^2} \sum_{k=1}^{n} \int \Big(\frac{f(x)}{pdf(x)} - E(F_n(X))\Big)^2 \cdot pdf(x) \mathrm{d}x $$
 
-$$ = \frac{1}{n} \Big[ \int \Big( \frac{f(x)}{pdf(x)} \Big)^2 \cdot pdf(x) dx - E(F_n(X))^2 \Big]$$
+$$ = \frac{1}{n} \Big[ \int \Big( \frac{f(x)}{pdf(x)} \Big)^2 \cdot pdf(x) \mathrm{d}x - E(F_n(X))^2 \Big]$$
 
-$$ = \frac{1}{n} \Big[ \int \frac{f(x)^2}{pdf(x)} dx - E(F_n(X))^2 \Big] $$
+$$ = \frac{1}{n} \Big[ \int \frac{f(x)^2}{pdf(x)} \mathrm{d}x - E(F_n(X))^2 \Big] $$
 
 从式子中可以知道，标准差与 $\frac{1}{\sqrt{n}}$ 正相关，也就是说，蒙特卡罗积分估计量的收敛与被积函数的维度等都无关，只跟样本数有关。
 
@@ -268,7 +268,7 @@ $$ = \frac{1}{n} \Big[ \int \frac{f(x)^2}{pdf(x)} dx - E(F_n(X))^2 \Big] $$
 
 设 $X$ 是一个随机变量，它的概率密度函数为 $pdf(x)$ ，它的累积分布函数可以表示为：
 
-$$ cdf(x) = \int_{-\infty}^{+\infty} pdf(t) dt $$
+$$ cdf(x) = \int_{-\infty}^{+\infty} pdf(t) \mathrm{d}t $$
 
 那么，计算符合该概率分布的随机数方法如下：
 
@@ -286,7 +286,7 @@ $$ \int_{0}^{1} cx^n = c\frac{x^{n+1}}{n+1} \Big|_{0}^{1} = \frac{c}{n+1} = 1 $$
 
 得到 $c = n+1$ ，首先计算累积分布函数：
 
-$$ cdf(x) = \int_{0}^{x} (n+1)t^n dt = x^{n+1} $$
+$$ cdf(x) = \int_{0}^{x} (n+1)t^n \mathrm{d}t = x^{n+1} $$
 
 其反函数为：
 
@@ -308,19 +308,19 @@ $$ cdf_Y(y) = cdf_X(x) $$
 
 两边分别求导，得：
 
-$$ pdf_Y(y) \cdot \frac{dy}{dx} = pdf_X(x) $$
+$$ pdf_Y(y) \cdot \frac{\mathrm{d}y}{\mathrm{d}x} = pdf_X(x) $$
 
 即有：
 
-$$ pdf_Y(y) = pdf_X(x) \cdot \Big( \frac{dy}{dx} \Big)^{-1} $$
+$$ pdf_Y(y) = pdf_X(x) \cdot \Big( \frac{\mathrm{d}y}{\mathrm{d}x} \Big)^{-1} $$
 
 一般 $y$ 的导数都是正或者负的，则：
 
-$$ pdf_Y(y) = pdf_X(x) \cdot \Big| \frac{dy}{dx} \Big|^{-1} $$
+$$ pdf_Y(y) = pdf_X(x) \cdot \Big| \frac{\mathrm{d}y}{\mathrm{d}x} \Big|^{-1} $$
 
 举个例子，已知区间 $[0,1]$ 之间的的概率密度函数为 $pdf_x(x) = 2x , Y = \sin{X}$ ，如何计算 $Y$ 的概率密度函数呢？
 
-由于 $\frac{dy}{dx} = \cos{x}$ ，则：
+由于 $\frac{\mathrm{d}y}{\mathrm{d}x} = \cos{x}$ ，则：
 
 $$ pdf_Y(y) = \frac{2x}{|\cos{x}|} = \frac{2\arcsin{y}}{\sqrt{1-y^2}} $$
 
@@ -368,11 +368,11 @@ $$ pdf(r,\theta,\phi) = r^2 \sin{\theta} \cdot pdf(x,y,z) $$
 
 现在考虑半球积分的采样，设半球的概率密度函数为 $pdf(\omega) = c$ ，其中 $\omega$ 是立体角，球坐标与立体角对应的关系有：
 
-$$ \int_{\Omega^2}p(\omega)d\omega = \int_{\Omega^2}\sin{\theta}d\phi d\theta \tag{2} $$
+$$ \int_{\Omega^2}p(\omega)\mathrm{d}\omega = \int_{\Omega^2}\sin{\theta}\mathrm{d}\phi \mathrm{d}\theta \tag{2} $$
 
 则有
 
-$$ \int_{\Omega^2}p(\omega)d\omega = c \int_{0}^{\frac{\pi}{2}} \sin{\theta} \int_{0}^{2\pi} d\phi d\theta = 2\pi c = 1 $$
+$$ \int_{\Omega^2}p(\omega)\mathrm{d}\omega = c \int_{0}^{\frac{\pi}{2}} \sin{\theta} \int_{0}^{2\pi} \mathrm{d}\phi \mathrm{d}\theta = 2\pi c = 1 $$
 
 则：
 
@@ -384,7 +384,7 @@ $$ pdf(\theta, \phi) = \frac{\sin{\theta}}{2\pi} $$
 
 可以计算出：
 
-$$ pdf(\theta) = \int_{0}^{2\pi} p(\theta,\phi)d\phi = \sin{\theta} $$
+$$ pdf(\theta) = \int_{0}^{2\pi} p(\theta,\phi)\mathrm{d}\phi = \sin{\theta} $$
 
 再根据条件概率的公式，可知：
 
@@ -392,9 +392,9 @@ $$ pdf(\phi | \theta) = \frac{pdf(\theta,\phi)}{pdf(\theta)} = \frac{1}{2\pi} $$
 
 分别计算累积分布函数：
 
-$$ cdf(\theta) = \int_{0}^{\theta} \sin{t} dt = 1 - \cos{\theta} $$
+$$ cdf(\theta) = \int_{0}^{\theta} \sin{t} \mathrm{d}t = 1 - \cos{\theta} $$
 
-$$ cdf(\phi | \theta) = \int_{0}^{\phi} \frac{1}{2\pi} dt = \frac{\phi}{2\pi} $$
+$$ cdf(\phi | \theta) = \int_{0}^{\phi} \frac{1}{2\pi} \mathrm{d}t = \frac{\phi}{2\pi} $$
 
 根据前面介绍的随机数生成法，设 $\xi_1, \xi_2$ 是 $[0, 1]$ 之间均匀分布的随机数，可以用 $1-\xi_1$ 替换 $\xi_1$ ，可以求出：
 
@@ -495,7 +495,7 @@ $$
 
 考虑另外一个例子，需要计算函数 $f(x) = \sin{x}, x \in [0, \frac{\pi}{2}]$ 的积分。首先，很容易计算出它的积分真值为：
 
-$$ F(x) = \int_{0}^{\frac{\pi}{2}} f(x) dx = -\cos{x} \Big|_{0}^{\frac{\pi}{2}} = 1 $$
+$$ F(x) = \int_{0}^{\frac{\pi}{2}} f(x) \mathrm{d}x = -\cos{x} \Big|_{0}^{\frac{\pi}{2}} = 1 $$
 
 我们设计两种概率密度函数，一种是均匀分布，随机变量 $X_1$ 的概率密度函数为：
 
@@ -601,7 +601,7 @@ No     Uniform     Importance   Err.Uniform(%) Err.Importance(%)
 
 从理论的角度来说，任意一个被积函数 $f(x)$ ，它的最优概率密度函数是：
 
-$$ pdf(x) = \frac{|f(x)|}{\int f(x) dx} $$
+$$ pdf(x) = \frac{|f(x)|}{\int f(x) \mathrm{d}x} $$
 
 从这个结论来说，上述的例子中，最优的概率密度函数应该是：
 
@@ -617,7 +617,7 @@ $$ pdf(x) = \sin{x} \tag{3} $$
 
 设 $D(m)$ 是微表面的法线分布函数，有下列等式成立：
 
-$$ \int_{\Omega} D(m) (m \cdot n) d\omega = 1 \tag{4} $$
+$$ \int_{\Omega} D(m) (m \cdot n) \mathrm{d}\omega = 1 \tag{4} $$
 
 其中， $m$ 是微表面的法线， $n$ 是几何平面的发现。
 
@@ -629,7 +629,7 @@ $$ D(m) = \frac{a^2}{\pi (1 + (m \cdot n)^2 (a^2 - 1))^2} \tag{5} $$
 
 将等式（2）和等式（5）带入等式等式（4），得：
 
-$$ \int_{\Omega} D(m) (m \cdot n) d\omega = \int_{\Omega} \frac{a^2}{\pi (1 + (m \cdot n)^2 (a^2 - 1))^2} \cos{\theta} \sin{\theta} d\theta d\phi = 1 $$
+$$ \int_{\Omega} D(m) (m \cdot n) \mathrm{d}\omega = \int_{\Omega} \frac{a^2}{\pi (1 + (m \cdot n)^2 (a^2 - 1))^2} \cos{\theta} \sin{\theta} \mathrm{d}\theta \mathrm{d}\phi = 1 $$
 
 其中， $\theta \in [0, \pi], \phi \in [0,2\pi]$ 。
 
@@ -639,7 +639,7 @@ $$ pdf(\theta,\phi) = \frac{a^2}{\pi (1 + (m \cdot n)^2 (a^2 - 1))^2} \cos{\thet
 
 首先计算关于 $\theta$ 边缘概率密度函数 $pdf(\theta)$ ：
 
-$$ pdf(\theta) = \int_{0}^{2\pi} pdf(\theta,\phi) d\phi = \frac{2a^2}{(1 + \cos^2{\theta}(a^2 - 1))^2} \cos{\theta} \sin{\theta} $$
+$$ pdf(\theta) = \int_{0}^{2\pi} pdf(\theta,\phi) \mathrm{d}\phi = \frac{2a^2}{(1 + \cos^2{\theta}(a^2 - 1))^2} \cos{\theta} \sin{\theta} $$
 
 再计算条件概率密度函数 $pdf(\phi \| \theta)$ ：
 
@@ -647,11 +647,11 @@ $$ pdf(\phi | \theta) = \frac{pdf(\theta, \phi)}{pdf(\theta)} = \frac{1}{2\pi} $
 
 计算等式的积分：
 
-$$ cdf(x) = \int_{0}^{x} pdf(\theta) d\theta $$
+$$ cdf(x) = \int_{0}^{x} pdf(\theta) \mathrm{d}\theta $$
 
-$$ = -2a^2 \int_{1}^{\cos{x}} \frac{t}{(1 + t^2(a^2 - 1))^2} dt, t = \cos{\theta} $$
+$$ = -2a^2 \int_{1}^{\cos{x}} \frac{t}{(1 + t^2(a^2 - 1))^2} \mathrm{d}t, t = \cos{\theta} $$
 
-$$ = -a^2 \int_{1}^{\cos^2{x}} \frac{1}{(1 + y(a^2 - 1))^2} dy, y = t^2 $$
+$$ = -a^2 \int_{1}^{\cos^2{x}} \frac{1}{(1 + y(a^2 - 1))^2} \mathrm{d}y, y = t^2 $$
 
 $$ = -\frac{a^2}{a^2 - 1} \int_{a^2}^{(a^2 - 1)\cos^2{x} + 1} \frac{1}{z^2} dz, z = (a^2 - 1)y + 1 $$
 
