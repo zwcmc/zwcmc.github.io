@@ -375,16 +375,6 @@ void CalculateRightAndUpTexelDepthDeltas(in vec3 texShadowView, in mat3 shadowPr
 
 由于这种技术在计算上比较复杂，因此只有在 GPU 有足够的计算周期可供使用时才应该使用它。当使用非常大的 PCF 内核时，这可能是唯一一种可以去除自阴影伪影而不引起彼得潘效应的技术。
 
-<!-- TODO
-### Variance Shadow Maps（VSMs） -->
-
-<!-- TODO
-### Percentage-Closer Soft Shadows（PCSS）
-- https://developer.download.nvidia.cn/whitepapers/2008/PCSS_Integration.pdf
-- https://developer.download.nvidia.cn/shaderlibrary/docs/shadow_PCSS.pdf
-- https://www.legendsmb.com/2022/10/13/unity-PCF-sourcecode/
-- https://zhuanlan.zhihu.com/p/369761748 -->
-
 ## (4) 参考
 
 - [1] [https://graphics.stanford.edu/~mdfisher/Shadows.html](https://graphics.stanford.edu/~mdfisher/Shadows.html)

@@ -5,6 +5,15 @@ date:   2024-03-04 16:16:00
 category: Rendering
 ---
 
+- [(1) Normal Matrix(法线变换矩阵)](#1-normal-matrix法线变换矩阵)
+- [(2) Alpha to Coverage](#2-alpha-to-coverage)
+- [(3) Normal Mapping without Precomputed Tangents](#3-normal-mapping-without-precomputed-tangents)
+- [(4) 通过一个四元数存储基础法线向量 `(0,0,1)` 、基础切线向量 `(1,0,0)` 与基础副切线向量 `(0,1,0)` 的旋转信息](#4-通过一个四元数存储基础法线向量-001-基础切线向量-100-与基础副切线向量-010-的旋转信息)
+- [(5) 3D 空间中的平面方程](#5-3d-空间中的平面方程)
+  - [5.1 平面方程表达式](#51-平面方程表达式)
+  - [5.2 如何确定平面方程](#52-如何确定平面方程)
+  - [5.3 平面方程的应用](#53-平面方程的应用)
+
 ## (1) Normal Matrix(法线变换矩阵)
 
 法线向量是定义在模型空间中的，而光照计算一般情况下都是在世界空间进行的，所以就需要一个矩阵来把法线向量从模型空间转换到世界空间，这个矩阵就叫做法线变化矩阵。
@@ -125,11 +134,11 @@ $$
 
 可以知道如果模型变换中包含旋转，统一缩放和平移时，此时也可以直接使用模型矩阵左上角3x3部分的矩阵来变换法线向量，变换后的统一缩放系数影响的是法线向量的长度，而在计算光照时，需要的仅仅的法线向量的方向，也就是最终都会对法线向量进行归一化计算，它的长度变化并不需要关心。
 
-### 1.1 总结
+**总结** ：
 
 如果模型变换中包含旋转变换，统一变换，平移变换时，可以直接使用模型矩阵左上角 3x3 部分的矩阵来变换法线向量；而如果变换中包含了非统一缩放，此时就必须求解模型矩阵左上角 3x3 部分的矩阵的逆的转置来得到法线变换矩阵
 
-### 1.2 参考
+**参考** ：
 
 - [The Normal Matrix](http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/)
 - [Unity Shaders Book Chapter 4](https://candycat1992.github.io/unity_shaders_book/unity_shaders_book_chapter_4.pdf)
@@ -157,7 +166,7 @@ $$
 
 ![04_alpha_to_coverage](/assets/images/2024/2024-03-04-RenderingNotes/04_alpha_to_coverage.png)
 
-### 2.1 参考
+**参考** ：
 
 - [Anti-aliased Alpha Test: The Esoteric Alpha To Coverage](https://bgolus.medium.com/anti-aliased-alpha-test-the-esoteric-alpha-to-coverage-8b177335ae4f)
 - [A Quick Overview of MSAA](https://therealmjp.github.io/posts/msaa-overview/)
@@ -414,42 +423,50 @@ void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
 }
 ```
 
-<!-- ## 计算法线变换矩阵的另一种方法 -->
+## (5) 3D 空间中的平面方程
 
-<!-- TODO -->
+### 5.1 平面方程表达式
 
-<!-- * Note that the inverse-transpose of a matrix is equal to its cofactor matrix divided by its
-* determinant:
-*
-*     transpose(inverse(M)) = cof(M) / det(M)
-*
-* The cofactor matrix is faster to compute than the inverse-transpose, and it can be argued
-* that it is a more correct way of transforming normals anyway. Some references from Dale
-* Weiler, Nathan Reed, Inigo Quilez, and Eric Lengyel:
-*
-*   - https://github.com/graphitemaster/normals_revisited
-*   - http://www.reedbeta.com/blog/normals-inverse-transpose-part-1/
-*   - https://www.shadertoy.com/view/3s33zj
-*   - FGED Volume 1, section 1.7.5 "Inverses of Small Matrices"
-*   - FGED Volume 1, section 3.2.2 "Transforming Normal Vectors"
-*
-* In "Transforming Normal Vectors", Lengyel notes that there are two types of transformed
-* normals: one that uses the transposed adjugate (aka cofactor matrix) and one that uses the
-* transposed inverse. He goes on to say that this difference is inconsequential, except when
-* mirroring is involved. -->
+**平面方程** 是描述 3D 空间中一个平面的数学表达式。标准的平面方程形式是：
 
-<!-- 在之前的笔记中，有说到[法线变换矩阵](#normal-matrix法线变换矩阵)，经过推导使用的是 `transpose(inverse(M))` 矩阵。
+$$ Ax + By + Cz + D = 0 $$
 
-- https://github.com/graphitemaster/normals_revisited
-- http://www.reedbeta.com/blog/normals-inverse-transpose-part-1/
-- https://www.shadertoy.com/view/3s33zj
-- FGED Volume 1, section 1.7.5 "Inverses of Small Matrices"
-- FGED Volume 1, section 3.2.2 "Transforming Normal Vectors" -->
+其中：
 
-<!-- ## SSR -->
+- $(A,B,C)$ 是平面的法线向量，它垂直于平面
+- $(x,y,z)$ 是平面上的任意一点的坐标
+- $D$ 是平面方程的常数项
 
-<!-- TODO -->
+### 5.2 如何确定平面方程
 
-<!-- ## TAA -->
+1. **已知法线向量和平面上的一个点** ：
 
-<!-- TODO -->
+    如果知道平面的法线向量 $\mathbf{n} = (A,B,C)$ 和平面上的一个点 $\mathbf{p_0} = (x_0, y_0, z_0)$ ，那么平面方程可以表示为：
+
+    $$ A(x - x_0) + B(y - y_0) + C(z - z_0) = 0 $$
+
+    展开后就是标准形式：
+
+    $$ Ax + By + Cz + D = 0 $$
+
+    其中， $D = -(Ax_0, By_0, Cz_0)$ ，即 $- \mathbf{n} \cdot \mathbf{p_0}$ 。
+
+2. **已知三个不共线的点** ：
+
+    如果知道平面上的三个不共线的点 $\mathbf{p_1} = (x_1, y_1, z_1)$ 、 $\mathbf{p_2} = (x_2, y_2, z_2)$ 、 $\mathbf{p_3} = (x_3, y_3, z_3)$ ，可以通过以下步骤确定平面方程：
+
+    - 计算两个向量： $\mathbf{v_1} = p_2 - p1$ 和 $\mathbf{v_2} = p_3 - p_1$
+    - 通过叉积计算平面的法线向量： $\mathbf{n} = \mathbf{v_1} \times \mathbf{v2}$
+    - 带入其中一个点（如 $p_1$ ）和法线向量 $\mathbf{n}$ 到平面方程中，得到常数 $D$
+
+    通过这种方向可以计算出某个三角形所在平面的平面方程。
+
+### 5.3 平面方程的应用
+
+在实际应用中，可以通过将一个点的坐标带入平面方程中，来计算这个点与平面的位置关系：
+
+- 如果 $ Ax + By + Cz + D > 0 $ ，则这个点在平面的正面
+- 如果 $ Ax + By + Cz + D < 0 $ ，则这个点在平面的背面
+- 如果 $ Ax + By + Cz + D = 0 $ ，则这个点在平面上
+
+在做视锥体剔除时，视锥体可以看作是 6 个平面，通过计算某个点距离分别距离这 6 个平面的距离来判断这个点是否在视锥体内。通过这个方法可以扩展到视锥体与球体、AABB等的求交。
