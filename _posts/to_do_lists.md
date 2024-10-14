@@ -86,3 +86,10 @@
 - https://developer.download.nvidia.cn/shaderlibrary/docs/shadow_PCSS.pdf
 - https://www.legendsmb.com/2022/10/13/unity-PCF-sourcecode/
 - https://zhuanlan.zhihu.com/p/369761748 -->
+
+## IMR & TBR & TBDR
+
+- https://developer.samsung.com/galaxy-gamedev/resources/articles/gpu-framebuffer.html
+- https://docs.qq.com/slide/DUWFsekNSZllIVHpT
+- https://mp.weixin.qq.com/s/-ueKhxbsJOnUtV1SC5eyBQ
+- https://gitlab.freedesktop.org/mesa/mesa
