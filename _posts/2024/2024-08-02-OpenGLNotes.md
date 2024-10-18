@@ -457,7 +457,7 @@ void main()
 
 ![05_spherical_coordinates](/assets/images/2024/2024-08-02-OpenGLNotes/05_spherical_coordinates.png)
 
-其中， $\theta$ 范围通常是 [ $-\frac{\pi}{2}$ , $\frac{\pi}{2}$ ]， $\phi$ 范围通常是 [ $-\pi$, $\pi$ ]。
+其中， $\theta$ 范围通常是 $[0, \pi]$ ， $\phi$ 范围通常是 $[0, 2\pi]$ 。
 
 有一个三维向量，可以通过如下公式计算出其对应的球面坐标：
 

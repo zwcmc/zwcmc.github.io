@@ -18,8 +18,8 @@ category: Rendering
 - [7 三角形图元（Triangle Primitive）](#7-三角形图元triangle-primitive)
 - [8 光栅化（Rasterization）](#8-光栅化rasterization)
   - [8.1 光栅化的一些加速优化](#81-光栅化的一些加速优化)
-    - [**8.1.1 轴对齐包围盒（Axis-aligned Bounding Box, AABB）**](#811-轴对齐包围盒axis-aligned-bounding-box-aabb)
-    - [**8.1.2 将屏幕像素视为一行一行像素的集合**](#812-将屏幕像素视为一行一行像素的集合)
+    - [8.1.1 轴对齐包围盒（Axis-aligned Bounding Box, AABB）](#811-轴对齐包围盒axis-aligned-bounding-box-aabb)
+    - [8.1.2 将屏幕像素视为一行一行像素的集合](#812-将屏幕像素视为一行一行像素的集合)
 - [9 抗锯齿（Antialiasing）](#9-抗锯齿antialiasing)
   - [9.1 MSAA](#91-msaa)
 - [10 深度缓冲算法（Z-buffering）](#10-深度缓冲算法z-buffering)
@@ -27,40 +27,40 @@ category: Rendering
 - [12 透视纠正插值（Perspective Correct Interpolation）](#12-透视纠正插值perspective-correct-interpolation)
 - [13 纹理过滤（Texture Filtering）](#13-纹理过滤texture-filtering)
   - [13.1 纹理过滤的方法](#131-纹理过滤的方法)
-    - [**13.1.1 最邻近插值（Nearest-neighbor Interpolation）**](#1311-最邻近插值nearest-neighbor-interpolation)
-    - [**13.1.2 双线性过滤（Bilinear Filtering）**](#1312-双线性过滤bilinear-filtering)
-    - [**13.1.3 双三次插值（Bicubic Interpolation）**](#1313-双三次插值bicubic-interpolation)
-    - [**13.1.4 Mipmap**](#1314-mipmap)
-    - [**13.1.5 三线性过滤(Trilinear Filtering)**](#1315-三线性过滤trilinear-filtering)
-    - [**13.1.6 各向异性过滤（Anisotropic Filtering）**](#1316-各向异性过滤anisotropic-filtering)
+    - [13.1.1 最邻近插值（Nearest-neighbor Interpolation）](#1311-最邻近插值nearest-neighbor-interpolation)
+    - [13.1.2 双线性过滤（Bilinear Filtering）](#1312-双线性过滤bilinear-filtering)
+    - [13.1.3 双三次插值（Bicubic Interpolation）](#1313-双三次插值bicubic-interpolation)
+    - [13.1.4 Mipmap](#1314-mipmap)
+    - [13.1.5 三线性过滤(Trilinear Filtering)](#1315-三线性过滤trilinear-filtering)
+    - [13.1.6 各向异性过滤（Anisotropic Filtering）](#1316-各向异性过滤anisotropic-filtering)
 - [14 几何的基本表示方法](#14-几何的基本表示方法)
   - [14.1 隐式几何](#141-隐式几何)
   - [14.2 隐式几何的表示方法](#142-隐式几何的表示方法)
-    - [**14.2.1 代数曲面（Algebraic Surfaces）**](#1421-代数曲面algebraic-surfaces)
-    - [**14.2.2 构造立体几何（Constructive Solid Geometry, CSG）**](#1422-构造立体几何constructive-solid-geometry-csg)
-    - [**14.2.3 距离函数（Distance Function）**](#1423-距离函数distance-function)
-    - [**14.2.4 水平集方法（Level Set Method, LSM）**](#1424-水平集方法level-set-method-lsm)
-    - [**14.2.5 分型几何（Fractals）**](#1425-分型几何fractals)
+    - [14.2.1 代数曲面（Algebraic Surfaces）](#1421-代数曲面algebraic-surfaces)
+    - [14.2.2 构造立体几何（Constructive Solid Geometry, CSG）](#1422-构造立体几何constructive-solid-geometry-csg)
+    - [14.2.3 距离函数（Distance Function）](#1423-距离函数distance-function)
+    - [14.2.4 水平集方法（Level Set Method, LSM）](#1424-水平集方法level-set-method-lsm)
+    - [14.2.5 分型几何（Fractals）](#1425-分型几何fractals)
   - [14.3 显式几何](#143-显式几何)
   - [14.4 显式几何的表示方法](#144-显式几何的表示方法)
-    - [**14.4.1 点云（Point Cloud）**](#1441-点云point-cloud)
-    - [**14.4.2 多边形网格（Polygon Mesh）**](#1442-多边形网格polygon-mesh)
+    - [14.4.1 点云（Point Cloud）](#1441-点云point-cloud)
+    - [14.4.2 多边形网格（Polygon Mesh）](#1442-多边形网格polygon-mesh)
 - [15 ⻉塞尔曲线（Bézier Curve）](#15-塞尔曲线bézier-curve)
   - [15.1 de Casteljau 算法（de Casteljau Algorithm）](#151-de-casteljau-算法de-casteljau-algorithm)
-    - [**15.1.1 二次贝塞尔曲线（Quadratic Bézier Curve）**](#1511-二次贝塞尔曲线quadratic-bézier-curve)
-    - [**15.1.2 三次贝塞尔曲线（Cubic Bézier Curve）**](#1512-三次贝塞尔曲线cubic-bézier-curve)
-    - [**15.1.3 贝塞尔曲线的一般化代数表示**](#1513-贝塞尔曲线的一般化代数表示)
+    - [15.1.1 二次贝塞尔曲线（Quadratic Bézier Curve）](#1511-二次贝塞尔曲线quadratic-bézier-curve)
+    - [15.1.2 三次贝塞尔曲线（Cubic Bézier Curve）](#1512-三次贝塞尔曲线cubic-bézier-curve)
+    - [15.1.3 贝塞尔曲线的一般化代数表示](#1513-贝塞尔曲线的一般化代数表示)
   - [15.2 分段贝塞尔曲线（Piecewise Bézier Curve）](#152-分段贝塞尔曲线piecewise-bézier-curve)
-    - [**15.2.1 $C^0$ 连续（Continuity）**](#1521-c0-连续continuity)
-    - [**15.2.2 $C^1$ 连续（Continuity）**](#1522-c1-连续continuity)
+    - [15.2.1 $C^0$ 连续（Continuity）](#1521-c0-连续continuity)
+    - [15.2.2 $C^1$ 连续（Continuity）](#1522-c1-连续continuity)
   - [贝塞尔曲面（Bézier Surface）](#贝塞尔曲面bézier-surface)
 - [16 网格细分（Mesh Subdivision）](#16-网格细分mesh-subdivision)
   - [16.1 Loop 细分（Loop Subdivision）](#161-loop-细分loop-subdivision)
-    - [**16.1.1 生成更多的网格**](#1611-生成更多的网格)
-    - [**16.1.2 更新新生成的顶点和老的顶点的位置**](#1612-更新新生成的顶点和老的顶点的位置)
+    - [16.1.1 生成更多的网格](#1611-生成更多的网格)
+    - [16.1.2 更新新生成的顶点和老的顶点的位置](#1612-更新新生成的顶点和老的顶点的位置)
   - [16.2 Catmull-Clark 细分（Catmull-Clark Subdivision）](#162-catmull-clark-细分catmull-clark-subdivision)
-    - [**16.2.1 生成更多的网格**](#1621-生成更多的网格)
-    - [**16.2.2 更新新生成的顶点和老的顶点的位置**](#1622-更新新生成的顶点和老的顶点的位置)
+    - [16.2.1 生成更多的网格](#1621-生成更多的网格)
+    - [16.2.2 更新新生成的顶点和老的顶点的位置](#1622-更新新生成的顶点和老的顶点的位置)
 - [17 网格简化（Mesh Simplification）](#17-网格简化mesh-simplification)
   - [17.1 边坍缩（Edge Collapsing）](#171-边坍缩edge-collapsing)
 - [18 光线追踪（Ray Tracing）](#18-光线追踪ray-tracing)
@@ -68,19 +68,32 @@ category: Rendering
   - [18.2 光线投射算法（Ray Casting）](#182-光线投射算法ray-casting)
   - [18.3 Whitted-Style 光线追踪（Whitted-Style Ray Tracing）](#183-whitted-style-光线追踪whitted-style-ray-tracing)
   - [18.4 光线与表面求交（Ray-Surface Intersection）](#184-光线与表面求交ray-surface-intersection)
-    - [**18.4.1 光线方程（Ray Equation）**](#1841-光线方程ray-equation)
-    - [**18.4.2 光线与隐式几何求交**](#1842-光线与隐式几何求交)
-    - [**18.4.3 光线与显示几何求交**](#1843-光线与显示几何求交)
-    - [**18.4.4 Möller Trumbore 算法（Möller Trumbore Algorithm）**](#1844-möller-trumbore-算法möller-trumbore-algorithm)
+    - [18.4.1 光线方程（Ray Equation）](#1841-光线方程ray-equation)
+    - [18.4.2 光线与隐式几何求交](#1842-光线与隐式几何求交)
+    - [18.4.3 光线与显示几何求交](#1843-光线与显示几何求交)
+    - [18.4.4 Möller Trumbore 算法（Möller Trumbore Algorithm）](#1844-möller-trumbore-算法möller-trumbore-algorithm)
   - [18.5 轴对齐包围盒（Axis-Aligned Bounding Box, AABB）](#185-轴对齐包围盒axis-aligned-bounding-box-aabb)
-    - [**光线与 AABB 求交的核心思想**](#光线与-aabb-求交的核心思想)
+    - [光线与 AABB 求交的核心思想](#光线与-aabb-求交的核心思想)
   - [18.6 使用 AABB 加速光线追踪](#186-使用-aabb-加速光线追踪)
-    - [**18.6.1 均匀网格空间划分（Uniform Spatial Partitions (Grids) ）**](#1861-均匀网格空间划分uniform-spatial-partitions-grids-)
-    - [**18.6.2 空间划分（Spatial Partitions）**](#1862-空间划分spatial-partitions)
+    - [18.6.1 均匀网格空间划分（Uniform Spatial Partitions (Grids) ）](#1861-均匀网格空间划分uniform-spatial-partitions-grids-)
+    - [18.6.2 空间划分（Spatial Partitions）](#1862-空间划分spatial-partitions)
       - [八叉树（Oct-Tree）](#八叉树oct-tree)
       - [KD树（KD-Tree）](#kd树kd-tree)
-    - [**18.6.3 层次包围盒（Bounding Volume Hierarchy, BVH）**](#1863-层次包围盒bounding-volume-hierarchy-bvh)
-    - [**18.6.4 空间划分（Spatial Partitions）与物体划分（Object Partitions）的比较**](#1864-空间划分spatial-partitions与物体划分object-partitions的比较)
+    - [18.6.3 层次包围盒（Bounding Volume Hierarchy, BVH）](#1863-层次包围盒bounding-volume-hierarchy-bvh)
+    - [18.6.4 空间划分（Spatial Partitions）与物体划分（Object Partitions）的比较](#1864-空间划分spatial-partitions与物体划分object-partitions的比较)
+- [19 辐射度量学（Basic radiometry）](#19-辐射度量学basic-radiometry)
+  - [19.1 基本的物理量](#191-基本的物理量)
+  - [19.2 辐射能量（Radiant Energy）和辐射通量（Radiant Flux）](#192-辐射能量radiant-energy和辐射通量radiant-flux)
+  - [19.3 立体角（Solid Angle）](#193-立体角solid-angle)
+  - [19.4 微分立体角（Differential Solid Angles）](#194-微分立体角differential-solid-angles)
+  - [19.5 辐射强度（Radiant Intensity）](#195-辐射强度radiant-intensity)
+  - [19.6 辐射照度（Irradiance）](#196-辐射照度irradiance)
+  - [19.7 辐射亮度（Radiance）](#197-辐射亮度radiance)
+  - [19.8 辐射照度（Irradiance）与辐射亮度（Radiance）](#198-辐射照度irradiance与辐射亮度radiance)
+- [20 BRDF 、反射方程（The Reflection Equation）和渲染方程（The Rendering Equation）](#20-brdf-反射方程the-reflection-equation和渲染方程the-rendering-equation)
+  - [20.1 BRDF](#201-brdf)
+  - [20.2 反射方程（The Reflection Equation）](#202-反射方程the-reflection-equation)
+  - [20.3 渲染方程（The Rendering Equation）](#203-渲染方程the-rendering-equation)
 
 ## 1 点积（Dot Product）
 
@@ -595,13 +608,13 @@ for (int x = 0; x < width; ++x)
 
 ### 8.1 光栅化的一些加速优化
 
-#### **8.1.1 轴对齐包围盒（Axis-aligned Bounding Box, AABB）**
+#### 8.1.1 轴对齐包围盒（Axis-aligned Bounding Box, AABB）
 
 计算出每个三角形图元的包围盒，找到其中最小和最大的 $x, y$ 坐标。在光栅化的过程中，只遍历计算被包围盒覆盖的像素。如下图所示：
 
 ![11_rasterization_aabb](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/11_rasterization_aabb.jpeg)
 
-#### **8.1.2 将屏幕像素视为一行一行像素的集合**
+#### 8.1.2 将屏幕像素视为一行一行像素的集合
 
 将屏幕像素视为一行一行像素的集合，找出每一行像素被三角形图元覆盖的最小和最大 $x$ 坐标。在光栅化的过程中，只需要遍历计算每行像素中与被三角形图元覆盖的像素。如下图所示：
 
@@ -882,7 +895,7 @@ $$
 
 ### 13.1 纹理过滤的方法
 
-#### **13.1.1 最邻近插值（Nearest-neighbor Interpolation）**
+#### 13.1.1 最邻近插值（Nearest-neighbor Interpolation）
 
 最邻近插值使用离像素重心最近的纹素颜色作为像素颜色。下图展示了最邻近插值的结果：
 
@@ -890,7 +903,7 @@ $$
 
 这种方法粗暴简单，但是会产生大量的伪影（Artifact）：在纹理放大时会出现纹理“像素化”，这在有些像素风游戏中比较常用；在纹理缩小时会出现混叠和闪烁。这种方法在纹理放大时速度很快，只需要对纹理坐标四舍五入取整，但是在纹理缩小时，由于内存访问跨度变得任意大，往往会比 Mipmap 效率更低。
 
-#### **13.1.2 双线性过滤（Bilinear Filtering）**
+#### 13.1.2 双线性过滤（Bilinear Filtering）
 
 在使用双线性过滤时，采样的是离像素重心最近的 4 个纹素（2x2），并根据距离通过两次线性插值来计算最终的像素颜色。下图展示了双线性过滤的结果：
 
@@ -915,11 +928,11 @@ $$
 
 双线性过滤消除了纹理放大中的“像素化”的问题，因为现在的像素颜色从一个纹素到相邻的纹素呈现出平滑的渐变，而不是越过纹素边界时突然的跳变。双线性过滤在纹理放大时很常见，在纹理缩小时，通常与 Mipmap 结合使用。
 
-#### **13.1.3 双三次插值（Bicubic Interpolation）**
+#### 13.1.3 双三次插值（Bicubic Interpolation）
 
 双三次插值时一种更复杂的插值方法，它考虑了更大范围内的纹素（通常是 4x4 的纹素网格，共 16 个纹素），并通过三次函数来计算插值结果，从而在图像放大和缩小时提供更平滑的过渡和更少的伪影。
 
-#### **13.1.4 Mipmap**
+#### 13.1.4 Mipmap
 
 在纹理缩小时，屏幕上一个像素可以覆盖多个纹素，在远离摄像机的位置，屏幕上一个像素甚至会覆盖整个纹理，此时像素的颜色需要考虑到这些所有被覆盖的纹素的颜色。对于这个像素来说，使用更多的采样点来采样所有被覆盖的纹素并结合它们的值来确定像素颜色是一种对性能消耗极大的操作，而 Mipmap 技术通过预过滤纹理并将其存储为从大到小的一系列尺寸，每一级的尺寸都是上一级的一半，直至单个像素，在像素采样的过程中，根据像素覆盖的纹素的大小来决定其采样哪个尺寸的纹理，这样通过一次采样就可以得到像素覆盖的整个纹素区域的颜色平均值。
 
@@ -993,7 +1006,7 @@ void main()
 
 ![35_mip_debug](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/35_mip_debug.jpeg)
 
-#### **13.1.5 三线性过滤(Trilinear Filtering)**
+#### 13.1.5 三线性过滤(Trilinear Filtering)
 
 当纹理采样从一个 Mipmap 层级切换到下一个层级时，采样的结果会出现突然而非常明显的变化，三线性过滤通过对两个最接近的 Mipmap 层级（ `D` 和 `D + 1` ）进行双线性过滤查找，然后根据计算出的连续的层级 D 来进行线性插值去解决这个问题。具体来说，三线性过滤的步骤如下：
 
@@ -1054,7 +1067,7 @@ void main()
 }
 ```
 
-#### **13.1.6 各向异性过滤（Anisotropic Filtering）**
+#### 13.1.6 各向异性过滤（Anisotropic Filtering）
 
 当一个表面相对于摄像机呈斜角时，此时屏幕上的一个像素映射到纹理上的区域不再近似为方形，如下图所示：
 
@@ -1091,17 +1104,17 @@ void main()
 
 ### 14.2 隐式几何的表示方法
 
-#### **14.2.1 代数曲面（Algebraic Surfaces）**
+#### 14.2.1 代数曲面（Algebraic Surfaces）
 
 ![42_algebraic_surfaces](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/42_algebraic_surfaces.jpeg)
 
-#### **14.2.2 构造立体几何（Constructive Solid Geometry, CSG）**
+#### 14.2.2 构造立体几何（Constructive Solid Geometry, CSG）
 
 构造立体几何指的是可以对各种不同的几何做布尔运算，如下图对两个几何体的并（Union）、交（Intersection）和差（Difference）运算：
 
 ![43_constructive_solid_geometry](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/43_constructive_solid_geometry.jpeg)
 
-#### **14.2.3 距离函数（Distance Function）**
+#### 14.2.3 距离函数（Distance Function）
 
 距离函数并不直接表示几何表面，而是通过描述空间中任意一点到几何表面的距离来表示几何。最常见的一种距离函数是 **符号距离函数（Signed Distance Function, SDF）** ，对于空间中的任意一点， SDF 定义的是此点到最近的几何表面点的最小距离，最小距离小于 0 ，表示点在几何内部，等于 0 表示在几何表面，大于 0 表示在几何外。
 
@@ -1109,13 +1122,13 @@ void main()
 
 ![44_distance_function](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/44_distance_function.jpeg)
 
-#### **14.2.4 水平集方法（Level Set Method, LSM）**
+#### 14.2.4 水平集方法（Level Set Method, LSM）
 
 水平集的表示方法与距离函数类似，也是表示到集合表面的最小距离，但不像距离函数那样对空间中的每一个点都有一种严格的数学定义，而是将空间划分为一个个的区域，每个区域描述了距离几何表面的距离。和采样纹理一样，通过对每个区域值的插值可以得到距离为 0 的坐标，也就是几何表面。这种方法特别适合在笛卡尔坐标系下使用，将空间划分为一个个的小立方体。
 
 ![45_level_set](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/45_level_set.jpeg)
 
-#### **14.2.5 分型几何（Fractals）**
+#### 14.2.5 分型几何（Fractals）
 
 分型几何是指许多自相似的形体最终所组成的几何形体。
 
@@ -1129,13 +1142,13 @@ void main()
 
 ### 14.4 显式几何的表示方法
 
-#### **14.4.1 点云（Point Cloud）**
+#### 14.4.1 点云（Point Cloud）
 
 通过表面所有点的列表来表示几何，可以轻松表示任何类型的几何形状。在渲染时通常转换为多边形网格。
 
 ![48_point_cloud](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/48_point_cloud.jpeg)
 
-#### **14.4.2 多边形网格（Polygon Mesh）**
+#### 14.4.2 多边形网格（Polygon Mesh）
 
 通过顶点和多边形（通常是三角形或四方形）来表示几何。在图形学中，多边形网格是最常用的一种表示几何的方式。
 
@@ -1164,7 +1177,7 @@ void main()
 
 de Casteljau 算法是一种用于计算贝塞尔曲线的递归算法，算法核心是线性插值与递归，由法国数学家 Paul de Casteljau 在 1959 年发明。
 
-#### **15.1.1 二次贝塞尔曲线（Quadratic Bézier Curve）**
+#### 15.1.1 二次贝塞尔曲线（Quadratic Bézier Curve）
 
 下面以 3 个点控制的二次贝塞尔曲线为例来描述一下此算法：
 
@@ -1190,13 +1203,13 @@ $$ \mathbf{b}_0^2(t)=(1-t)\mathbf{b}_0^1 + t\mathbf{b}_1^1 \tag{15}$$
 
 $$ \mathbf{b}_0^2(t) = (1-t)^2 \mathbf{b}_0 + 2t(1-t)\mathbf{b}_1 + t^2 \mathbf{b}_2 $$
 
-#### **15.1.2 三次贝塞尔曲线（Cubic Bézier Curve）**
+#### 15.1.2 三次贝塞尔曲线（Cubic Bézier Curve）
 
 4 个点控制的三次贝塞尔曲线的计算过程和二次贝塞尔曲线类似，只是比二次贝塞尔曲线多一次递归计算：
 
 ![53_cubic_bezier_curve](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/53_cubic_bezier_curve.jpeg)
 
-#### **15.1.3 贝塞尔曲线的一般化代数表示**
+#### 15.1.3 贝塞尔曲线的一般化代数表示
 
 对于 $n$ 次贝塞尔曲线，它的代数表达式可以写成：
 
@@ -1239,13 +1252,13 @@ $$
 
 分段贝塞尔曲线的关键在于如何在每个贝塞尔曲线片段之间进行平滑连接。根据不同的条件，分段贝塞尔曲线之间的连接有着不同的连续性定义。
 
-#### **15.2.1 $C^0$ 连续（Continuity）**
+#### 15.2.1 $C^0$ 连续（Continuity）
 
 相邻贝塞尔曲线片段公用同一个点（前一个贝塞尔曲线片段的终点等于相邻贝塞尔曲线片段的起点），这种连续性称为 $C^0$ 连续。
 
 ![55_c0](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/55_c0.jpeg)
 
-#### **15.2.2 $C^1$ 连续（Continuity）**
+#### 15.2.2 $C^1$ 连续（Continuity）
 
 相邻贝塞尔曲线片段在连接点处的切线方向相同（前一个贝塞尔曲线片段的终点和上一个点组成的线段与相邻贝塞尔曲线片段的起点与下一个点组成的线段共线且方向相反，并且长度相等），这种连续性称为 $C^1$ 连续。
 
@@ -1278,13 +1291,13 @@ $$
 
 Loop 细分用于三角形网格。
 
-#### **16.1.1 生成更多的网格**
+#### 16.1.1 生成更多的网格
 
 对于每个三角形网格，取这个三角形网格三条边的中点作为新的顶点，连接这些新的顶点，将一个三角形网格分割成四个三角形网格：
 
 ![60_loop_subdivision_0](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/60_loop_subdivision_0.jpeg)
 
-#### **16.1.2 更新新生成的顶点和老的顶点的位置**
+#### 16.1.2 更新新生成的顶点和老的顶点的位置
 
 对于新生成的顶点，它一定在三角形网格的一条边上，这条边被两个相邻的三角形网格所共享。新生成的白色点位置的更新算法如下图所示：
 
@@ -1300,14 +1313,14 @@ Loop 细分用于三角形网格。
 
 Catmull-Clark 细分可以用于三角形网格或四边形网格。对于四边形网格，称为 **四边形面（Quad Face）** ，而对于三角形网格，称其为 **非四边形面（Non-quad Face）** 。顶点的度不为 4 的顶点，叫做 **奇异点（Extraordinary Vertex）** 。
 
-#### **16.2.1 生成更多的网格**
+#### 16.2.1 生成更多的网格
 
 对于每一个网格，取它每条边上的中点和这个网格的中点，将这些点连接起来。
 
 ![61_catmull_clark_subdivision_1](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/61_catmull_clark_subdivision_1.jpeg)
 ![61_catmull_clark_subdivision_2](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/61_catmull_clark_subdivision_2.jpeg)
 
-#### **16.2.2 更新新生成的顶点和老的顶点的位置**
+#### 16.2.2 更新新生成的顶点和老的顶点的位置
 
 ![61_catmull_clark_subdivision_0](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/61_catmull_clark_subdivision_0.jpeg)
 
@@ -1366,7 +1379,7 @@ Whitted-Style 光线追踪算法如上图所示，其中 **主光线（Primary R
 
 ### 18.4 光线与表面求交（Ray-Surface Intersection）
 
-#### **18.4.1 光线方程（Ray Equation）**
+#### 18.4.1 光线方程（Ray Equation）
 
 一条光线通过一个起点和光线的方向来定义。
 
@@ -1380,13 +1393,13 @@ $$
 
 其中 $\mathbf{o}$ 是光线的起点， $\mathbf{d}$ 是光线的方向。
 
-#### **18.4.2 光线与隐式几何求交**
+#### 18.4.2 光线与隐式几何求交
 
 对于隐式几何，直接使用光线方程带入隐式几何表达式，求解新的表达式时间 $t$ 的 **实数** 和 **正数** 解。下面是一个光线与隐式几何表示的球体求交例子：
 
 ![68_ray_intersection_sphere](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/68_ray_intersection_sphere.jpg)
 
-#### **18.4.3 光线与显示几何求交**
+#### 18.4.3 光线与显示几何求交
 
 1. 光线与平面（Plane）求交
 
@@ -1402,7 +1415,7 @@ $$
 
     三角形在一个平面上，首先求光线与三角形所在平面的交点，然后再计算这个交点是否在三角形内。
 
-#### **18.4.4 Möller Trumbore 算法（Möller Trumbore Algorithm）**
+#### 18.4.4 Möller Trumbore 算法（Möller Trumbore Algorithm）
 
 Möller Trumbore 算法是一种利用三角形重心坐标来计算光线与三角形相交的算法，由 Tomas Möller 和 Ben Trumbore 在 1997 年提出。
 
@@ -1416,7 +1429,7 @@ AABB 是一个长方体盒子，它的每条边有坐标轴对齐， **一个 AA
 
 场景中的每个物体都有一个自己的 AABB ，如果光线没有进入物体的 AABB ，那么表示光线和物体一定没有交点。
 
-#### **光线与 AABB 求交的核心思想**
+#### 光线与 AABB 求交的核心思想
 
 - 当光线进入了所有三对无限大平面之间，则表示光线进入了此 AABB ；
 - 当光线离开了任意一对无限大平面，则表示光线离开了此 AABB ；
@@ -1443,7 +1456,7 @@ AABB 是一个长方体盒子，它的每条边有坐标轴对齐， **一个 AA
 
 使用 AABB 加速光线追踪的核心思想是：在做光线追踪之前，预处理场景，构建加速结构。
 
-#### **18.6.1 均匀网格空间划分（Uniform Spatial Partitions (Grids) ）**
+#### 18.6.1 均匀网格空间划分（Uniform Spatial Partitions (Grids) ）
 
 ![75_uniform_spatial_partitions](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/75_uniform_spatial_partitions.jpg)
 
@@ -1465,7 +1478,7 @@ AABB 是一个长方体盒子，它的每条边有坐标轴对齐， **一个 AA
 
 其中，在三维空间中， $C \approx 27$ 。
 
-#### **18.6.2 空间划分（Spatial Partitions）**
+#### 18.6.2 空间划分（Spatial Partitions）
 
 不同于均匀网格空间划分，空间划分是将场景划分为最优的不均匀的三维网格。
 
@@ -1491,7 +1504,7 @@ KD树的数据结构：
 - **叶子节点（Leaf Node）**
     - 存储场景中物体的列表
 
-#### **18.6.3 层次包围盒（Bounding Volume Hierarchy, BVH）**
+#### 18.6.3 层次包围盒（Bounding Volume Hierarchy, BVH）
 
 **层次包围盒不再从空间上做划分，而是通过场景内的物体来做划分** 。
 
@@ -1536,7 +1549,7 @@ Intersect(Ray ray, BVH node)
 }
 ```
 
-#### **18.6.4 空间划分（Spatial Partitions）与物体划分（Object Partitions）的比较**
+#### 18.6.4 空间划分（Spatial Partitions）与物体划分（Object Partitions）的比较
 
 空间划分(例如：KD-Tree)
 
@@ -1547,3 +1560,190 @@ Intersect(Ray ray, BVH node)
 
 - 将所有物体划分为不相交的子集；
 - 每个子集的包围盒可能相交；
+
+## 19 辐射度量学（Basic radiometry）
+
+### 19.1 基本的物理量
+
+| 中文名 | 英文名 | 单位 | 符号 |
+|:------:|:--------:|:-------:|:-------:|
+| 辐射能量  |  Radiant Energy   | 焦耳（J）  |  $Q$  |
+| 辐射通量  |  Radiant Flux   | 瓦特（W）  |  $\phi$  |
+| 辐射强度  |  Radiant Intensity   | 坎德拉（[Candela](https://en.wikipedia.org/wiki/Candela), W / sr）  |  $I$  |
+| 辐射照度  |  Irradiance   | W / m^2  |  $E$  |
+| 辐射亮度  |  Radiance   | W / (sr⋅m^2)  |  $L$  |
+
+下面来具体依次对它们进行介绍。
+
+### 19.2 辐射能量（Radiant Energy）和辐射通量（Radiant Flux）
+
+**光源辐射出来的总能量，叫做辐射能量** 。它以焦耳（J）为单位进行测量，并用符号 $Q$ 表示。
+
+**每单位时间的辐射能量，叫做辐射通量** 。它的单位是瓦特（W），使用符号 $\phi$ 表示：
+
+$$ \phi = \frac{\rm{d}Q}{\rm{d}t} $$
+
+### 19.3 立体角（Solid Angle）
+
+要介绍辐射强度，就要先介绍 **立体角（Solid Angle）** 。什么是立体角呢？先引用一段维基百科的描述：
+
+```text
+立体角，是一个物体对特定点的三维空间的角度，是平面角在三维空间中的类比。它描述的是站在某一点的观察者测量到的物体大小的尺度。
+```
+
+我们先来看看二维空间的平面角是怎么定义的，平面角指的是这个角对应的圆上的弧长和圆半径的比值。看下图这个平面角的例子：
+
+![81_angle](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/81_angle.jpeg)
+
+在上面这个二维圆中，角度 $\theta$ 对应在圆上的弧长为 $l$ ，圆的半径为 $r$ ，那么这个角用弧度可以表示为：
+
+$$ \theta = \frac{l}{r} $$
+
+整个圆的弧度则为： $\frac{2\pi r}{r} = 2\pi$ 。
+
+而立体角就是三维空间中的 “平面角 $\theta$ ” ，立体角是三维空间中 **球面上的面积与球体半径的平方的比值** ，立体角使用符号 $\Omega$ 来表示，它的单位是 **球面度（[Steradian](https://en.wikipedia.org/wiki/Steradian), sr）** 。下图是一个立体角的示例：
+
+![82_solid_angle](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/82_solid_angle.jpeg)
+
+上图中的立体角可以表示为：
+
+$$ \Omega = \frac{A}{r^2} $$
+
+整个球对应的立体角是： $\frac{4\pi r^2}{r^2} = 4\pi$ 。
+
+### 19.4 微分立体角（Differential Solid Angles）
+
+假设球的半径为 $r$ ，对于使用球面坐标定义的一个角度 $(r, \phi, \theta)$ ，如下图所示：
+
+![83_spherical_coordinates](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/83_spherical_coordinates.png)
+
+其中 $\phi$ 是方位角，范围是 $[0, 2\pi]$ ， $\theta$ 是极角，范围是 $[0, \pi]$ 。对于方位角和极角上的极小差分变化 $\phi + \rm{d}\phi$ 和 $\theta + \rm{d}\theta$ 所对应的立体角微元怎么表示呢？
+
+下图展示了这种极小差分变化下对应的球面上的面积微元 $\rm{d}A$ 的推导计算过程：
+
+![84_solid_angle_dA](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/84_solid_angle_dA.jpg)
+
+需要注意的是， $a$ 和 $b$ 对应的是球面上的弧长，所以我们可以利用平面角的定义来计算它们。
+
+那么这种极小差分变化对应的立体角微元 $\rm{d}\omega$ 也就可以表示为：
+
+$$
+\rm{d}\omega = \frac{\rm{d}A}{r^2} = \frac{r^2 \sin{\theta} \rm{d}\theta \rm{d}\phi}{r^2} = \sin{\theta} \rm{d}\theta \rm{d}\phi
+$$
+
+这种极小差分变化对应的立体角微元也叫做 **单位立体角（Unit Solid Angle）** 。
+
+对于整个球的立体角也就是将所有的单位立体角积分起来：
+
+$$
+\Omega = \int_{S^2} \rm{d}\omega = \int_{0}^{2\pi} \int_{0}^{\pi} \sin{\theta} \rm{d}\theta \rm{d}\phi = 4\pi
+$$
+
+### 19.5 辐射强度（Radiant Intensity）
+
+**每单位立体角的辐射通量，叫做辐射强度** 。它的单位是 `W / sr` ，使用符号 $I$ 表示：
+
+$$ I(\omega) = \frac{\rm{d}\phi}{\rm{d}\omega} $$
+
+对于三维空间中一个均匀向四周辐射能量的点光源，它在任意一个方向上单位立体角的能量就是它的辐射强度。这个点光源在单位时间内辐射的能量（即辐射通量）为 $\phi$ ， $\phi$ 可以表示为对整个球上所有方向上的辐射强度做积分，也就是：
+
+$$ \phi = \int_{S^2} I \rm{d}\omega $$
+
+我们知道，将一个球面上所有单位立体角积分起来的结果就是这个球的立体角，也就是 $4\pi$ ，所以：
+
+$$ \phi = 4\pi I $$
+
+那么对于任意方向上的辐射强度 $I$ ，可以表示为：
+
+$$ I = \frac{\phi}{4\pi} $$
+
+### 19.6 辐射照度（Irradiance）
+
+**每单位面积所接收到的辐射通量** ，叫做辐射照度。它的单位是 `W / m^2` ，使用符号 $E$ 来表示：
+
+$$ E = \frac{\rm{d}\phi}{dA} $$
+
+需要注意的是，在实际计算接收到辐射照度时，需要考虑到表面法线与光线入射方向的夹角大小：
+
+![85_irradiance_cos_theta](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/85_irradiance_cos_theta.jpg)
+
+可以看到，当接收的表面与光线垂直时，此时接收到所有的能量，但当光线斜着照射到表面时，表面接收到的能量就会变少。通常情况下，接收到的辐射照度与表面与光线夹角的余弦乘比例关系，也就是：
+
+$$ E = \frac{\phi}{A} \cos{\theta} $$
+
+通过辐射照度，还可以解释为什么距离光源越远接收到的能量就越少，也就是辐射照度是有衰减的：
+
+![86_irradiance_falloff](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/86_irradiance_falloff.jpeg)
+
+如上图所示，因为辐射通量 $\phi$ 是固定的，而随着距离光源越来越远，单位面积上所接收到的能量也就越来越少。
+
+### 19.7 辐射亮度（Radiance）
+
+**每单位立体角每单位垂直面积的辐射通量** ，叫做辐射亮度。它的单位是 `W / (sr⋅m^2)` ，使用符号 $L$ 来表示：
+
+$$
+L = \frac{\rm{d}^2 \phi}{\rm{d}\omega \rm{d}A \cos{\theta}}
+$$
+
+**辐射亮度同时指定了光的方向与照射到的表面所接收到的能量** 。在这里有一个细微的差别，在辐射照度中定义的 **每单位面积** ，而在辐射亮度中，为了更好的使其称为描述一条光线传播中的能量，且在传播过程当中大小不随方向改变，所以在定义中关于接收面积的部分是 **每单位垂直面积** ，这一点的不同也正解释了上式中分母中的 $\cos{\theta}$ ，如下图所示：
+
+![87_radiance_cos_theta](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/87_radiance_cos_theta.png)
+
+上图中， $\rm{d}A$ 是辐射照度中所定义的单位面积，而 $\rm{d}A^{\perp}$ 才是辐射亮度中所定义的单位垂直面积，$\rm{d}A^{\perp}$ 可以通过 $\rm{d}A$ 与光线与表面法线之间夹角的余弦来表示，也就是： $\rm{d}A^{\perp} = \rm{d}A \cos{\theta}$ 。
+
+### 19.8 辐射照度（Irradiance）与辐射亮度（Radiance）
+
+再次复习一下：
+
+- 辐射亮度（Radiance）描述的是 **单位立体角单位垂直面积的辐射通量**
+- 而辐射照度（Irradiance）描述的是 **单位面积所接收到的辐射通量** ，也就是**单位面积从整个单位半球 $\Omega^{+}$ 接收到的所有辐射通量**
+
+![88_indicent_radiance](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/88_indicent_radiance.jpg)
+
+那么，对于上图所示的 **从某个单位立体角入射的辐射亮度（Radiance）** 可以表示为：
+
+$$
+L_i(p,\omega) = \frac{\rm{d}E(p)}{\rm{d}\omega \cos{\theta}}
+$$
+
+其中， $p$ 是物体表面上的某一点， $\omega$ 是入射方向的单位立体角， $\theta$ 是入射方向与物体表面法线的夹角。
+
+也就是说， **从某个单位立体角入射的辐射照度（Irradiance）** 是：
+
+$$
+\rm{d}E(p) = L_i(p,\omega) \cos{\theta} \rm{d}\omega
+$$
+
+对单位半球 $\Omega^{+}$ 所有入射单位立体角积分就可以得到单位面积所接收到的辐射通量，也就是辐射照度（Irradiance） $E(p)$ ：
+
+$$
+E(p) = \int_{\Omega^{+}} L_i(p,\omega) \cos{\theta} \rm{d}\omega
+$$
+
+## 20 BRDF 、反射方程（The Reflection Equation）和渲染方程（The Rendering Equation）
+
+### 20.1 BRDF
+
+BRDF 全称是 Bidirectional Reflectance Distribution Function ，中文叫做： **双向反射分布函数** 。 BRDF 描述的是物体表面上的一个点，接收了某一个方向上的辐射照度（Irradiance）后，将其反射到另外一个方向上的比例。也就是 **反射光的辐射亮度（Radiance）与某个方向入射光的辐射照度（Irradiance）的比值** 。BRDF 表示为：
+
+$$
+f_r(\omega_{i} \to \omega_{r}) = \frac{\rm{d}L_r(\omega_{r})}{\rm{d}E_i(\omega_{i})} = \frac{\rm{d}L_r(\omega_{r})}{L_i(\omega_{i}) \cos{\theta_{i}} \rm{d}\omega_{i}}
+$$
+
+### 20.2 反射方程（The Reflection Equation）
+
+对于某一个入射方向 $\omega_{i}$ 的入射光，对反射方向 $\omega_{r}$ 的辐射亮度（Radiance）的贡献为：
+
+$$
+\rm{d}L_r{\omega_{r}} = f_r(\omega_{i} \to \omega_{r}) L_i(\omega_{i}) \cos{\theta_{i}} \rm{d}\omega_{i}
+$$
+
+那么，将整个单位半球 $\Omega^{+}$ 上所有入射光对反射方向 $\omega_{r}$ 的辐射亮度（Radiance）的贡献积分出来就是最终反射光的辐射亮度（Radiance），这就是反射方程。对于物体表面某个点 $p$ ，反射方向为 $\omega_{r}$ ，反射方程可以表示为：
+
+$$
+L_r(p,\omega_{r}) = \int_{\Omega^{+}} f_r(p,\omega_{i} \to \omega_{r}) L_i(p,\omega_{i}) \cos{\theta_{i}} \rm{d}\omega_{i}
+$$
+
+### 20.3 渲染方程（The Rendering Equation）
+
+![89_the_rendering_equation](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/89_the_rendering_equation.jpeg)
