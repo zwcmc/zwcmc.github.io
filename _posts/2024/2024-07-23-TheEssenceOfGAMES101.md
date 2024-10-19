@@ -1852,7 +1852,6 @@ $$
 
 $$
 \begin{align*}
-E[F_N] \\
 E[F_N] &= E\Big[\frac{1}{N} \sum_{i=1}^{N} \frac{f(X_i)}{p(X_i)}\Big]\\
 &= \frac{1}{N} \sum_{i=1}^{N} E\Big[\frac{f(X_i)}{p(X_i)}\Big]\\
 &= \frac{1}{N} \sum_{i=1}^{N} \int_{a}^{b} \frac{f(x)}{p(x)} p(x) \rm{d}x\\
