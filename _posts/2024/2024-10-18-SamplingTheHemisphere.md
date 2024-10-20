@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "不同的半球面上采样方案"
+title:  "半球面上采样方案"
 date:   2024-10-18 16:16:00
 category: Rendering
 ---
@@ -11,7 +11,7 @@ category: Rendering
   - [2.2 从立体角上的 PDF 转换到相对于球面坐标 $\\theta$ 和 $\\phi$ 的 PDF](#22-从立体角上的-pdf-转换到相对于球面坐标-theta-和-phi-的-pdf)
   - [2.3 多维 PDF 的分解](#23-多维-pdf-的分解)
   - [2.4 从联合 PDF 中进行二维采样的基本思路](#24-从联合-pdf-中进行二维采样的基本思路)
-- [3 不同的半球面上采样方案](#3-不同的半球面上采样方案)
+- [3 一些半球面上采样方案](#3-一些半球面上采样方案)
   - [3.1 均匀采样半球（Uniformly Sampling a Hemisphere）](#31-均匀采样半球uniformly-sampling-a-hemisphere)
   - [3.2 余弦加权半球采样（Cosine-Weighted Hemisphere Sampling）](#32-余弦加权半球采样cosine-weighted-hemisphere-sampling)
   - [3.3 微表面 BRDF 半球采样（Microfacet BRDF Hemisphere Sampling）](#33-微表面-brdf-半球采样microfacet-brdf-hemisphere-sampling)
@@ -85,7 +85,7 @@ $$ p(y|x) = \frac{p(x,y)}{p(x)} $$
 
 首先计算边缘密度函数以隔离一个特定的变量，然后从该边缘密度函数中抽取样本，一旦抽取了该样本，那就可以计算给定该值的情况下的另一个变量的条件密度函数，并再次从该条件密度函数中抽取另外一个样本。
 
-## 3 不同的半球面上采样方案
+## 3 一些半球面上采样方案
 
 ### 3.1 均匀采样半球（Uniformly Sampling a Hemisphere）
 
