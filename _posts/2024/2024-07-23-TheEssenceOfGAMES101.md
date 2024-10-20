@@ -149,10 +149,12 @@ $$
 叉积满足以下性质：
 
 $$
-\vec{a} \times \vec{b} = -\vec{b} \times \vec{a} \\
-\vec{a} \times \vec{a} = \vec{0} \\
-\vec{a} \times (\vec{b} + \vec{c}) = \vec{a} \times \vec{b} + \vec{a} \times \vec{c} \\
-\vec{a} \times (k\vec{b}) = k(\vec{a} \times \vec{b})
+\begin{align*}
+\vec{a} \times \vec{b} &= -\vec{b} \times \vec{a} \\
+\vec{a} \times \vec{a} &= \vec{0} \\
+\vec{a} \times (\vec{b} + \vec{c}) &= \vec{a} \times \vec{b} + \vec{a} \times \vec{c} \\
+\vec{a} \times (k\vec{b}) &= k(\vec{a} \times \vec{b})
+\end{align*}
 $$
 
 叉积在笛卡尔坐标系下（三维空间下）的计算：
