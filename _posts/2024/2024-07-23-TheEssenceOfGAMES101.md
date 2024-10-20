@@ -1587,7 +1587,7 @@ Intersect(Ray ray, BVH node)
 
 **每单位时间的辐射能量，叫做辐射通量** 。它的单位是瓦特（W），使用符号 $\phi$ 表示：
 
-$$ \phi = \frac{\rm{d}Q}{\rm{d}t} $$
+$$ \phi = \frac{\mathrm{d}Q}{\mathrm{d}t} $$
 
 ### 19.3 立体角（Solid Angle）
 
@@ -1623,18 +1623,18 @@ $$ \Omega = \frac{A}{r^2} $$
 
 ![83_spherical_coordinates](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/83_spherical_coordinates.png)
 
-其中 $\phi$ 是方位角，范围是 $[0, 2\pi]$ ， $\theta$ 是极角，范围是 $[0, \pi]$ 。对于方位角和极角上的极小差分变化 $\phi + \rm{d}\phi$ 和 $\theta + \rm{d}\theta$ 所对应的立体角微元怎么表示呢？
+其中 $\phi$ 是方位角，范围是 $[0, 2\pi]$ ， $\theta$ 是极角，范围是 $[0, \pi]$ 。对于方位角和极角上的极小差分变化 $\phi + \mathrm{d}\phi$ 和 $\theta + \mathrm{d}\theta$ 所对应的立体角微元怎么表示呢？
 
-下图展示了这种极小差分变化下对应的球面上的面积微元 $\rm{d}A$ 的推导计算过程：
+下图展示了这种极小差分变化下对应的球面上的面积微元 $\mathrm{d}A$ 的推导计算过程：
 
 ![84_solid_angle_dA](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/84_solid_angle_dA.jpg)
 
 需要注意的是， $a$ 和 $b$ 对应的是球面上的弧长，所以我们可以利用平面角的定义来计算它们。
 
-那么这种极小差分变化对应的立体角微元 $\rm{d}\omega$ 也就可以表示为：
+那么这种极小差分变化对应的立体角微元 $\mathrm{d}\omega$ 也就可以表示为：
 
 $$
-\rm{d}\omega = \frac{\rm{d}A}{r^2} = \frac{r^2 \sin{\theta} \rm{d}\theta \rm{d}\phi}{r^2} = \sin{\theta} \rm{d}\theta \rm{d}\phi
+\mathrm{d}\omega = \frac{\mathrm{d}A}{r^2} = \frac{r^2 \sin{\theta} \mathrm{d}\theta \mathrm{d}\phi}{r^2} = \sin{\theta} \mathrm{d}\theta \mathrm{d}\phi
 $$
 
 这种极小差分变化对应的立体角微元也叫做 **单位立体角（Unit Solid Angle）** 。
@@ -1642,18 +1642,18 @@ $$
 对于整个球的立体角也就是将所有的单位立体角积分起来：
 
 $$
-\Omega = \int_{S^2} \rm{d}\omega = \int_{0}^{2\pi} \int_{0}^{\pi} \sin{\theta} \rm{d}\theta \rm{d}\phi = 4\pi
+\Omega = \int_{S^2} \mathrm{d}\omega = \int_{0}^{2\pi} \int_{0}^{\pi} \sin{\theta} \mathrm{d}\theta \mathrm{d}\phi = 4\pi
 $$
 
 ### 19.5 辐射强度（Radiant Intensity）
 
 **每单位立体角的辐射通量，叫做辐射强度** 。它的单位是 `W / sr` ，使用符号 $I$ 表示：
 
-$$ I(\omega) = \frac{\rm{d}\phi}{\rm{d}\omega} $$
+$$ I(\omega) = \frac{\mathrm{d}\phi}{\mathrm{d}\omega} $$
 
 对于三维空间中一个均匀向四周辐射能量的点光源，它在任意一个方向上单位立体角的能量就是它的辐射强度。这个点光源在单位时间内辐射的能量（即辐射通量）为 $\phi$ ， $\phi$ 可以表示为对整个球上所有方向上的辐射强度做积分，也就是：
 
-$$ \phi = \int_{S^2} I \rm{d}\omega $$
+$$ \phi = \int_{S^2} I \mathrm{d}\omega $$
 
 我们知道，将一个球面上所有单位立体角积分起来的结果就是这个球的立体角，也就是 $4\pi$ ，所以：
 
@@ -1667,7 +1667,7 @@ $$ I = \frac{\phi}{4\pi} $$
 
 **每单位面积所接收到的辐射通量** ，叫做辐射照度。它的单位是 `W / m^2` ，使用符号 $E$ 来表示：
 
-$$ E = \frac{\rm{d}\phi}{dA} $$
+$$ E = \frac{\mathrm{d}\phi}{dA} $$
 
 需要注意的是，在实际计算接收到辐射照度时，需要考虑到表面法线与光线入射方向的夹角大小：
 
@@ -1688,14 +1688,14 @@ $$ E = \frac{\phi}{A} \cos{\theta} $$
 **每单位立体角每单位垂直面积的辐射通量** ，叫做辐射亮度。它的单位是 `W / (sr⋅m^2)` ，使用符号 $L$ 来表示：
 
 $$
-L = \frac{\rm{d}^2 \phi}{\rm{d}\omega \rm{d}A \cos{\theta}}
+L = \frac{\mathrm{d}^2 \phi}{\mathrm{d}\omega \mathrm{d}A \cos{\theta}}
 $$
 
 **辐射亮度同时指定了光的方向与照射到的表面所接收到的能量** 。在这里有一个细微的差别，在辐射照度中定义的 **每单位面积** ，而在辐射亮度中，为了更好的使其称为描述一条光线传播中的能量，且在传播过程当中大小不随方向改变，所以在定义中关于接收面积的部分是 **每单位垂直面积** ，这一点的不同也正解释了上式中分母中的 $\cos{\theta}$ ，如下图所示：
 
 ![87_radiance_cos_theta](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/87_radiance_cos_theta.png)
 
-上图中， $\rm{d}A$ 是辐射照度中所定义的单位面积，而 $\rm{d}A^{\perp}$ 才是辐射亮度中所定义的单位垂直面积，$\rm{d}A^{\perp}$ 可以通过 $\rm{d}A$ 与光线与表面法线之间夹角的余弦来表示，也就是： $\rm{d}A^{\perp} = \rm{d}A \cos{\theta}$ 。
+上图中， $\mathrm{d}A$ 是辐射照度中所定义的单位面积，而 $\mathrm{d}A^{\perp}$ 才是辐射亮度中所定义的单位垂直面积，$\mathrm{d}A^{\perp}$ 可以通过 $\mathrm{d}A$ 与光线与表面法线之间夹角的余弦来表示，也就是： $\mathrm{d}A^{\perp} = \mathrm{d}A \cos{\theta}$ 。
 
 ### 19.8 辐射照度（Irradiance）与辐射亮度（Radiance）
 
@@ -1709,7 +1709,7 @@ $$
 那么，对于上图所示的 **从某个单位立体角入射的辐射亮度（Radiance）** 可以表示为：
 
 $$
-L_i(p,\omega) = \frac{\rm{d}E(p)}{\rm{d}\omega \cos{\theta}}
+L_i(p,\omega) = \frac{\mathrm{d}E(p)}{\mathrm{d}\omega \cos{\theta}}
 $$
 
 其中， $p$ 是物体表面上的某一点， $\omega$ 是入射方向的单位立体角， $\theta$ 是入射方向与物体表面法线的夹角。
@@ -1717,13 +1717,13 @@ $$
 也就是说， **从某个单位立体角入射的辐射照度（Irradiance）** 是：
 
 $$
-\rm{d}E(p) = L_i(p,\omega) \cos{\theta} \rm{d}\omega
+\mathrm{d}E(p) = L_i(p,\omega) \cos{\theta} \mathrm{d}\omega
 $$
 
 对单位半球 $\Omega^{+}$ 所有入射单位立体角积分就可以得到单位面积所接收到的辐射通量，也就是辐射照度（Irradiance） $E(p)$ ：
 
 $$
-E(p) = \int_{\Omega^{+}} L_i(p,\omega) \cos{\theta} \rm{d}\omega
+E(p) = \int_{\Omega^{+}} L_i(p,\omega) \cos{\theta} \mathrm{d}\omega
 $$
 
 ## 20 BRDF 、反射方程（The Reflection Equation）和渲染方程（The Rendering Equation）
@@ -1733,7 +1733,7 @@ $$
 BRDF 全称是 Bidirectional Reflectance Distribution Function ，中文叫做： **双向反射分布函数** 。 BRDF 描述的是物体表面上的一个点，接收了某一个方向上的辐射照度（Irradiance）后，将其反射到另外一个方向上的比例。也就是 **反射光的辐射亮度（Radiance）与某个方向入射光的辐射照度（Irradiance）的比值** 。BRDF 表示为：
 
 $$
-f_r(\omega_{i} \to \omega_{r}) = \frac{\rm{d}L_r(\omega_{r})}{\rm{d}E_i(\omega_{i})} = \frac{\rm{d}L_r(\omega_{r})}{L_i(\omega_{i}) \cos{\theta_{i}} \rm{d}\omega_{i}}
+f_r(\omega_{i} \to \omega_{r}) = \frac{\mathrm{d}L_r(\omega_{r})}{\mathrm{d}E_i(\omega_{i})} = \frac{\mathrm{d}L_r(\omega_{r})}{L_i(\omega_{i}) \cos{\theta_{i}} \mathrm{d}\omega_{i}}
 $$
 
 ### 20.2 反射方程（The Reflection Equation）
@@ -1741,13 +1741,13 @@ $$
 对于某一个入射方向 $\omega_{i}$ 的入射光，对反射方向 $\omega_{r}$ 的辐射亮度（Radiance）的贡献为：
 
 $$
-\rm{d}L_r{\omega_{r}} = f_r(\omega_{i} \to \omega_{r}) L_i(\omega_{i}) \cos{\theta_{i}} \rm{d}\omega_{i}
+\mathrm{d}L_r{\omega_{r}} = f_r(\omega_{i} \to \omega_{r}) L_i(\omega_{i}) \cos{\theta_{i}} \mathrm{d}\omega_{i}
 $$
 
 那么，将整个单位半球 $\Omega^{+}$ 上所有入射光对反射方向 $\omega_{r}$ 的辐射亮度（Radiance）的贡献积分出来就是最终反射光的辐射亮度（Radiance），这就是反射方程。对于物体表面某个点 $p$ ，反射方向为 $\omega_{r}$ ，反射方程可以表示为：
 
 $$
-L_r(p,\omega_{r}) = \int_{\Omega^{+}} f_r(p,\omega_{i} \to \omega_{r}) L_i(p,\omega_{i}) \cos{\theta_{i}} \rm{d}\omega_{i}
+L_r(p,\omega_{r}) = \int_{\Omega^{+}} f_r(p,\omega_{i} \to \omega_{r}) L_i(p,\omega_{i}) \cos{\theta_{i}} \mathrm{d}\omega_{i}
 $$
 
 ### 20.3 渲染方程（The Rendering Equation）
@@ -1808,12 +1808,12 @@ $$ p(x) \geq 0 $$
 
 并且将连续区间内的概率密度积分起来结果为 1 ：
 
-$$ \int p(x)\rm{d}x = 1 $$
+$$ \int p(x)\mathrm{d}x = 1 $$
 
 连续型随机变量 $X$ 的期望值 $E[X]$ 是：
 
 $$
-E[X] = \int x p(x) \rm{d}x
+E[X] = \int x p(x) \mathrm{d}x
 $$
 
 随机变量 $X$ 的函数 $Y$ 也是一个随机变量：
@@ -1824,7 +1824,7 @@ $$ Y = f(X) $$
 
 函数 $Y$ 的期望可以表示为：
 
-$$ E[Y] = E[f(X)] = \int f(x)p(x) \rm{d}x $$
+$$ E[Y] = E[f(X)] = \int f(x)p(x) \mathrm{d}x $$
 
 ### 21.5 蒙特卡罗积分
 
@@ -1854,9 +1854,9 @@ $$
 \begin{align*}
 E[F_N] &= E\Big[\frac{1}{N} \sum_{i=1}^{N} \frac{f(X_i)}{p(X_i)}\Big]\\
 &= \frac{1}{N} \sum_{i=1}^{N} E\Big[\frac{f(X_i)}{p(X_i)}\Big]\\
-&= \frac{1}{N} \sum_{i=1}^{N} \int_{a}^{b} \frac{f(x)}{p(x)} p(x) \rm{d}x\\
-&= \frac{1}{N} \sum_{i=1}^{N} \int_{a}^{b} f(x)\rm{d}x\\
-&= \int_{a}^{b} f(x)\rm{d}x
+&= \frac{1}{N} \sum_{i=1}^{N} \int_{a}^{b} \frac{f(x)}{p(x)} p(x) \mathrm{d}x\\
+&= \frac{1}{N} \sum_{i=1}^{N} \int_{a}^{b} f(x)\mathrm{d}x\\
+&= \int_{a}^{b} f(x)\mathrm{d}x
 \end{align*}
 $$
 
@@ -1865,7 +1865,7 @@ $$
 首先概率密度函数在区间 $[a,b]$ 之间的积分为 1 ，也就是：
 
 $$
-\int_{a}^{b} p(x) \rm{d}x = 1
+\int_{a}^{b} p(x) \mathrm{d}x = 1
 $$
 
 而 **对于一个均匀分布的随机变量，它的概率密度函数是一个常数** ，如下图所示：
@@ -1877,7 +1877,7 @@ $$
 所以：
 
 $$
-\int_{a}^{b} C \rm{d}x = 1
+\int_{a}^{b} C \mathrm{d}x = 1
 $$
 
 也就得到这个常数是：
