@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Unity中的 LinearEyeDepth 和 Linear01Depth 推导"
+title:  "Unity 中的 LinearEyeDepth 和 Linear01Depth 推导"
 date:   2023-07-03 16:16:00
 category: Unity
 ---

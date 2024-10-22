@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "阴影贴图的原理以及相关的软阴影技术"
+title:  "阴影贴图（Shadow Mapping）"
 date:   2024-08-21 16:16:00
 category: Rendering
 ---
@@ -24,11 +24,12 @@ category: Rendering
   - [2.4 创建子视锥体](#24-创建子视锥体)
   - [2.5 渲染级联阴影贴图](#25-渲染级联阴影贴图)
   - [2.6 采样级联阴影贴图](#26-采样级联阴影贴图)
-- [(3) 硬阴影（Hard Shadows）与软阴影（Soft Shadows）](#3-硬阴影hard-shadows与软阴影soft-shadows)
-  - [3.1 Percentage Closer Filtering（PCF）](#31-percentage-closer-filteringpcf)
-    - [3.1.1 双线性 PCF （Bilinear PCF）](#311-双线性-pcf-bilinear-pcf)
-    - [3.1.2 更大内核的 PCF](#312-更大内核的-pcf)
-- [(4) 参考](#4-参考)
+- [(3) 硬阴影（Hard Shadows）](#3-硬阴影hard-shadows)
+- [(4) 软阴影（Soft Shadows）](#4-软阴影soft-shadows)
+  - [4.1 双线性 PCF （Bilinear PCF）](#41-双线性-pcf-bilinear-pcf)
+  - [4.2 更大内核的 PCF](#42-更大内核的-pcf)
+    - [4.2.1 过大的 PCF 内核会造成自阴影伪影的问题](#421-过大的-pcf-内核会造成自阴影伪影的问题)
+- [(5) 参考](#5-参考)
 
 ## (1) 阴影贴图（Shadow mapping）原理
 
@@ -218,7 +219,7 @@ vWorldUnitsPerTexel = XMVectorSet( fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0
 
 ## (2) 级联阴影（Cascaded Shadow Maps）
 
-在前面的阴影贴图中的一些问题中，有提到 [透视锯齿](#透视锯齿perspective-aliasing) 的问题，出现透视锯齿问题的原因是靠近摄像机的阴影贴图分辨率不足（阴影贴图中少量的纹素覆盖了场景中太大的范围）。而解决透视锯齿的问题，目前来说最佳的方案就是使用 **级联阴影**。
+在前面的阴影贴图中的一些问题中，有提到 [透视锯齿](#111-透视锯齿perspective-aliasing) 的问题，出现透视锯齿问题的原因是靠近摄像机的阴影贴图分辨率不足（阴影贴图中少量的纹素覆盖了场景中太大的范围）。而解决透视锯齿的问题，目前来说最佳的方案就是使用 **级联阴影**。
 
 级联阴影的基本思想是将摄像机视锥体分割成多个子视锥体，为每个视锥体渲染一张阴影贴图，在实际渲染的过程中，根据像素与摄像机的距离，判断像素处于哪个子视锥体，并使用所在的子视锥体的阴影贴图来计算阴影。下图展示了将摄像机视锥体分割成 3 个子视锥体，并为每一个子视锥体渲染一张阴影贴图（需要注意的是，一般情况下每张阴影贴图的分辨率应该是一样的，下图中展示的网格密度的不同只是为了展示场景中靠近摄像机的区域也覆盖了足够分辨率的阴影贴图纹素数量）：
 
@@ -273,87 +274,69 @@ vWorldUnitsPerTexel = XMVectorSet( fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0
 - **根据深度间隔来确定级联** ： 通过级联区间划分与摄像机视锥体的深度 `Z` 将每一级联的深度范围计算出来并传入 `GPU` ，在着色器中，将像素坐标转换到摄像机的视图空间，根据该像素在摄像机视图空间的深度坐标 `Z` 与所有级联的深度范围做对比，这样就能确定该像素所属的级联。找到所属级联后，再应用此级联的纹理坐标的缩放（Scale）和偏移（Offset），也就确定了该像素在大的阴影贴图上需要采样的纹理坐标了。
 - **根据每个级联的视口缩放和偏移来确定级联**： 此方法的核心思想是：首先将像素转换到光源的视图空间，然后遍历每个级联的投影矩阵，当计算出的 `X` 和 `Y` 坐标在纹理上时（范围属于 `[0, 1]`，实际计算中会偏移一个纹素的大小 ），也就说明找到了所属的级联。最后，同样需要再应用此级联的纹理坐标的缩放（Scale）和偏移（Offset），最终计算出该像素在大的阴影贴图上需要采样的纹理坐标。
 
-## (3) 硬阴影（Hard Shadows）与软阴影（Soft Shadows）
+## (3) 硬阴影（Hard Shadows）
 
-首先，阴影贴图的核心原理就是通过 **将像素在光源空间中的深度值与该像素在阴影贴图中对应纹素所存储的深度值做对比来判断该像素在光源空间中能不能被光源看到（能看到就是不在阴影中，不能看到就是在阴影中，因为前方有遮挡）** 。
+首先，阴影贴图的核心原理就是通过 **将像素在光源空间中的深度值与该像素在阴影贴图中对应纹素所存储的深度值做比较来判断该像素在光源空间中能不能被光源看到（能看到就是不在阴影中，不能看到就是在阴影中，因为前方有遮挡）** 。
 
-由于阴影贴图具有固定的分辨率，也就是说阴影贴图中存储的深度信息是离散的，而在采样阴影贴图的过程中，场景中的多个像素采样的是阴影贴图中的同一个纹素，也就是说场景中的这些像素会采样到相同的深度值，在做深度测试时，因为对比的是同一个深度值，所以会产生锯齿状的块状边缘，这种阴影被称为 **硬阴影（Hard Shadows）**。增加阴影贴图的分辨率可以改善锯齿的大小。下图展示了不同分辨率的阴影贴图下的硬阴影：
+由于阴影贴图具有固定的分辨率，阴影贴图中每个纹素存储的深度信息是 **离散的** ，这也就意味着每个像素采样得到的深度信息也是离散的，在后续做深度比较时，比较的结果不是 0 就是 1，最终也就得到了锯齿状的硬阴影边缘。
+
+阴影贴图的分辨率大小还会影响硬阴影锯齿状边缘的大小，因为更小的阴影贴图分辨率意味着有更多的像素采样的是同一个纹素的深度值。下图展示了不同分辨率的阴影贴图情况下的硬阴影：
 
 ![25_hard_shadows](/assets/images/2024/2024-08-21-ShadowMapping/25_hard_shadows.png)
 
-### 3.1 Percentage Closer Filtering（PCF）
+## (4) 软阴影（Soft Shadows）
 
-PCF的基本思想是从阴影贴图中多次采样，每次使用略有不同的采样纹理坐标，最终根据所有通过深度测试的采样数与总的采样数的比例来计算像素处于阴影中的百分比。如下图所示，一个像素通过了 4 个深度测试中的 1 个，所以它处于 25% 的阴影中：
+PCF（Percentage Closer Filter） 是实时渲染中软阴影的基本算法，它的基本思想可以描述为：将像素投影到阴影贴图上后，采样其周围一定范围的纹素（例如 `3x3` 范围内的 9 个纹素），将该像素在光源空间中的深度值与每个采样点的深度值做比较，如果通过深度测试（像素在光源空间中的深度值小于等于采样点的深度值）则为可见，即不在阴影中，返回 1，如果没有通过深度测试则为不可见，即在阴影中，返回 0 。最终将所有的结果平均起来，从而得到该像素的阴影值。如下图所示，一个像素的 4 个采样点中，有 3 个通过了深度测试，那么它的阴影值为 0.25 ：
 
 ![26_pcf](/assets/images/2024/2024-08-21-ShadowMapping/26_pcf.png)
 
-通过这种方式计算出的阴影称为 **软阴影（Soft Shadows）** 。通过扩大 PCF 内核的大小（采样点周围 NxN 的像素），可以是阴影边缘产生更平滑的渐变效果。
-
-#### 3.1.1 双线性 PCF （Bilinear PCF）
-
-这是最基础的 PCF `2x2` 内核，通过采样像素映射到阴影贴图中纹理坐标周围的 4 个纹素，并将每次采样的深度测试的结果通过 **双线性插值（Bilinear Interpolation）** 的方式进行混合，得到最终该像素的阴影值。
+### 4.1 双线性 PCF （Bilinear PCF）
 
 ![27_bilinear_pcf](/assets/images/2024/2024-08-21-ShadowMapping/27_bilinear_pcf.png)
 
-上图中像素映射到阴影贴图中的纹理坐标是红色的点 `asked point` ，双线性 PCF 通过采样周围的 4 个纹素（texel1 - texel4），对每个采样的结果与像素在光源空间的深度值做深度测试，得到每个采样纹素的深度测试结果，最后根据映射的纹理坐标与 4 个采样纹素的纹理坐标做双线性插值，计算出映射点的深度测试结果。
+最基础的 `2x2` PCF 内核。通过采样像素映射到阴影贴图上纹理坐标周围 `2x2` 的 4 个纹素，并将 4 次深度测试比较的结果通过 **双线性插值** 的方式进行混合，得到最终的阴影值。
 
-在早期的硬件中，需要手动进行 4 次**点过滤（Point Filtering）**采样，并做双线性插值才能得到最终的阴影结果。在现代的硬件中都集成了此算法，只需要 1 次采样就可以得到同样的结果。下面举一个在 OpenGL 中使用的例子：
-
-```cpp
-// 设置阴影贴图的过滤方式为双线性
-glTexParameteri(m_Target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(m_Target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-// 设置阴影贴图的比较模式
-glTexParameteri(m_Target, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-glTexParameteri(m_Target, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-```
-
-在着色器中，只需要一次采样就可以得到双线性 PCF 的结果：
-
-```cpp
-uniform sampler2DShadow uShadowMap;
-
-...
-
-float shadow = texture(uShadowMap, shadowCoord.xyz);
-```
+在早期的硬件中，需要进行 4 次 **点过滤（Point Filtering）** 采样，才能得到最终的阴影结果。而在现代的硬件中都集成了此算法，只需要 1 次双线性特殊采样[SampleCmpLevelZero](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-to-samplecmplevelzero)就能得到最终的阴影结果。
 
 下图展示了使用双线性 PCF 的阴影结果，阴影贴图的分辨率是 `512x512` ：
 
 ![28_bilinear_pcf_512](/assets/images/2024/2024-08-21-ShadowMapping/28_bilinear_pcf_512.png)
 
-#### 3.1.2 更大内核的 PCF
+### 4.2 更大内核的 PCF
 
-通过使用更大的加权内核进行采样，例如使用 `NxN` 的加权内核（所有权重总和为 1 ），可以使阴影更加柔和，不过更大的内核也意味着更高的性能消耗，因为需要更多的采样。也有使用 **非对称的（Irregular）** 内核来进行 PCF 过滤（例如使用泊松圆盘采样（Poisson Disk Sampling）算法生成的内核），通过非对称的 PCF 内核进行采样可以减少采样次数，节省带宽的使用，不过非对称的 PCF 内核会使阴影噪声（Noise）变多。下图展示了普通 `NxN` PCF 内核与非对称 PCF 内核的阴影效果对比：
+通过使用更大的加权内核进行采样，例如使用 `NxN` 的加权内核（所有权重总和为 1 ），可以使阴影更加柔和，不过更大的内核也意味着更高的性能消耗，因为需要更多的采样。
+
+也有使用 **非对称的（Irregular）** 内核来进行 PCF 过滤（例如使用 **泊松圆盘采样（Poisson Disk Sampling）算法** 生成的内核），通过非对称的 PCF 内核进行采样可以减少采样次数，节省带宽的使用，不过非对称的 PCF 内核会使阴影噪声（Noise）变多。下图展示了普通 `NxN` PCF 内核与非对称 PCF 内核的阴影效果对比：
 
 ![29_regular_irregular](/assets/images/2024/2024-08-21-ShadowMapping/29_regular_irregular.png)
 
-需要注意的是，过大的 PCF 内核也会造成[阴影暗斑](#阴影暗斑shadow-acne)的问题。
+#### 4.2.1 过大的 PCF 内核会造成自阴影伪影的问题
 
-PCF 的主要思想是：对于场景中的某个转换到光源空间后的像素的深度 `Z` 值，PCF 算法不仅会采样此像素映射到阴影贴图中的纹素，并将采样的结果与 `Z` 值做深度测试比较，而且还会采样映射纹素周围 `NxN` 的纹素，并将采样的结果分别与 `Z` 值做深度测试比较，最终根据通过深度测试的样本数量与总的采样数量的比值来确定此像素的阴影值。通过这个主要思想就能发现一个问题： **对于阴影贴图中的每个纹素，都应该分别使用其映射到光源空间中像素的深度 `Z` 值与其存储的深度值做深度测试比较，而不是像上面描述的那样使用同一个光源空间中的像素的深度 `Z` 值与所有这些 `NxN` 纹素中存储的深度值做深度测试比较**。
+当使用很大的 PCF 内核时，会使用同一个像素在光源空间的深度值与阴影贴图上很大范围内的每个纹素存储的深度值做比较，这样做是明显有问题的，在 PCF 内核边缘的纹素所对应的场景内某个点可能与当前像素所对应的场景内的点离的很远，甚至没有任何关系。更合理的做法是： **对于阴影贴图中的每个纹素，应该分别使用其映射到光源空间中像素的深度值与其存储的深度值做深度测试比较，而不是像上面描述的那样使用同一个光源空间中的像素的深度值与所有这些 `NxN` 纹素中存储的深度值做深度测试比较** 。
 
-一种解决此问题的方法是，利用当前像素在光源空间中坐标的导数（Derivative），计算出相邻像素深度 `Z` 值在 `X` 和 `Y` 轴方向上的变化率，在 PCF 过滤采样相邻纹素的过程中，基于相邻纹素纹理坐标在 `X` 和 `Y` 轴上的偏移，计算出深度偏差并将其应用到深度测试比较中。具体的流程如下：
+一种解决此问题的方法是，利用当前像素在光源空间中坐标的导数（Derivative），计算出相邻像素深度值在 `X` 和 `Y` 轴方向上的变化率，在 PCF 过滤采样相邻纹素的过程中，基于相邻纹素纹理坐标在 `X` 和 `Y` 轴上的偏移，计算出深度偏差并将其应用到深度测试比较中。具体的流程如下：
 
-1. 通过求导函数 `ddx` 和 `ddy` 计算出当前像素在光源空间中 xyz 坐标的导数，通过倒数的 `x` 和 `y` 构建一个 `float2x2` 的矩阵，此矩阵用来将屏幕空间的邻近纹素转换为光源空间的斜率。
-2. 通过对这个矩阵求逆，得到一个将光源空间邻近像素转换为屏幕空间斜率的矩阵。
-3. 然后将光源空间中，向上偏移 1 个像素 和 向右偏移 1 个像素的向量转换到屏幕空间斜率，也就得到了屏幕空间中向上+y和向右+x的相邻像素的斜率。
-4. 因为最终要对比的是深度值，所以这2个斜率还要乘以深度 z 的倒数，这样就得到了屏幕空间相邻纹素相对的深度的斜率。
-5. 在 PCF 计算时，在应用 xy 偏移的同时，同时根据这 2 个斜率计算出深度偏差。
+1. 通过求导函数 `ddx` 和 `ddy` 计算出当前像素在光源观察空间中 xyz 坐标的变化率，将此变化率变换到屏幕空间
+2. 使用屏幕空间 xyz 坐标的变化率的 x 和 y 构建一个 `2x2` 的矩阵，计算这个矩阵的逆矩阵，得到一个屏幕空间到光源观察空间的变换矩阵
+3. 通过上面的矩阵，计算屏幕空间在 `+x` 和 `+y` 方向上 1 个纹素偏移所对应的光源观察空间中 xy 坐标的变化率
+4. 根据屏幕空间在 `+x` 和 `+y` 方向上 1 个纹素偏移所对应的光源观察空间中 xy 坐标的变化率，计算出屏幕空间在 `+x` 和 `+y` 方向上 1 个纹素偏移所对应的光源观察空间中深度值 z 的变化率
+5. 在 PCF 计算时，根据上面计算的深度 z 的变化率计算出相邻纹素的深度偏差
 
 在 OpenGL 中实现的代码如下：
 
 ```cpp
-void CalculateRightAndUpTexelDepthDeltas(in vec3 texShadowView, in mat3 shadowProjection, out float upTextDepthWeight, out float rightTextDepthWeight)
+void CalculateRightAndUpTexelDepthDeltas(in vec3 texShadowView, in mat3 shadowProjection, out float upTexelDepthWeight, out float rightTexelDepthWeight)
 {
+    // 光源的观察空间中， xyz 坐标的变化率
     vec3 vShadowTexDDX = dFdx(texShadowView);
     vec3 vShadowTexDDY = dFdy(texShadowView);
 
+    // 将光源的观察空间中 xyz 坐标的变化率变换到屏幕坐标
     vShadowTexDDX = shadowProjection * vShadowTexDDX;
     vShadowTexDDY = shadowProjection * vShadowTexDDY;
 
+    // 构建矩阵
     mat2 matScreenToShadow = mat2(vShadowTexDDX.xy, vShadowTexDDY.xy);
-
     // 求逆矩阵
     float fDeterminant = determinant(matScreenToShadow);
     float fInvDeterminant = 1.0 / fDeterminant;
@@ -362,20 +345,21 @@ void CalculateRightAndUpTexelDepthDeltas(in vec3 texShadowView, in mat3 shadowPr
         matScreenToShadow[1][0] * -fInvDeterminant, matScreenToShadow[0][0] * fInvDeterminant
     );
 
+    // 计算对于屏幕空间 +x 方向 和 +y 方向上 1 个纹素偏移的光源空间 xy 坐标变化率
     vec2 vRightShadowTexelLocation = vec2(1.0/2048.0, 0.0);
     vec2 vUpShadowTexelLocation = vec2(0.0, 1.0/2048.0);
-
     vec2 vRightTexelDepthRatio = matShadowToScreen * vRightShadowTexelLocation;
     vec2 vUpTexelDepthRatio = matShadowToScreen * vUpShadowTexelLocation;
 
-    upTextDepthWeight = vUpTexelDepthRatio.x * vShadowTexDDX.z + vUpTexelDepthRatio.y * vShadowTexDDY.z;
-    rightTextDepthWeight = vRightTexelDepthRatio.x * vShadowTexDDX.z + vRightTexelDepthRatio.y * vShadowTexDDY.z;
+    // 计算对于屏幕空间 +x 方向 和 +y 方向上 1 个纹素偏移的光源空间深度 z 的变化率
+    upTexelDepthWeight = vUpTexelDepthRatio.x * vShadowTexDDX.z + vUpTexelDepthRatio.y * vShadowTexDDY.z;
+    rightTexelDepthWeight = vRightTexelDepthRatio.x * vShadowTexDDX.z + vRightTexelDepthRatio.y * vShadowTexDDY.z;
 }
 ```
 
-由于这种技术在计算上比较复杂，因此只有在 GPU 有足够的计算周期可供使用时才应该使用它。当使用非常大的 PCF 内核时，这可能是唯一一种可以去除自阴影伪影而不引起彼得潘效应的技术。
+由于这种技术在计算上比较复杂，因此只有在 GPU 有足够的计算周期可供使用时才应该使用它。当使用非常大的 PCF 内核时，这也是唯一一种可以去除自阴影伪影而不引起彼得潘效应的技术。
 
-## (4) 参考
+## (5) 参考
 
 - [1] [https://graphics.stanford.edu/~mdfisher/Shadows.html](https://graphics.stanford.edu/~mdfisher/Shadows.html)
 - [2] [https://learn.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps](https://learn.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps)
