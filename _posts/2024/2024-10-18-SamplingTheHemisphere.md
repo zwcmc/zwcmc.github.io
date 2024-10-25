@@ -8,9 +8,9 @@ category: Rendering
 - [1 球面坐标与笛卡尔坐标](#1-球面坐标与笛卡尔坐标)
 - [2 半球面上采样的原理](#2-半球面上采样的原理)
   - [2.1 立体角转换到 $\\theta$ 与 $\\phi$](#21-立体角转换到-theta-与-phi)
-  - [2.2 从立体角上的 PDF 转换到相对于球面坐标 $\\theta$ 和 $\\phi$ 的 PDF](#22-从立体角上的-pdf-转换到相对于球面坐标-theta-和-phi-的-pdf)
-  - [2.3 多维 PDF 的分解](#23-多维-pdf-的分解)
-  - [2.4 从联合 PDF 中进行二维采样的基本思路](#24-从联合-pdf-中进行二维采样的基本思路)
+  - [2.2 从立体角上的 PDF 转换到相对于球面坐标 $\\theta$ 和 $\\phi$ 的联合概率密度函数](#22-从立体角上的-pdf-转换到相对于球面坐标-theta-和-phi-的联合概率密度函数)
+  - [2.3 联合概率密度函数的分解](#23-联合概率密度函数的分解)
+  - [2.4 从联合概率密度函数中进行二维采样的基本思路](#24-从联合概率密度函数中进行二维采样的基本思路)
 - [3 一些半球面上采样方案](#3-一些半球面上采样方案)
   - [3.1 均匀采样半球（Uniformly Sampling a Hemisphere）](#31-均匀采样半球uniformly-sampling-a-hemisphere)
   - [3.2 余弦加权半球采样（Cosine-Weighted Hemisphere Sampling）](#32-余弦加权半球采样cosine-weighted-hemisphere-sampling)
@@ -36,9 +36,9 @@ $$
 
 在半球面上采样的原理可以分为以下几个步骤：
 
-1. 计算归一化的 **概率密度函数 PDF**
-2. 将 PDF 分解（一个用于 $\theta$ ，一个用于 $\phi$ ）
-3. 通过对 PDF 积分计算 **累积分布函数 CDF**
+1. 计算归一化的立体角上的 **概率密度函数 PDF** ，并将其转换为使用球面坐标 $\theta$ 和 $\phi$ 表示的联合概率密度函数
+2. 将联合概率密度函数分解（一个是 $\theta$ 的边缘密度函数，另一个是在给定 $\theta$ 的情况下 $\phi$ 的条件密度函数）
+3. 通过对分解出的两个密度函数积分计算 **累积分布函数 CDF**
 4. 将 CDF 设为 0 到 1 之间的随机数，以获得定义采样样本的 $\theta$ 和 $\phi$ 角度
 
 ### 2.1 立体角转换到 $\theta$ 与 $\phi$
@@ -53,9 +53,9 @@ $$
 \int_{H^2} f(\theta)\mathrm{d}\omega = \int_{0}^{2\pi} \int_{0}^{\pi / 2} f(\theta, \phi) \sin\theta \mathrm{d}\theta \mathrm{d}\phi
 $$
 
-### 2.2 从立体角上的 PDF 转换到相对于球面坐标 $\theta$ 和 $\phi$ 的 PDF
+### 2.2 从立体角上的 PDF 转换到相对于球面坐标 $\theta$ 和 $\phi$ 的联合概率密度函数
 
-假设有一个定义在立体角上的概率密度函数 $p(\omega)$ ，此密度函数相对于球面坐标角度 $\theta$ 和 $\phi$ 的概率密度函数可以推导出来为：
+假设有一个定义在立体角上的概率密度函数 $p(\omega)$ ，此密度函数相对于球面坐标角度 $\theta$ 和 $\phi$ 的联合概率密度函数可以推导出来为：
 
 $$
 \begin{align*}
@@ -65,11 +65,11 @@ p(\theta,\phi) &= \sin\theta p(\omega)
 \end{align*}
 $$
 
-### 2.3 多维 PDF 的分解
+### 2.3 联合概率密度函数的分解
 
-**多维的 PDF 是可分解的，可以表示为分解出的一维 PDF 的乘积** 。
+**联合概率密度函数是可分解的，可以表示为分解出的边缘密度函数和条件密度函数的乘积** 。
 
-假设给定一个二维 PDF ： $p(x,y)$ ，通过将 $y$ 这个维度的整个取值范围积分起来可以得到 **边缘密度函数（Marginal Density Function）** $p(x)$ ：
+假设给定一个联合概率密度函数： $p(x,y)$ ，通过将 $y$ 这个维度的整个取值范围积分起来可以得到 **边缘密度函数（Marginal Density Function）** $p(x)$ ：
 
 $$ p(x) = \int p(x,y) \mathrm{d}y $$
 
@@ -81,7 +81,7 @@ $$ p(y|x) = \frac{p(x,y)}{p(x)} $$
 
 上式也被称为是， **在给定 $x$ 的情况下， $y$ 的条件密度函数（Conditional Density Function）** 。
 
-### 2.4 从联合 PDF 中进行二维采样的基本思路
+### 2.4 从联合概率密度函数中进行二维采样的基本思路
 
 首先计算边缘密度函数以隔离一个特定的变量，然后从该边缘密度函数中抽取样本，一旦抽取了该样本，那就可以计算给定该值的情况下的另一个变量的条件密度函数，并再次从该条件密度函数中抽取另外一个样本。
 
@@ -109,7 +109,7 @@ $$ p(\omega) = \frac{1}{2\pi} $$
 
 $$ p(\theta,\phi) = \sin\theta p(\omega) = \frac{\sin\theta}{2\pi} $$
 
-下面要做的，就是将这个二维的 PDF 分解。首先，通过对 $\phi$ 的整个取值范围进行积分来获得边缘密度函数 $p(\theta)$ ：
+下面要做的，就是将这个联合 PDF 分解。首先，通过对 $\phi$ 的整个取值范围进行积分来获得边缘密度函数 $p(\theta)$ ：
 
 $$
 p(\theta) = \int_{0}^{2\pi} p(\theta, \phi) \mathrm{d}\phi = \int_{0}^{2\pi} \frac{\sin\theta}{2\pi} \mathrm{d}\phi = \sin\theta
@@ -195,7 +195,7 @@ $$
 p(\theta, \phi) = \sin\theta p(\omega) = \frac{1}{\pi} \sin\theta \cos\theta
 $$
 
-接下来，将 PDF 分解。首先，通过对 $\phi$ 的整个取值范围进行积分来获得边缘密度函数 $p(\theta)$ ：
+接下来，将联合 PDF 分解。首先，通过对 $\phi$ 的整个取值范围进行积分来获得边缘密度函数 $p(\theta)$ ：
 
 $$
 p(\theta) = \int_{0}^{2\pi} p(\theta, \phi) \mathrm{d}\phi = \int_{0}^{2\pi} \frac{1}{\pi} \cos\theta \sin\theta \mathrm{d}\phi = \frac{2\pi}{\pi} \cos\theta \sin\theta = 2 \sin\theta \cos\theta
@@ -321,7 +321,7 @@ $$
 p_h(\theta, \phi) = \frac{a^2 \cos\theta \sin\theta}{\pi((a^2 - 1)\cos^{2}\theta + 1)^2}
 $$
 
-接下来，将 PDF 分解。首先，通过对 $\phi$ 的整个取值范围进行积分来获得边缘密度函数 $p(\theta)$ ：
+接下来，将联合 PDF 分解。首先，通过对 $\phi$ 的整个取值范围进行积分来获得边缘密度函数 $p(\theta)$ ：
 
 $$
 p_h(\theta) = \int_{0}^{2\pi} p_h(\theta, \phi) \mathrm{d}\phi = \int_{0}^{2\pi} \frac{a^2 \cos\theta \sin\theta}{\pi((a^2 - 1)\cos^{2}\theta + 1)^2} \mathrm{d}\phi = \frac{2 a^2 \cos\theta \sin\theta}{((a^2 - 1)\cos^{2}\theta + 1)^2}
