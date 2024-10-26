@@ -1,17 +1,17 @@
 ---
 layout: post
-title:  "半球面上采样方案"
+title:  "半球上采样方案"
 date:   2024-10-18 16:16:00
 category: Rendering
 ---
 
 - [1 球面坐标与笛卡尔坐标](#1-球面坐标与笛卡尔坐标)
-- [2 半球面上采样的原理](#2-半球面上采样的原理)
+- [2 半球上采样的原理](#2-半球上采样的原理)
   - [2.1 立体角转换到 $\\theta$ 与 $\\phi$](#21-立体角转换到-theta-与-phi)
   - [2.2 从立体角上的 PDF 转换到相对于球面坐标 $\\theta$ 和 $\\phi$ 的联合概率密度函数](#22-从立体角上的-pdf-转换到相对于球面坐标-theta-和-phi-的联合概率密度函数)
   - [2.3 联合概率密度函数的分解](#23-联合概率密度函数的分解)
   - [2.4 从联合概率密度函数中进行二维采样的基本思路](#24-从联合概率密度函数中进行二维采样的基本思路)
-- [3 一些半球面上采样方案](#3-一些半球面上采样方案)
+- [3 一些半球上采样方案](#3-一些半球上采样方案)
   - [3.1 均匀采样半球（Uniformly Sampling a Hemisphere）](#31-均匀采样半球uniformly-sampling-a-hemisphere)
   - [3.2 余弦加权半球采样（Cosine-Weighted Hemisphere Sampling）](#32-余弦加权半球采样cosine-weighted-hemisphere-sampling)
   - [3.3 微表面 BRDF 半球采样（Microfacet BRDF Hemisphere Sampling）](#33-微表面-brdf-半球采样microfacet-brdf-hemisphere-sampling)
@@ -20,7 +20,7 @@ category: Rendering
 
 ## 1 球面坐标与笛卡尔坐标
 
-在半球面上生成采样样本时，通常通过计算 **极角 $\theta$** 和 **方位角 $\phi$** 来使用单位球面（单位球的半径为 1 ）的坐标。这两个角度可以通过以下公式转换到笛卡尔坐标：
+在半球上生成采样样本时，通常通过计算 **极角 $\theta$** 和 **方位角 $\phi$** 来使用单位球面（单位球的半径为 1 ）的坐标。这两个角度可以通过以下公式转换到笛卡尔坐标：
 
 $$
 \left\{
@@ -32,9 +32,9 @@ z = \cos\theta
 \right.
 $$
 
-## 2 半球面上采样的原理
+## 2 半球上采样的原理
 
-在半球面上采样的原理可以分为以下几个步骤：
+在半球上采样的原理可以分为以下几个步骤：
 
 1. 计算归一化的立体角上的 **概率密度函数 PDF** ，并将其转换为使用球面坐标 $\theta$ 和 $\phi$ 表示的联合概率密度函数
 2. 将联合概率密度函数分解（一个是 $\theta$ 的边缘密度函数，另一个是在给定 $\theta$ 的情况下 $\phi$ 的条件密度函数）
@@ -47,7 +47,7 @@ $$
 
 $$ \mathrm{d}\omega = \sin\theta \mathrm{d}\theta \mathrm{d}\phi $$
 
-在半球面上采样常见的一个操作就是 **从使用立体角的半球积分（ $\mathrm{d}\omega$ ）转换为使用球面坐标的半球积分（ $\mathrm{d}\theta \mathrm{d}\phi$ ）** ，转换过程如下：
+在半球上采样常见的一个操作就是 **从使用立体角的半球积分（ $\mathrm{d}\omega$ ）转换为使用球面坐标的半球积分（ $\mathrm{d}\theta \mathrm{d}\phi$ ）** ，转换过程如下：
 
 $$
 \int_{H^2} f(\theta)\mathrm{d}\omega = \int_{0}^{2\pi} \int_{0}^{\pi / 2} f(\theta, \phi) \sin\theta \mathrm{d}\theta \mathrm{d}\phi
@@ -85,7 +85,7 @@ $$ p(y|x) = \frac{p(x,y)}{p(x)} $$
 
 首先计算边缘密度函数以隔离一个特定的变量，然后从该边缘密度函数中抽取样本，一旦抽取了该样本，那就可以计算给定该值的情况下的另一个变量的条件密度函数，并再次从该条件密度函数中抽取另外一个样本。
 
-## 3 一些半球面上采样方案
+## 3 一些半球上采样方案
 
 ### 3.1 均匀采样半球（Uniformly Sampling a Hemisphere）
 
