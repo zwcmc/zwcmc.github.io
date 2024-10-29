@@ -378,3 +378,4 @@ $$
 - [1] [2D Sampling with Multidimensional Transformations](https://www.pbr-book.org/3ed-2018/Monte_Carlo_Integration/2D_Sampling_with_Multidimensional_Transformations)
 - [2] [Sampling the hemisphere](https://ameye.dev/notes/sampling-the-hemisphere/#)
 - [3] [Sampling Microfacet BRDF](https://agraphicsguynotes.com/posts/sample_microfacet_brdf/)
+- [4] [Notes on importance sampling](https://www.blog.tobias-franke.eu/2014/03/30/notes_on_importance_sampling.html)

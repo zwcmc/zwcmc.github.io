@@ -60,36 +60,11 @@
 // it returns the column 2 of the light's localToWorld matrix, and in lighting calculation in Shader,
 // the spot directional vector needs to point to light, so negative the direction here -->
 
-<!-- ---
-
+<!-- TODO
 ### RenderTexture.memorylessMode
-
-<!-- TODO -->
 <!-- https://discussions.unity.com/t/rendertexture-memorylessmode/661299 -->
-
-<!-- **TODO：在这里只是列出了实现的代码，但是具体 GGX 采样点生成的推导过程还需要详细的学习分析。下图展示了主要思路和一些文章参考** ：
-
-![39_GGX_ImportanceSampling](/assets/images/2024/2024-08-12-PhysicallyBasedRendering/39_GGX_ImportanceSampling.png)
-
-- https://blog.tobias-franke.eu/2014/03/30/notes_on_importance_sampling.html
-- https://blog.selfshadow.com/publications/s2013-shading-course/#course_content
-- https://placeholderart.wordpress.com/2015/07/28/implementation-notes-runtime-environment-map-filtering-for-image-based-lighting/ -->
 
 <!-- #### **球谐函数（Spherical Harmonics）** -->
 
 <!-- TODO
 ### Variance Shadow Maps（VSMs） -->
-
-<!-- TODO
-### Percentage-Closer Soft Shadows（PCSS）
-- https://developer.download.nvidia.cn/whitepapers/2008/PCSS_Integration.pdf
-- https://developer.download.nvidia.cn/shaderlibrary/docs/shadow_PCSS.pdf
-- https://www.legendsmb.com/2022/10/13/unity-PCF-sourcecode/
-- https://zhuanlan.zhihu.com/p/369761748 -->
-
-## IMR & TBR & TBDR
-
-- https://developer.samsung.com/galaxy-gamedev/resources/articles/gpu-framebuffer.html
-- https://docs.qq.com/slide/DUWFsekNSZllIVHpT
-- https://mp.weixin.qq.com/s/-ueKhxbsJOnUtV1SC5eyBQ
-- https://gitlab.freedesktop.org/mesa/mesa
