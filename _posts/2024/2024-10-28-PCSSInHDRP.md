@@ -128,4 +128,4 @@ float coordz = shadowCoord.z + (Z_OFFSET_DIRECTION) * zoffset;
 
 最后，放上一张 PCSS 与 PCF 阴影的效果对比图：
 
-![07_pcf_pcss](/assets/images/2024/2024-10-28-PCSSInHDRP/07_pcf_pcss.jpg)
+![07_pcf_pcss](/assets/images/2024/2024-10-28-PCSSInHDRP/07_pcf_pcss.jpeg)
