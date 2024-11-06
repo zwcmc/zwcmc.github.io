@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "简析Cocos2d-x中的纹理异步加载"
-date:   2018-07-30 16:25:18
+date:   2018-07-30 16:25:18 +800
 category: Cocos2d-x
 ---
 

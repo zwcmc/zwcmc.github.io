@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Scalable Ambient Obscurance"
-date:   2024-11-01 16:16:00
+date:   2024-11-01 16:16:00 +800
 category: Rendering
 ---
 

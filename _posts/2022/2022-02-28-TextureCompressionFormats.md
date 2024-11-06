@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "ETC1 与 ETC2 纹理压缩"
-date:   2022-02-28 02:03:00 PM
+date:   2022-02-28 02:03:00 PM +800
 category: Others
 ---
 

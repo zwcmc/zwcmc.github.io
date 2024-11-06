@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "蒙特卡罗积分"
-date:   2024-06-24 16:16:00
+date:   2024-06-24 16:16:00 +800
 category: Math
 ---
 

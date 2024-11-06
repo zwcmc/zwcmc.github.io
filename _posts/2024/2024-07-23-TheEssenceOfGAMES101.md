@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "GAMES101知识精炼"
-date:   2024-07-23 16:16:00
+date:   2024-07-23 16:16:00 +800
 category: Rendering
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "阴影贴图（Shadow Mapping）"
-date:   2024-08-21 16:16:00
+date:   2024-08-21 16:16:00 +800
 category: Rendering
 ---
 

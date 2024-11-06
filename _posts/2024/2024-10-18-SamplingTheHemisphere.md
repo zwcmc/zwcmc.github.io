@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "半球上采样方案"
-date:   2024-10-18 16:16:00
+date:   2024-10-18 16:16:00 +800
 category: Rendering
 ---
 
