@@ -5,11 +5,11 @@ date:   2023-07-03 16:16:00 +800
 category: Unity
 ---
 
-- [Unity 中的这两个函数](#unity-中的这两个函数)
-- [LinearEyeDepth](#lineareyedepth)
-- [Linear01Depth](#linear01depth)
+- [1. Unity 中的这两个函数](#1-unity-中的这两个函数)
+- [2. LinearEyeDepth](#2-lineareyedepth)
+- [3. Linear01Depth](#3-linear01depth)
 
-### Unity 中的这两个函数
+## 1. Unity 中的这两个函数
 
 先看这2个函数：
 
@@ -51,7 +51,7 @@ float4 _ZBufferParams;
 
 可以知道，最主要的就是这个 `_ZBufferParams` 。下面来推导它的四个分量分别是怎么计算出来的。
 
-### LinearEyeDepth
+## 2. LinearEyeDepth
 
 深度纹理中存储的是经过透视变换和透视除法后的 NDC 空间中的 `z` 值。
 
@@ -143,7 +143,7 @@ $$
 
 可见和源码中的`_ZBufferParams` 的 `z` 和 `w` 分量注释是一样的，推导正确。
 
-### Linear01Depth
+## 3. Linear01Depth
 
 上面推导的 LinearEyeDepth 其实就是把经过非线性的投影变换和透视除法后的 `z` 变换到观察空间中的 `z`，此时它的取值范围是 [0, f]，此时，近平面的 `z` 为 $-n$，而远平面的 `z` 为 $-f$，而相机的 `z` 为 0。而想要转换到 [0, 1]，即把上面得到的结果除以 f 就可以了。
 

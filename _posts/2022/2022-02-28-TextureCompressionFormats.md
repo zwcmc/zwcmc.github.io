@@ -5,19 +5,19 @@ date:   2022-02-28 02:03:00 PM +800
 category: Others
 ---
 
-- [纹理压缩格式](#纹理压缩格式)
-- [ETC1 Compressed Texture Image Formats](#etc1-compressed-texture-image-formats)
-  - [ETC1S](#etc1s)
-  - [ETC1总结](#etc1总结)
-- [ETC2 Compressed Texture Image Formats](#etc2-compressed-texture-image-formats)
-  - [Format RGB ETC2](#format-rgb-etc2)
-  - [Format RGBA ETC2](#format-rgba-etc2)
+- [1. 纹理压缩格式](#1-纹理压缩格式)
+- [2. ETC1 Compressed Texture Image Formats](#2-etc1-compressed-texture-image-formats)
+  - [2.1. ETC1S](#21-etc1s)
+  - [2.2. ETC1总结](#22-etc1总结)
+- [3. ETC2 Compressed Texture Image Formats](#3-etc2-compressed-texture-image-formats)
+  - [3.1. Format RGB ETC2](#31-format-rgb-etc2)
+  - [3.2. Format RGBA ETC2](#32-format-rgba-etc2)
 
-## 纹理压缩格式
+## 1. 纹理压缩格式
 
 [参考](https://www.khronos.org/registry/DataFormat/specs/1.3/dataformat.1.3.html#_introduction)
 
-## ETC1 Compressed Texture Image Formats
+## 2. ETC1 Compressed Texture Image Formats
 
 纹理压缩成一个个 4x4 的纹素块。如果一个纹理(或者mipmap的特定mip-level)的任意方向上的尺寸小于4(比如纹理为 2x2 或者 8x1 )，则纹理的数据被存储在 4x4 纹素块的左/上部分，纹素块的其他部分不使用没有数据。举个例子，一个 4x2 的纹理即被存储在 4x4 的纹素块的上半部分，纹素块的下半部分没有数据。
 
@@ -89,11 +89,11 @@ $$
 
 [two’s complement资料 2](https://www.cnblogs.com/effulgent/archive/2011/10/30/two_s_complement.html)
 
-### ETC1S
+### 2.1. ETC1S
 
 ETC1S格式是ETC1的子集，简化了一些内容方便图像压缩。纹素块使用差分编码(diff bit = 1)，颜色增量$R_{d} = G_{d} = B_{d}$ = 0，所以2个子纹素块使用同一个基色，2个子纹素块的表码字也是相同的，最后flip bit = 0。
 
-### ETC1总结
+### 2.2. ETC1总结
 
 - 纹理通过一个个的 4x4 纹素块存储，到边缘比4小的时候，会使用纹素块的左部分或者上部分，根据flip bit来控制是 2x4(flip bit = 0) 还是 4x2(flip bit = 1)
 - 每个 4x4 的纹素块有64比特位(bit)，通过8字节(Byte)$q_0, q_1, q_2, q_3, q_4, q_5, q_6, q_7$存储，1 Byte = 8 bit，由以下 64 位整数表示：
@@ -107,7 +107,7 @@ ETC1S格式是ETC1的子集，简化了一些内容方便图像压缩。纹素�
 - 对于每一个子纹素块内的每一个纹素，通过MSB和LSB得到它的编辑值
 - 通过基色和编辑值得到每个纹素的RGB值
 
-## ETC2 Compressed Texture Image Formats
+## 3. ETC2 Compressed Texture Image Formats
 
 - **RGB ETC2**用于压缩RGB数据的格式。是ETC1格式的超集(superset)，这意味着ETC2的解码器可以解码ETC1格式的纹理。ETC2和ETC1主要的不同就是ETC2新增了3中模式，T模式(T-mode)，H模式(H-mode)和Planar模式，其中T模式和H模式适用于锐利的色度块，Planar模式适合平滑的色度块。
 
@@ -141,7 +141,7 @@ ETC1S格式是ETC1的子集，简化了一些内容方便图像压缩。纹素�
 
 ![Texture Compression Formats9](/assets/images/2022/2022-02-28-TextureCompressionFormats/Texture_Compression_Formats_9.png)
 
-### Format RGB ETC2
+### 3.1. Format RGB ETC2
 
 对于RGB ETC2，每个64位字包含有三通道 4×4 纹素块的信息如下图：
 
@@ -189,7 +189,7 @@ T模式和H模式最终有4个描述颜色(paint color)用于解码 4x4 的纹�
 
 其中 ≫ 表示按位右移。
 
-### Format RGBA ETC2
+### 3.2. Format RGBA ETC2
 
 每个 4×4 纹素块的 RGBA8888 信息块被压缩为 128 比特位。分为2个64位整数，$int64bit_{Alpha}$和$int64bit_{Color}$，其中RGB部分解码和RGB ETC2一样。Alpha部分比特位结构如下图：
 

@@ -7,14 +7,14 @@ category: Unity
 
 本篇笔记是关于 HDRP 中方向光 PCSS 算法的分析和理解， HDRP 的版本是 16.0.6 。
 
-- [PCSS（Percentage-Closer Soft Shadows）](#pcsspercentage-closer-soft-shadows)
-- [HDRP 中的 PCSS](#hdrp-中的-pcss)
-  - [斐波那契螺旋盘采样（Fibonacci Spiral Disk Sampling）](#斐波那契螺旋盘采样fibonacci-spiral-disk-sampling)
-  - [角直径（Angular diameter）](#角直径angular-diameter)
-  - [在搜索 Blocker 和 PCF 采样时对着色点深度的偏移](#在搜索-blocker-和-pcf-采样时对着色点深度的偏移)
-  - [PCSS 效果对比](#pcss-效果对比)
+- [1. PCSS（Percentage-Closer Soft Shadows）](#1-pcsspercentage-closer-soft-shadows)
+- [2. HDRP 中的 PCSS](#2-hdrp-中的-pcss)
+  - [2.1. 斐波那契螺旋盘采样（Fibonacci Spiral Disk Sampling）](#21-斐波那契螺旋盘采样fibonacci-spiral-disk-sampling)
+  - [2.2. 角直径（Angular diameter）](#22-角直径angular-diameter)
+  - [2.3. 在搜索 Blocker 和 PCF 采样时对着色点深度的偏移](#23-在搜索-blocker-和-pcf-采样时对着色点深度的偏移)
+  - [2.4. PCSS 效果对比](#24-pcss-效果对比)
 
-## PCSS（Percentage-Closer Soft Shadows）
+## 1. PCSS（Percentage-Closer Soft Shadows）
 
 PCSS 是一种基于 PCF 的改进型软阴影算法，它的主要步骤是：
 
@@ -28,9 +28,9 @@ PCSS 是一种基于 PCF 的改进型软阴影算法，它的主要步骤是：
 
 3. **PCF 采样（PCF Filtering）** ：根据 $w_{Penumbra}$ ，使用不同的 PCF 核的大小（ $w_{Penumbra}$ 越大， PCF 的核越大）来进行 PCF 采样
 
-## HDRP 中的 PCSS
+## 2. HDRP 中的 PCSS
 
-### 斐波那契螺旋盘采样（Fibonacci Spiral Disk Sampling）
+### 2.1. 斐波那契螺旋盘采样（Fibonacci Spiral Disk Sampling）
 
 在 HDRP 的 PCSS 算法中，使用了斐波那契螺旋盘生成对阴影贴图随机采样的坐标。
 
@@ -85,7 +85,7 @@ float2 ComputeFibonacciSpiralDiskSampleUniform(const in int sampleIndex, const i
 
 上面两个函数中，用于搜索 Blocker 的采样点在更靠近中心 (0, 0) 的区域，分布更密集，这种分布更有利于搜索 Blocker；而最终 PCF Filter 的采样点分布则是均匀分布，这种分布更有利于生成软阴影。
 
-### 角直径（Angular diameter）
+### 2.2. 角直径（Angular diameter）
 
 方向光源通常表示的是太阳这类光源，它距离场景无限远，并且影响的是场景中的每个物体。对于方向光源，很难使用一个固定的光源大小 $w_{Light}$ 来描述，在 HDRP 中，使用 **角直径（Angular diameter）** 来描述方向光源的大小。
 
@@ -103,7 +103,7 @@ $$
 \delta = 2 \arctan{(\frac{d}{2D})}
 $$
 
-### 在搜索 Blocker 和 PCF 采样时对着色点深度的偏移
+### 2.3. 在搜索 Blocker 和 PCF 采样时对着色点深度的偏移
 
 因为 PCSS 的计算是基于在着色点以一个固定角直径看向光源的圆锥体，而在阴影贴图上的采样样本是位于圆锥体的底面上。和下图中红色的四棱锥类似，只不过我们这说的是圆锥体：
 
@@ -124,7 +124,7 @@ float zoffset = radialOffset * (radialOffset < minFilterRadius ? minFilterRadial
 float coordz = shadowCoord.z + (Z_OFFSET_DIRECTION) * zoffset;
 ```
 
-### PCSS 效果对比
+### 2.4. PCSS 效果对比
 
 最后，放上一张 PCSS 与 PCF 阴影的效果对比图：
 

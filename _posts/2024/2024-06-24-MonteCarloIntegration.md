@@ -5,23 +5,23 @@ date:   2024-06-24 16:16:00 +800
 category: Math
 ---
 
-- [(1) 蒙特卡罗法用到的数学理论知识](#1-蒙特卡罗法用到的数学理论知识)
-  - [1.1 随机变量（Random Variable）](#11-随机变量random-variable)
-  - [1.2 概率密度函数（Probability Density Function）](#12-概率密度函数probability-density-function)
-  - [1.3 累积分布函数（Cumulative Distribution Function）](#13-累积分布函数cumulative-distribution-function)
-  - [1.4 边缘密度函数（Marginal Density Function）与条件密度函数（Conditional Density Function）](#14-边缘密度函数marginal-density-function与条件密度函数conditional-density-function)
-  - [1.5 期望值（Expected Value）](#15-期望值expected-value)
-  - [1.6 方差（Variance）与标准差（Standard Deviation）](#16-方差variance与标准差standard-deviation)
-  - [1.7 其它知识](#17-其它知识)
-- [(2) 蒙特卡罗法](#2-蒙特卡罗法)
-- [(3) 蒙特卡罗估计积分](#3-蒙特卡罗估计积分)
-- [(4) 生成符合指定分布的随机数](#4-生成符合指定分布的随机数)
-- [(5) 重要性采样](#5-重要性采样)
-- [(6) 拟蒙特卡洛](#6-拟蒙特卡洛)
+- [1. 蒙特卡罗法用到的数学理论知识](#1-蒙特卡罗法用到的数学理论知识)
+  - [1.1. 随机变量（Random Variable）](#11-随机变量random-variable)
+  - [1.2. 概率密度函数（Probability Density Function）](#12-概率密度函数probability-density-function)
+  - [1.3. 累积分布函数（Cumulative Distribution Function）](#13-累积分布函数cumulative-distribution-function)
+  - [1.4. 边缘密度函数（Marginal Density Function）与条件密度函数（Conditional Density Function）](#14-边缘密度函数marginal-density-function与条件密度函数conditional-density-function)
+  - [1.5. 期望值（Expected Value）](#15-期望值expected-value)
+  - [1.6. 方差（Variance）与标准差（Standard Deviation）](#16-方差variance与标准差standard-deviation)
+  - [1.7. 其它知识](#17-其它知识)
+- [2. 蒙特卡罗法](#2-蒙特卡罗法)
+- [3. 蒙特卡罗估计积分](#3-蒙特卡罗估计积分)
+- [4. 生成符合指定分布的随机数](#4-生成符合指定分布的随机数)
+- [5. 重要性采样](#5-重要性采样)
+- [6. 拟蒙特卡洛](#6-拟蒙特卡洛)
 
 **蒙特卡罗积分（Monte Carlo Integration）** 是指使用 **蒙特卡罗法（Monte Carlo Methods）** 来估计积分。蒙特卡罗积分在图形渲染中起到非常重要的作用。
 
-## (1) 蒙特卡罗法用到的数学理论知识
+## 1. 蒙特卡罗法用到的数学理论知识
 
 自然界中，有一类现象在一定条件下必然会发生，例如向上抛一石子、同性电荷互相排斥等，这类现象称为 **确定性现象** 。还有一类现象在大量重复试验下，呈现出某种规律（例如多次重复抛一枚硬币得到正面朝上大致有一半），这种大量重复试验中所呈现出的固有规律性，就是我们所说的 **统计规律性** 。这种在个别试验中结果呈现不确定性，在大量重复试验中结果有统计规律性的现象，就称之为 **随机现象** 。
 
@@ -29,13 +29,13 @@ category: Math
 
 在相同的条件下，进行了 $n$ 次试验，在这 $n$ 次试验中，事件 A 发生的次数 $n_A$ 称为事件 A 发生的 **频数** ，比值 $n_A/n$ 称为事件 A 发生的 **频率** 。当重复试验的次数 $n$ 逐渐增大时，频率呈现出稳定性，逐渐稳定于某个常数，这种“频率稳定性”即通常所说的统计规律性，用来表示事件 A 发生可能性的大小，这就是所谓的 **概率** ，通常用 $P$ 来表示。
 
-### 1.1 随机变量（Random Variable）
+### 1.1. 随机变量（Random Variable）
 
 **随机变量** 用于描述随机试验中可能的结果，通常使用大写字母来表示，例如 $X$ 、 $Y$ 等。 **随机变量是一个函数，将每一个可能的结果映射到一个实数** 。以抛硬币为例，它的样本空间是 $S = \lbrace 正面, 反面 \rbrace$ ，那么抛硬币的随机变量可以定义为： $X(正面) = 1$ ， $X(反面) = 0$ 。
 
 随机变量有两种类型： **离散（Discrete）随机变量** 和 **连续（Continuous）随机变量** 。当随机变量是离散型时，随机过程的结果只能取一列确切的值。掷骰子、抛硬币都是只能用离散随机变量来衡量的试验的例子，因为它们产生 **有限** 或 **可数无限** 的多个值。温度测量可以被视为连续型随机变量的一个例子，因为测量温度的试验可以取得的可能值落在一个连续区间范围内，无法列举所有的可能性。
 
-### 1.2 概率密度函数（Probability Density Function）
+### 1.2. 概率密度函数（Probability Density Function）
 
 概率密度函数，简称为 PDF ，是用于描述 **连续型随机变量的概率分布的函数** 。 **PDF 的值表示的是连续型随机变量在某个确定的取值点附近的可能性大小** 。对于一个连续型随机变量 $X$ ，概率密度函数 $p(x)$ 满足：
 
@@ -43,7 +43,7 @@ category: Math
 - 归一化：整个实数集上的积分等于 1，即 $\int_{-\infty}^{+\infty} p(x) \mathrm{d}x = 1$
 - 对于任意两个实数 $a$ 和 $b$ ，随机变量 $X$ 落在区间 $[a,b]$ 内的概率可以通过积分计算： $P(a \leq X \leq b) = \int_{a}^{b} p(x) \mathrm{d}x$
 
-### 1.3 累积分布函数（Cumulative Distribution Function）
+### 1.3. 累积分布函数（Cumulative Distribution Function）
 
 累积分布函数，简称为 CDF 。对于一个随机变量 $X$ ，其 CDF $F(x)$ 定义为 $F(x) = P(X \leq x)$ ，它描述的是 **随机变量 $X$ 取值小于或等于某个特定值 $x$ 的累积概率** 。对于离散型随机变量， CDF 是一个阶梯函数；对于连续型随机变量， CDF 是一个连续函数。
 
@@ -51,7 +51,7 @@ category: Math
 
 对于离散型随机变量，没有概率密度函数的概念。但可以通过概率质量函数（Probability Mass Function, PMF）来描述概率分布。在这种情况下， CDF 是通过累加 PMF 的值来得到的。
 
-### 1.4 边缘密度函数（Marginal Density Function）与条件密度函数（Conditional Density Function）
+### 1.4. 边缘密度函数（Marginal Density Function）与条件密度函数（Conditional Density Function）
 
 边缘密度函数用于描述 **一个多元随机变量中的某个单一随机变量的概率分布，而忽略其它随机变量的影响** 。假设有两个连续型随机变量 $X$ 和 $Y$ ，它们的 **联合概率密度函数（Joint Probability Density Function, Joint PDF）** 为 $p(x,y)$ 。那么，随机变量 $X$ 的边缘密度函数 $p_X(x)$ 可以通过对 $Y$ 的整个取值范围积分来得到：
 
@@ -73,7 +73,7 @@ $$ p_{Y | X}(y | x) = \frac{p(x,y)}{p_X(x)} $$
 
 其中， $p_X(x)$ 是 $X$ 的边缘密度函数，前提是 $p_X(x) > 0$ 。
 
-### 1.5 期望值（Expected Value）
+### 1.5. 期望值（Expected Value）
 
 如果从随机变量中反复抽取样本，所获得的平均值称为 **期望值** ，使用符号 $E$ 来表示。具体来说， **期望值是对随机变量取值的加权平均，权重是每个可能值的概率** ，它提供了一个关于随机变量取值的集中趋势的度量。
 
@@ -109,7 +109,7 @@ $$ Y = f(X) $$
 
 $$ E[Y] = E[f(X)] = \int f(x)p(x) \mathrm{d}x $$
 
-### 1.6 方差（Variance）与标准差（Standard Deviation）
+### 1.6. 方差（Variance）与标准差（Standard Deviation）
 
 **方差** 是用来描述一个随机变量的离散程度。对于一个随机变量 $X$ ，其期望值 $E[X] = \mu$ ，方差表示的是 **随机变量 $X$ 与其期望值 $E[X]$ 之间差值的平方的期望** ：
 
@@ -135,7 +135,7 @@ $$ \text{Var}(X) = \int (x - \mu)^2 \cdot p(x)\mathrm{d}x $$
 
 $$ \sigma = \sqrt{\text{Var}(X)} $$
 
-### 1.7 其它知识
+### 1.7. 其它知识
 
 设随机变量 $X$ 具有数学期望 $E[X] = \mu$ ，方差 $\text{Var}(X) = \sigma^2$ ，则对于任意实数 $k > 0$ ，不等式
 
@@ -155,7 +155,7 @@ $$ \lim_{n \to \infty} P\left(\left| \frac{S_n}{n} - p \right| < \varepsilon \ri
 
 **伯努利大数定理说明了在大量独立重复试验中，经验概率会收敛于理论概率** 。
 
-## (2) 蒙特卡罗法
+## 2. 蒙特卡罗法
 
 蒙特卡罗法是一类通过随机采样来求解问题的算法的统称，要求解的问题是某随机事件的概率或某随机变量的期望。通过随机抽样的方法，以随机事件出现的频率估计其概率，并将其作为问题的解。
 
@@ -171,7 +171,7 @@ $$ p = \frac{A_{shape}}{A} \approx \frac{k}{n} $$
 
 这样的一个例子说明蒙特卡洛方法的基本思路，它并不是“缘分”求解法，而是有严格的数学基础作为依托，前面介绍的大数定理是它重要的理论基础。但是，蒙特卡洛方法的求解的结果是有误差的，重复的试验越多误差就会越低。
 
-## (3) 蒙特卡罗估计积分
+## 3. 蒙特卡罗估计积分
 
 举一个简单的例子，设一个函数 $f(x) = 3x^2$ ，计算其在区间 $[a,b]$ 上的积分值，如下图所示，容易得到：
 
@@ -203,7 +203,7 @@ $$
 
 从上面的推导可以看出蒙特卡洛法的积分估计量的数学期望等于被积函数的积分真值，证明 $F_n(X)$ 是 **无偏估计量** 。
 
-## (4) 生成符合指定分布的随机数
+## 4. 生成符合指定分布的随机数
 
 <!-- 随机变量 $X$ 通常表示某种概率分布，随机数通常指生成某种概率分布的生成器，也就是随机变量 $X$ 的生成器。如何生成符合指定概率分布特点的随机数就是下面要介绍的内容。 -->
 
@@ -237,7 +237,7 @@ $$ cdf^{-1}(x) = \sqrt[n+1]{x} $$
 
 $$ X = \sqrt[n+1]{\xi} $$
 
-## (5) 重要性采样
+## 5. 重要性采样
 
 **重要性采样（Importance Sampling）** 是已知被积函数的一些分布信息而采用的一种缩减方差的策略，还有别的策略像 **俄罗斯轮盘切割（Russian Roulette and Splitting）** ， **分层采样（Stratified Sampling）** ， **拉丁超立方体采样（Latin Hypercube Sampling）** 等，都是通过控制采样的策略达到缩减方差的目的。
 
@@ -276,7 +276,7 @@ $$ p_2(x) = \frac{8x}{\pi^2}, x \in [0, \frac{\pi}{2}] $$
 
 显然 $p_2(x)$ 更符合被积函数的曲线特点。
 
-## (6) 拟蒙特卡洛
+## 6. 拟蒙特卡洛
 
 **拟蒙特卡洛（Quasi Monte Carlo）积分** 估计技术的核心点是积分估计时采用 **低差异序列（Low Discrepancy Sequence）** 来替换纯随机数，它的优点是积分估计的收敛速度更快，理论上拟蒙特卡洛能达到 $O(n^{-1})$ 的收敛速度，而普通蒙特卡洛的收敛速度是 $O(n^{-0.5})$ ，更快的收敛速度意味着相同的采样数下，低差异序列估计的结果误差更小。
 

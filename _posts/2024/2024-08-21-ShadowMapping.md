@@ -5,33 +5,33 @@ date:   2024-08-21 16:16:00 +800
 category: Rendering
 ---
 
-- [(1) 阴影贴图（Shadow mapping）原理](#1-阴影贴图shadow-mapping原理)
-  - [1.1 阴影贴图的一些常见问题](#11-阴影贴图的一些常见问题)
-    - [1.1.1 透视锯齿（Perspective Aliasing）](#111-透视锯齿perspective-aliasing)
-    - [1.1.2 投影锯齿（Projective Aliasing）](#112-投影锯齿projective-aliasing)
-    - [1.1.3 阴影暗斑（Shadow Acne）](#113-阴影暗斑shadow-acne)
-    - [1.1.4 彼得潘效应（Peter Panning）](#114-彼得潘效应peter-panning)
-  - [1.2 改善阴影贴图的一些技术](#12-改善阴影贴图的一些技术)
-    - [1.2.1 基于斜率的深度偏移（Slope-Scale Depth Bias）](#121-基于斜率的深度偏移slope-scale-depth-bias)
-    - [1.2.2 提高深度缓冲区的精度或提高阴影贴图的分辨率](#122-提高深度缓冲区的精度或提高阴影贴图的分辨率)
-    - [1.2.3 计算合适的光源投影大小（Calculating a Tight Projection）](#123-计算合适的光源投影大小calculating-a-tight-projection)
-    - [1.2.4 计算适合的光源投影的近平面和远平面（Calculating the Near Plane and Far Plane）](#124-计算适合的光源投影的近平面和远平面calculating-the-near-plane-and-far-plane)
-    - [1.2.5 以纹素大小的增量来移动光源（Moving the Light in Texel-Sized Increments）](#125-以纹素大小的增量来移动光源moving-the-light-in-texel-sized-increments)
-- [(2) 级联阴影（Cascaded Shadow Maps）](#2-级联阴影cascaded-shadow-maps)
-  - [2.1 分割摄像机视锥体的方法](#21-分割摄像机视锥体的方法)
-  - [2.2 摄像机视锥体覆盖的场景区域 Z 轴范围的大小影响级联区间的划分](#22-摄像机视锥体覆盖的场景区域-z-轴范围的大小影响级联区间的划分)
-  - [2.3 光源与摄像机的方向之间的关系会影响级联之间的重叠](#23-光源与摄像机的方向之间的关系会影响级联之间的重叠)
-  - [2.4 创建子视锥体](#24-创建子视锥体)
-  - [2.5 渲染级联阴影贴图](#25-渲染级联阴影贴图)
-  - [2.6 采样级联阴影贴图](#26-采样级联阴影贴图)
-- [(3) 硬阴影（Hard Shadows）](#3-硬阴影hard-shadows)
-- [(4) 软阴影（Soft Shadows）](#4-软阴影soft-shadows)
-  - [4.1 Bilinear PCF](#41-bilinear-pcf)
-  - [4.2 更大内核的 PCF](#42-更大内核的-pcf)
-    - [4.2.1 过大的 PCF 内核会造成自阴影伪影的问题](#421-过大的-pcf-内核会造成自阴影伪影的问题)
-- [(5) 参考](#5-参考)
+- [1. 阴影贴图（Shadow mapping）原理](#1-阴影贴图shadow-mapping原理)
+  - [1.1. 阴影贴图的一些常见问题](#11-阴影贴图的一些常见问题)
+    - [1.1.1. 透视锯齿（Perspective Aliasing）](#111-透视锯齿perspective-aliasing)
+    - [1.1.2. 投影锯齿（Projective Aliasing）](#112-投影锯齿projective-aliasing)
+    - [1.1.3. 阴影暗斑（Shadow Acne）](#113-阴影暗斑shadow-acne)
+    - [1.1.4. 彼得潘效应（Peter Panning）](#114-彼得潘效应peter-panning)
+  - [1.2. 改善阴影贴图的一些技术](#12-改善阴影贴图的一些技术)
+    - [1.2.1. 基于斜率的深度偏移（Slope-Scale Depth Bias）](#121-基于斜率的深度偏移slope-scale-depth-bias)
+    - [1.2.2. 提高深度缓冲区的精度或提高阴影贴图的分辨率](#122-提高深度缓冲区的精度或提高阴影贴图的分辨率)
+    - [1.2.3. 计算合适的光源投影大小（Calculating a Tight Projection）](#123-计算合适的光源投影大小calculating-a-tight-projection)
+    - [1.2.4. 计算适合的光源投影的近平面和远平面（Calculating the Near Plane and Far Plane）](#124-计算适合的光源投影的近平面和远平面calculating-the-near-plane-and-far-plane)
+    - [1.2.5. 以纹素大小的增量来移动光源（Moving the Light in Texel-Sized Increments）](#125-以纹素大小的增量来移动光源moving-the-light-in-texel-sized-increments)
+- [2. 级联阴影（Cascaded Shadow Maps）](#2-级联阴影cascaded-shadow-maps)
+  - [2.1. 分割摄像机视锥体的方法](#21-分割摄像机视锥体的方法)
+  - [2.2. 摄像机视锥体覆盖的场景区域 Z 轴范围的大小影响级联区间的划分](#22-摄像机视锥体覆盖的场景区域-z-轴范围的大小影响级联区间的划分)
+  - [2.3. 光源与摄像机的方向之间的关系会影响级联之间的重叠](#23-光源与摄像机的方向之间的关系会影响级联之间的重叠)
+  - [2.4. 创建子视锥体](#24-创建子视锥体)
+  - [2.5. 渲染级联阴影贴图](#25-渲染级联阴影贴图)
+  - [2.6. 采样级联阴影贴图](#26-采样级联阴影贴图)
+- [3. 硬阴影（Hard Shadows）](#3-硬阴影hard-shadows)
+- [4. 软阴影（Soft Shadows）](#4-软阴影soft-shadows)
+  - [4.1. Bilinear PCF](#41-bilinear-pcf)
+  - [4.2. 更大内核的 PCF](#42-更大内核的-pcf)
+    - [4.2.1. 过大的 PCF 内核会造成自阴影伪影的问题](#421-过大的-pcf-内核会造成自阴影伪影的问题)
+- [5. 参考](#5-参考)
 
-## (1) 阴影贴图（Shadow mapping）原理
+## 1. 阴影贴图（Shadow mapping）原理
 
 阴影贴图（Shadow mapping）是实时渲染中常用的一种用以渲染场景阴影的技术，它最初是由 Lance Williams 于 1978 年在 “Casting curved shadows on curved surfaces” 这篇论文中提出的。阴影贴图的原理如下：
 
@@ -51,9 +51,9 @@ category: Rendering
 - 对于聚光灯光源（Spot Light），使用透视的投影矩阵（Perspective Projection）。
 - 而对于点光源（Point Light），需要使用透视的投影矩阵，而且要渲染点光源的正上、正下，正左、正右、正前和正后 6 个方向上的阴影贴图。一般使用一个立方体贴图才存储 6 个方向的阴影贴图。
 
-### 1.1 阴影贴图的一些常见问题
+### 1.1. 阴影贴图的一些常见问题
 
-#### 1.1.1 透视锯齿（Perspective Aliasing）
+#### 1.1.1. 透视锯齿（Perspective Aliasing）
 
 方向光通常模拟太阳光，单个方向光即可照亮整个场景，这意味着方向光的阴影贴图需要覆盖摄像机视锥体（Frustum）覆盖的场景的部分。**透视锯齿（Perspective Aliasing）** 问题是指靠近摄像机的阴影贴图像素看起来比远处的像素更大块，如下图所示，靠近摄像机位置的阴影比远处的阴影更大块，这就是透视锯齿的问题：
 
@@ -71,7 +71,7 @@ category: Rendering
 
 **级联阴影贴图（CSMs）** 是处理透视锯齿问题的最流行技术，在后面会介绍这个技术。
 
-#### 1.1.2 投影锯齿（Projective Aliasing）
+#### 1.1.2. 投影锯齿（Projective Aliasing）
 
 当几何体的切平面与光线方向平行时，会出现 **投影锯齿（Projective Aliasing）** 的问题。下图展示了立方体的侧切面与光线方向平行时出现的投影锯齿问题：
 
@@ -79,7 +79,7 @@ category: Rendering
 
 用于减轻透视锯齿问题的技术也可以缓解投影锯齿的问题。而且当几何体的切平面与光线方向平行时，也就表示此表面法线和光线方向垂直，在光照计算时可以通过 `NdotL = 0` 来规避投影锯齿的问题。
 
-#### 1.1.3 阴影暗斑（Shadow Acne）
+#### 1.1.3. 阴影暗斑（Shadow Acne）
 
 **阴影暗斑（Shadow Acne）** 也叫做 **错误自阴影（Erroneous Self-Shadowing）** 。阴影暗斑的问题是由于阴影贴图的离散性质而引起的，阴影贴图中每个纹素存储的是离散的深度值，而实际场景中几何体的表面是连续的，可能实际场景中几何体表面上的很多个连续的像素采样的是阴影贴图中的同一个纹素，这就导致在做深度对比时，有的像素的深度是大于阴影贴图中的深度，而有些像素的深度是小于阴影贴图中存储的深度，这也就导致了阴影暗斑的问题。下图展示了阴影暗斑的问题：
 
@@ -109,15 +109,15 @@ category: Rendering
 
 ![10_peter_panning](/assets/images/2024/2024-08-21-ShadowMapping/10_peter_panning.jpg)
 
-#### 1.1.4 彼得潘效应（Peter Panning）
+#### 1.1.4. 彼得潘效应（Peter Panning）
 
 **彼得潘效应（Peter Panning）** 这个术语源自一本儿童书籍中的角色，该角色的影子脱离了他并且他能飞。这种瑕疵问题（Artifact）使得缺失阴影的物体看起来像是与地面分离并漂浮在空中一样。在这种情况下，深度偏移导致深度测试错误的通过。当阴影贴图精度不足时，彼得潘效应会加剧。
 
 计算紧密的近剪裁面和远剪裁面也有助于避免彼得潘效应。
 
-### 1.2 改善阴影贴图的一些技术
+### 1.2. 改善阴影贴图的一些技术
 
-#### 1.2.1 基于斜率的深度偏移（Slope-Scale Depth Bias）
+#### 1.2.1. 基于斜率的深度偏移（Slope-Scale Depth Bias）
 
 对于固定的深度偏移，偏移值太小还是会有阴影暗斑的问题，而偏移值太大又会造成彼得潘效应。此外，相对于光源倾斜角度较大的像素比倾斜度较小的像素更容易受到投影锯齿的影响。因此，每个深度贴图中存储的深度值需要根据像素相对于光源的倾斜角度应用不同的深度偏移量，这就是 **基于斜率的深度偏移（Slope-Scale Depth Bias）**。下图展示了基于斜率的深度偏移的原理：
 
@@ -140,11 +140,11 @@ glDisable(GL_POLYGON_OFFSET_FILL);
 
 `Direct3D` 中也有类似的技术，在 `Direct3D 10` 之后，硬件能够根据多边形相对于视角方向的倾斜角度来调整深度偏移量。这种做法的效果是，对那些边缘面向光源方向的多边形应用较大的偏移量，而对于直接面向光源的多边形则不应用任何偏移。下图展示了当对同一个未偏移的倾斜角度进行测试时，两个相邻像素如何在阴影和非阴影之间交替变化。
 
-#### 1.2.2 提高深度缓冲区的精度或提高阴影贴图的分辨率
+#### 1.2.2. 提高深度缓冲区的精度或提高阴影贴图的分辨率
 
 深度缓冲区精度可以是 16 位、24 位或 32 位，值介于 0 和 1 之间，通常是固定点格式（Fixed-point Format）。使用更高精度的深度缓冲区可以改善阴影的质量，同时，使用更高分辨率的阴影贴图也可以改善阴影的质量。
 
-#### 1.2.3 计算合适的光源投影大小（Calculating a Tight Projection）
+#### 1.2.3. 计算合适的光源投影大小（Calculating a Tight Projection）
 
 紧密的将光源的投影大小适配到摄像机的视锥体大小可以增加阴影贴图的覆盖范围。下图展示了不同投影大小对阴影贴图覆盖的影响，其中观察的视角来自光源，梯形代表的是摄像机的视锥体，网格代表的是阴影贴图，从对比可以看出，当光源的投影大小更紧密的适配场景时，相同分辨率的阴影贴图会对场景产生更多的纹素覆盖：
 
@@ -156,7 +156,7 @@ glDisable(GL_POLYGON_OFFSET_FILL);
 
 也可以将摄像机视锥体裁剪到场景的轴对齐边界包围盒（Axis-Aligned Bounding Box，AABB）大小以获得更紧密的边界。然而，并不是在所有情况下都建议这么做，这可能导致光源的投影大小每帧都在变化，这种变化会导致阴影计算结果的不稳定（某一个像素上一帧在阴影中，下一帧可能因为光源投影大小的变化导致它的计算结果又是不在阴影中）。
 
-#### 1.2.4 计算适合的光源投影的近平面和远平面（Calculating the Near Plane and Far Plane）
+#### 1.2.4. 计算适合的光源投影的近平面和远平面（Calculating the Near Plane and Far Plane）
 
 深度缓冲区的精度也由近平面与远平面的比例决定。使用尽可能紧密的近平面/远平面比例可以提高深度缓冲区的精度，在使用紧密的近平面/远平面的情况下还可以使用16位深度缓冲区，16位深度缓冲区可以减少内存使用，同时提高处理速度。
 
@@ -182,7 +182,7 @@ glDisable(GL_POLYGON_OFFSET_FILL);
 
     微软在他们的 [DirectX 的 CascadedShadowMaps11 示例中](https://github.com/walbourn/directx-sdk-samples) 实现了这个算法。核心思路是，首先将场景包围盒的转换到光源空间，光源空间中的场景包围盒每个四边形面可以表示为 2 个三角形，所以光源空间中的场景包围盒可以用 12 个三角形来表示。将这些三角形裁剪到光源视锥体的空间中，所有被裁减后的三角形中的最小和最大的 `Z` 值就是近平面和远平面了。
 
-#### 1.2.5 以纹素大小的增量来移动光源（Moving the Light in Texel-Sized Increments）
+#### 1.2.5. 以纹素大小的增量来移动光源（Moving the Light in Texel-Sized Increments）
 
 使用阴影贴图技术还有一个常见的问题就是 **闪烁边缘效应（shimmering edge effect）**。当摄像机移动时，阴影边缘的像素会变亮或者变暗。下图展示了这个问题出现的样子：
 
@@ -217,7 +217,7 @@ vWorldUnitsPerTexel = XMVectorSet( fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0
 
 需要注意的是，当使用这种技术时，纹理的宽度和高度会增加 1 个像素。这可以防止阴影坐标索引到阴影贴图之外。
 
-## (2) 级联阴影（Cascaded Shadow Maps）
+## 2. 级联阴影（Cascaded Shadow Maps）
 
 在前面的阴影贴图中的一些问题中，有提到 [透视锯齿](#111-透视锯齿perspective-aliasing) 的问题，出现透视锯齿问题的原因是靠近摄像机的阴影贴图分辨率不足（阴影贴图中少量的纹素覆盖了场景中太大的范围）。而解决透视锯齿的问题，目前来说最佳的方案就是使用 **级联阴影**。
 
@@ -225,7 +225,7 @@ vWorldUnitsPerTexel = XMVectorSet( fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0
 
 ![18_cascade_shadow_maps](/assets/images/2024/2024-08-21-ShadowMapping/18_cascade_shadow_maps.png)
 
-### 2.1 分割摄像机视锥体的方法
+### 2.1. 分割摄像机视锥体的方法
 
 通过计算摄像机视锥体在 `Z` 方向上的区间，将此区间按固定的间隔划分为一个个的小区间，每个小区间代表的就是一个子视锥体，每个子视锥体根据划分的 `Z` 方向上的区间都有一个近平面和远平面，下图展示了一个对摄像机视锥体进行分割的例子：
 
@@ -233,19 +233,19 @@ vWorldUnitsPerTexel = XMVectorSet( fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0
 
 一般在实际渲染中，普遍使用的分割摄像机视锥体做法是：针对每个不同的场景，使用一组静态的级联区间（Cascades Intervals）（每帧重新计算动态的级联区间会导致阴影边缘闪烁），级联区间中的每个值描述的是沿 `Z` 轴的间隔，通过这个间隔来表示分割出的一个个子视锥体。常见的做法是使用一组固定的级联区间，这样在像素着色器中，可以通过像素的 `Z` 值来计算出当前像素具体处于哪个级联阴影中。
 
-### 2.2 摄像机视锥体覆盖的场景区域 Z 轴范围的大小影响级联区间的划分
+### 2.2. 摄像机视锥体覆盖的场景区域 Z 轴范围的大小影响级联区间的划分
 
 对于场景中的几何体，摄像机的方向会影响级联区间的选择。当摄像机视锥体覆盖的场景中的几何体的 `Z` 轴范围特别大时，需要划分更多的级联，而当场景中大部分的几何体都集中在摄像机视锥体的一个小部分时，此时只需要少量的级联。下图展示了摄像机视锥体覆盖的场景中几何体在 `Z` 轴范围大小不同时，不同的级联区间的划分。可以看到最左边的图中，覆盖的几何体在 `Z` 轴上有很大的范围时，这时需要大量的级联，而当覆盖的几何体在 `Z` 轴上有中等范围（右图）、低范围（中图）时，这时可以划分出少量的级联：
 
 ![20_scene_geometry](/assets/images/2024/2024-08-21-ShadowMapping/20_scene_geometry.jpg)
 
-### 2.3 光源与摄像机的方向之间的关系会影响级联之间的重叠
+### 2.3. 光源与摄像机的方向之间的关系会影响级联之间的重叠
 
 每个级联的投影矩阵都紧密的适配其对应的子视锥体。当摄像机方向与光源方向正交（互相垂直）时，每个级联可以很紧密的适配其对应的子视锥体，且级联之间重叠很少；当摄像机方向与光源方向趋于平行时，每个级联之前的重叠很多；而当摄像机方向和光源方向几乎平行时，这种情况被称为 **对抗视锥体（Dueling Frusta）** ，对于大多数阴影算法来说，这是一个非常难处理的情况，所以需要尽量避免这种情况的发生，级联阴影在这种情况下的表现优于许多其它算法。下图展示了随着摄像机方向与光线方向越来越趋于平行时，级联之间的重叠会越来越明显：
 
 ![21_cascades_overlap](/assets/images/2024/2024-08-21-ShadowMapping/21_cascades_overlap.jpg)
 
-### 2.4 创建子视锥体
+### 2.4. 创建子视锥体
 
 创建子视锥体一般有两种方法： **适应场景（Fit to Scene）** 和 **适应级联（Fit to Cascade）** 。
 
@@ -259,7 +259,7 @@ vWorldUnitsPerTexel = XMVectorSet( fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0
 
 适应级联的方法计算出的子视锥体之间没有重叠，与适应场景的方法相比更充分的利用了分辨率有限的阴影贴图（有重叠区域意味着浪费了阴影贴图上的纹素），但是当摄像机移动旋转时，通过适应级联方法计算出的子视锥体都需要重新计算，这会导致阴影闪烁的问题。
 
-### 2.5 渲染级联阴影贴图
+### 2.5. 渲染级联阴影贴图
 
 一种方法将所有级联阴影贴图渲染到一张大的阴影贴图纹理上（通过在渲染每一个级联阴影时改变视口（Viewport）的偏移和大小），阴影贴图上的每个部分代表了一个级联阴影贴图，下图展示了在一张 `2048 x 2048` 的阴影贴图上渲染了 4 个级联阴影贴图：
 
@@ -267,14 +267,14 @@ vWorldUnitsPerTexel = XMVectorSet( fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0
 
 还有一种方法是使用 **纹理数组（Textures Array）**，数组中的每一张纹理代表了一个级联阴影贴图。
 
-### 2.6 采样级联阴影贴图
+### 2.6. 采样级联阴影贴图
 
 采样级联阴影贴图最重要的一点就是确定当前像素着色器需要采样哪一级的级联阴影贴图。一般有如下 2 种方法：
 
 - **根据深度间隔来确定级联** ： 通过级联区间划分与摄像机视锥体的深度 `Z` 将每一级联的深度范围计算出来并传入 `GPU` ，在着色器中，将像素坐标转换到摄像机的视图空间，根据该像素在摄像机视图空间的深度坐标 `Z` 与所有级联的深度范围做对比，这样就能确定该像素所属的级联。找到所属级联后，再应用此级联的纹理坐标的缩放（Scale）和偏移（Offset），也就确定了该像素在大的阴影贴图上需要采样的纹理坐标了。
 - **根据每个级联的视口缩放和偏移来确定级联**： 此方法的核心思想是：首先将像素转换到光源的视图空间，然后遍历每个级联的投影矩阵，当计算出的 `X` 和 `Y` 坐标在纹理上时（范围属于 `[0, 1]`，实际计算中会偏移一个纹素的大小 ），也就说明找到了所属的级联。最后，同样需要再应用此级联的纹理坐标的缩放（Scale）和偏移（Offset），最终计算出该像素在大的阴影贴图上需要采样的纹理坐标。
 
-## (3) 硬阴影（Hard Shadows）
+## 3. 硬阴影（Hard Shadows）
 
 首先，阴影贴图的核心原理就是通过 **将像素在光源空间中的深度值与该像素在阴影贴图中对应纹素所存储的深度值做比较来判断该像素在光源空间中能不能被光源看到（能看到就是不在阴影中，不能看到就是在阴影中，因为前方有遮挡）** 。
 
@@ -284,13 +284,13 @@ vWorldUnitsPerTexel = XMVectorSet( fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0
 
 ![25_hard_shadows](/assets/images/2024/2024-08-21-ShadowMapping/25_hard_shadows.png)
 
-## (4) 软阴影（Soft Shadows）
+## 4. 软阴影（Soft Shadows）
 
 PCF（Percentage Closer Filter） 是实时渲染中软阴影的基本算法，它的基本思想可以描述为：将像素投影到阴影贴图上后，采样其周围一定范围的纹素（例如 `3x3` 范围内的 9 个纹素），将该像素在光源空间中的深度值与每个采样点的深度值做比较，如果通过深度测试（像素在光源空间中的深度值小于等于采样点的深度值）则为可见，即不在阴影中，返回 1，如果没有通过深度测试则为不可见，即在阴影中，返回 0 。最终将所有的结果平均起来，从而得到该像素的阴影值。如下图所示，一个像素的 4 个采样点中，有 3 个通过了深度测试，那么它的阴影值为 0.25 ：
 
 ![26_pcf](/assets/images/2024/2024-08-21-ShadowMapping/26_pcf.png)
 
-### 4.1 Bilinear PCF
+### 4.1. Bilinear PCF
 
 ![27_bilinear_pcf](/assets/images/2024/2024-08-21-ShadowMapping/27_bilinear_pcf.png)
 
@@ -302,7 +302,7 @@ PCF（Percentage Closer Filter） 是实时渲染中软阴影的基本算法，�
 
 ![28_bilinear_pcf_512](/assets/images/2024/2024-08-21-ShadowMapping/28_bilinear_pcf_512.png)
 
-### 4.2 更大内核的 PCF
+### 4.2. 更大内核的 PCF
 
 通过使用更大的加权内核进行采样，例如使用 `NxN` 的加权内核（所有权重总和为 1 ），可以使阴影更加柔和，不过更大的内核也意味着更高的性能消耗，因为需要更多的采样。
 
@@ -310,7 +310,7 @@ PCF（Percentage Closer Filter） 是实时渲染中软阴影的基本算法，�
 
 ![29_regular_irregular](/assets/images/2024/2024-08-21-ShadowMapping/29_regular_irregular.png)
 
-#### 4.2.1 过大的 PCF 内核会造成自阴影伪影的问题
+#### 4.2.1. 过大的 PCF 内核会造成自阴影伪影的问题
 
 当使用很大的 PCF 内核时，会使用同一个像素在光源空间的深度值与阴影贴图上很大范围内的每个纹素存储的深度值做比较，这样做是明显有问题的，在 PCF 内核边缘的纹素所对应的场景内某个点可能与当前像素所对应的场景内的点离的很远，甚至没有任何关系。更合理的做法是： **对于阴影贴图中的每个纹素，应该分别使用其映射到光源空间中像素的深度值与其存储的深度值做深度测试比较，而不是像上面描述的那样使用同一个光源空间中的像素的深度值与所有这些 `NxN` 纹素中存储的深度值做深度测试比较** 。
 
@@ -359,7 +359,7 @@ void CalculateRightAndUpTexelDepthDeltas(in vec3 texShadowView, in mat3 shadowPr
 
 由于这种技术在计算上比较复杂，因此只有在 GPU 有足够的计算周期可供使用时才应该使用它。当使用非常大的 PCF 内核时，这也是唯一一种可以去除自阴影伪影而不引起彼得潘效应的技术。
 
-## (5) 参考
+## 5. 参考
 
 - [1] [https://graphics.stanford.edu/~mdfisher/Shadows.html](https://graphics.stanford.edu/~mdfisher/Shadows.html)
 - [2] [https://learn.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps](https://learn.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps)

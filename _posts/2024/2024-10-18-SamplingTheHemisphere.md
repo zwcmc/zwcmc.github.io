@@ -5,20 +5,20 @@ date:   2024-10-18 16:16:00 +800
 category: Rendering
 ---
 
-- [1 球面坐标与笛卡尔坐标](#1-球面坐标与笛卡尔坐标)
-- [2 半球上采样的原理](#2-半球上采样的原理)
-  - [2.1 立体角转换到 $\\theta$ 与 $\\phi$](#21-立体角转换到-theta-与-phi)
-  - [2.2 从立体角上的 PDF 转换到相对于球面坐标 $\\theta$ 和 $\\phi$ 的联合概率密度函数](#22-从立体角上的-pdf-转换到相对于球面坐标-theta-和-phi-的联合概率密度函数)
-  - [2.3 联合概率密度函数的分解](#23-联合概率密度函数的分解)
-  - [2.4 从联合概率密度函数中进行二维采样的基本思路](#24-从联合概率密度函数中进行二维采样的基本思路)
-- [3 一些半球上采样方案](#3-一些半球上采样方案)
-  - [3.1 均匀采样半球（Uniformly Sampling a Hemisphere）](#31-均匀采样半球uniformly-sampling-a-hemisphere)
-  - [3.2 余弦加权半球采样（Cosine-Weighted Hemisphere Sampling）](#32-余弦加权半球采样cosine-weighted-hemisphere-sampling)
-  - [3.3 微表面 BRDF 半球采样（Microfacet BRDF Hemisphere Sampling）](#33-微表面-brdf-半球采样microfacet-brdf-hemisphere-sampling)
-    - [3.3.1 基于 GGX 法线分布的半球采样](#331-基于-ggx-法线分布的半球采样)
-- [4 参考](#4-参考)
+- [1. 球面坐标与笛卡尔坐标](#1-球面坐标与笛卡尔坐标)
+- [2. 半球上采样的原理](#2-半球上采样的原理)
+  - [2.1. 立体角转换到 $\\theta$ 与 $\\phi$](#21-立体角转换到-theta-与-phi)
+  - [2.2. 从立体角上的 PDF 转换到相对于球面坐标 $\\theta$ 和 $\\phi$ 的联合概率密度函数](#22-从立体角上的-pdf-转换到相对于球面坐标-theta-和-phi-的联合概率密度函数)
+  - [2.3. 联合概率密度函数的分解](#23-联合概率密度函数的分解)
+  - [2.4. 从联合概率密度函数中进行二维采样的基本思路](#24-从联合概率密度函数中进行二维采样的基本思路)
+- [3. 一些半球上采样方案](#3-一些半球上采样方案)
+  - [3.1. 均匀采样半球（Uniformly Sampling a Hemisphere）](#31-均匀采样半球uniformly-sampling-a-hemisphere)
+  - [3.2. 余弦加权半球采样（Cosine-Weighted Hemisphere Sampling）](#32-余弦加权半球采样cosine-weighted-hemisphere-sampling)
+  - [3.3. 微表面 BRDF 半球采样（Microfacet BRDF Hemisphere Sampling）](#33-微表面-brdf-半球采样microfacet-brdf-hemisphere-sampling)
+    - [3.3.1. 基于 GGX 法线分布的半球采样](#331-基于-ggx-法线分布的半球采样)
+- [4. 参考](#4-参考)
 
-## 1 球面坐标与笛卡尔坐标
+## 1. 球面坐标与笛卡尔坐标
 
 在半球上生成采样样本时，通常通过计算 **极角 $\theta$** 和 **方位角 $\phi$** 来使用单位球面（单位球的半径为 1 ）的坐标。这两个角度可以通过以下公式转换到笛卡尔坐标：
 
@@ -32,7 +32,7 @@ z = \cos\theta
 \right.
 $$
 
-## 2 半球上采样的原理
+## 2. 半球上采样的原理
 
 在半球上采样的原理可以分为以下几个步骤：
 
@@ -41,7 +41,7 @@ $$
 3. 通过对分解出的两个密度函数积分计算 **累积分布函数 CDF**
 4. 将 CDF 设为 0 到 1 之间的随机数，以获得定义采样样本的 $\theta$ 和 $\phi$ 角度
 
-### 2.1 立体角转换到 $\theta$ 与 $\phi$
+### 2.1. 立体角转换到 $\theta$ 与 $\phi$
 
 首先我们知道， **对球面上立体角的微分 $\mathrm{d}\omega$ 可以通过球面坐标中极小差分变化的 $\theta$ 和 $\phi$ 来表示** ，也就是：
 
@@ -53,7 +53,7 @@ $$
 \int_{H^2} f(\theta)\mathrm{d}\omega = \int_{0}^{2\pi} \int_{0}^{\pi / 2} f(\theta, \phi) \sin\theta \mathrm{d}\theta \mathrm{d}\phi
 $$
 
-### 2.2 从立体角上的 PDF 转换到相对于球面坐标 $\theta$ 和 $\phi$ 的联合概率密度函数
+### 2.2. 从立体角上的 PDF 转换到相对于球面坐标 $\theta$ 和 $\phi$ 的联合概率密度函数
 
 假设有一个定义在立体角上的概率密度函数 $p(\omega)$ ，此密度函数相对于球面坐标角度 $\theta$ 和 $\phi$ 的联合概率密度函数可以推导出来为：
 
@@ -65,7 +65,7 @@ p(\theta,\phi) &= \sin\theta p(\omega)
 \end{align*}
 $$
 
-### 2.3 联合概率密度函数的分解
+### 2.3. 联合概率密度函数的分解
 
 **联合概率密度函数是可分解的，可以表示为分解出的边缘密度函数和条件密度函数的乘积** 。
 
@@ -81,13 +81,13 @@ $$ p(y|x) = \frac{p(x,y)}{p(x)} $$
 
 上式也被称为是， **在给定 $x$ 的情况下， $y$ 的条件密度函数（Conditional Density Function）** 。
 
-### 2.4 从联合概率密度函数中进行二维采样的基本思路
+### 2.4. 从联合概率密度函数中进行二维采样的基本思路
 
 首先计算边缘密度函数以隔离一个特定的变量，然后从该边缘密度函数中抽取样本，一旦抽取了该样本，那就可以计算给定该值的情况下的另一个变量的条件密度函数，并再次从该条件密度函数中抽取另外一个样本。
 
-## 3 一些半球上采样方案
+## 3. 一些半球上采样方案
 
-### 3.1 均匀采样半球（Uniformly Sampling a Hemisphere）
+### 3.1. 均匀采样半球（Uniformly Sampling a Hemisphere）
 
 对于**均匀采样， 立体角上的 PDF 应该是一个常数，并且在定义的积分域积分的结果为 1** 。也就是说：
 
@@ -173,7 +173,7 @@ $$
 \right.
 $$
 
-### 3.2 余弦加权半球采样（Cosine-Weighted Hemisphere Sampling）
+### 3.2. 余弦加权半球采样（Cosine-Weighted Hemisphere Sampling）
 
 所谓的余弦加权半球采样，描述的是立体角上的 PDF 应与极角 $\theta$ 的余弦成正比关系，也就是立体角的极角 $\theta$ 的余弦越大，随机生成此立体角用于采样的概率就越大。
 
@@ -272,7 +272,7 @@ $$
 \right.
 $$
 
-### 3.3 微表面 BRDF 半球采样（Microfacet BRDF Hemisphere Sampling）
+### 3.3. 微表面 BRDF 半球采样（Microfacet BRDF Hemisphere Sampling）
 
 微表面 BRDF 是 PBR 的基础，它的基本表达式是：
 
@@ -296,7 +296,7 @@ $$
 \int_{H^2} D(h) \cos\theta \mathrm{d}\omega = 1
 $$
 
-#### 3.3.1 基于 GGX 法线分布的半球采样
+#### 3.3.1. 基于 GGX 法线分布的半球采样
 
 首先， GGX 的法线分布函数是：
 
@@ -373,7 +373,7 @@ $$
 \right.
 $$
 
-## 4 参考
+## 4. 参考
 
 - [1] [2D Sampling with Multidimensional Transformations](https://www.pbr-book.org/3ed-2018/Monte_Carlo_Integration/2D_Sampling_with_Multidimensional_Transformations)
 - [2] [Sampling the hemisphere](https://ameye.dev/notes/sampling-the-hemisphere/#)

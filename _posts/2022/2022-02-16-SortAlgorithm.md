@@ -5,34 +5,31 @@ date:   2022-02-16 12:16:00 PM +800
 category: Algorithm
 ---
 
-# 排序算法
+- [1. 排序算法中的基本概念](#1-排序算法中的基本概念)
+  - [1.1. 排序算法的稳定性](#11-排序算法的稳定性)
+  - [1.2. 时间复杂度](#12-时间复杂度)
+  - [1.3. 空间复杂度](#13-空间复杂度)
+  - [1.4 分治法（Divide and Conquer](#14-分治法divide-and-conquer)
+- [2. 排序算法](#2-排序算法)
+  - [2.1. 冒泡排序（Bubble Sort）](#21-冒泡排序bubble-sort)
+  - [2.2. 选择排序（Selection Sort）](#22-选择排序selection-sort)
+  - [2.3. 插入排序（Insertion Sort）](#23-插入排序insertion-sort)
+  - [2.4. 归并排序（Merge Sort）](#24-归并排序merge-sort)
+  - [2.5. 快速排序（Quick Sort）](#25-快速排序quick-sort)
+  - [2.6. 堆排序（Heap Sort）](#26-堆排序heap-sort)
+  - [2.7. 希尔排序（Shell Sort）](#27-希尔排序shell-sort)
+  - [2.8. 计数排序（Counting Sort）](#28-计数排序counting-sort)
+  - [2.9. 桶排序（Bucket Sort）](#29-桶排序bucket-sort)
+  - [2.10. 基数排序（Radix Sort）](#210-基数排序radix-sort)
+- [3. 参考](#3-参考)
 
-- [排序算法](#排序算法)
-  - [1 排序算法中的基本概念](#1-排序算法中的基本概念)
-    - [1.1 排序算法的稳定性](#11-排序算法的稳定性)
-    - [1.2 时间复杂度](#12-时间复杂度)
-    - [1.3 空间复杂度](#13-空间复杂度)
-    - [1.4 分治法（Divide and Conquer](#14-分治法divide-and-conquer)
-  - [2 排序算法](#2-排序算法)
-    - [2.1 冒泡排序（Bubble Sort）](#21-冒泡排序bubble-sort)
-    - [2.2 选择排序（Selection Sort）](#22-选择排序selection-sort)
-    - [2.3 插入排序（Insertion Sort）](#23-插入排序insertion-sort)
-    - [2.4 归并排序（Merge Sort）](#24-归并排序merge-sort)
-    - [2.5 快速排序（Quick Sort）](#25-快速排序quick-sort)
-    - [2.6 堆排序（Heap Sort）](#26-堆排序heap-sort)
-    - [2.7 希尔排序（Shell Sort）](#27-希尔排序shell-sort)
-    - [2.8 计数排序（Counting Sort）](#28-计数排序counting-sort)
-    - [2.9 桶排序（Bucket Sort）](#29-桶排序bucket-sort)
-    - [2.10 基数排序（Radix Sort）](#210-基数排序radix-sort)
-  - [参考](#参考)
+## 1. 排序算法中的基本概念
 
-## 1 排序算法中的基本概念
-
-### 1.1 排序算法的稳定性
+### 1.1. 排序算法的稳定性
 
 假设在待排序的数列中，存在多个具有相同值的元素，经过排序后，这些元素的相对顺序保持不变（例如， `arr[i] = arr[j]` ，且 `arr[i]` 在 `arr[j]` 之前，排序后， `arr[i]` 仍在 `arr[j]` 之前），则称这种排序算法是稳定的，否则称为不稳定的。
 
-### 1.2 时间复杂度
+### 1.2. 时间复杂度
 
 排序算法的时间复杂度是一种理论上的度量，用于描述算法在处理数据时所需的时间随输入规模的变化情况。它通常用 **“大O符号”** 表示，反映了算法在 **最坏** 、 **平均** 或 **最好** 情况下的效率。时间复杂度关注的是输入规模（通常用 `n` 表示）对算法运行时间的影响，而不是具体的运行时间，以便提供一种比较不同算法效率的标准。
 
@@ -50,7 +47,7 @@ category: Algorithm
 - **平方时间复杂度：O(n²)**  
    运行时间与输入规模的平方成正比，常见于简单排序算法如冒泡排序和选择排序。
 
-### 1.3 空间复杂度
+### 1.3. 空间复杂度
 
 排序算法的空间复杂度是指算法在运行过程中所需额外内存空间的大小，它同样用 **“大O符号”** 表示。空间复杂度考虑的是算法在处理数据时占用的内存量，特别是与输入规模相关的额外内存使用。
 
@@ -66,9 +63,9 @@ category: Algorithm
 
 分治法是一种算法设计范式，它将一个复杂的问题分解为多个较小的子问题，递归地解决这些子问题，然后将它们的结果合并以得到原问题的解。这个技巧是很多高效算法的基础，如排序算法（快速排序，归并排序）。
 
-## 2 排序算法
+## 2. 排序算法
 
-### 2.1 冒泡排序（Bubble Sort）
+### 2.1. 冒泡排序（Bubble Sort）
 
 **稳定性** ：
 
@@ -123,7 +120,7 @@ void BubbleSort(std::vector<int>& arr) {
 }
 ```
 
-### 2.2 选择排序（Selection Sort）
+### 2.2. 选择排序（Selection Sort）
 
 **稳定性** ：
 
@@ -169,7 +166,7 @@ void SelectionSort(std::vector<int>& arr) {
 }
 ```
 
-### 2.3 插入排序（Insertion Sort）
+### 2.3. 插入排序（Insertion Sort）
 
 **稳定性** ：
 
@@ -220,7 +217,7 @@ void InsertionSort(std::vector<int>& arr) {
 }
 ```
 
-### 2.4 归并排序（Merge Sort）
+### 2.4. 归并排序（Merge Sort）
 
 **稳定性** ：
 
@@ -312,7 +309,7 @@ void MergeSort(std::vector<int>& arr, int left, int right) {
 }
 ```
 
-### 2.5 快速排序（Quick Sort）
+### 2.5. 快速排序（Quick Sort）
 
 **稳定性** ：
 
@@ -393,7 +390,7 @@ void QuickSort(std::vector<int>& arr, int low, int high) {
 }
 ```
 
-### 2.6 堆排序（Heap Sort）
+### 2.6. 堆排序（Heap Sort）
 
 堆排序是一种基于 **堆数据结构** 的比较排序算法。
 
@@ -486,7 +483,7 @@ void HeapSort(std::vector<int>& arr) {
 }
 ```
 
-### 2.7 希尔排序（Shell Sort）
+### 2.7. 希尔排序（Shell Sort）
 
 希尔排序是[插入排序](#23-插入排序insertion-sort)的一种改进版本，也被称为 **缩小增量排序** 。其基本思想是：将数组分成若干个子序列，使得每个子序列内的元素是相隔一定步长（Gap Sequence）的，然后在每个子序列内进行插入排序。随着算法的进行，步长逐渐减小，最后一步步长为1时，整个数组就是有序的。
 
@@ -537,7 +534,7 @@ void ShellSort(std::vector<int>& arr) {
 }
 ```
 
-### 2.8 计数排序（Counting Sort）
+### 2.8. 计数排序（Counting Sort）
 
 计数排序不是基于比较的排序算法，其核心在于将输入的数据值转化为键存储在额外开辟的数组空间中。计数排序适用于元素是整数且范围不大的情况。
 
@@ -607,7 +604,7 @@ void CountingSort(std::vector<int>& arr) {
 }
 ```
 
-### 2.9 桶排序（Bucket Sort）
+### 2.9. 桶排序（Bucket Sort）
 
 桶排序是一种基于分布的排序算法，其基本思想是将数组元素分布到有限数量的桶中，然后对每个桶中的元素分别进行排序，最后将所有桶中的元素合并得到有序数组。
 
@@ -692,7 +689,7 @@ void BucketSort(std::vector<int>& arr) {
 }
 ```
 
-### 2.10 基数排序（Radix Sort）
+### 2.10. 基数排序（Radix Sort）
 
 **稳定性** ：
 
@@ -766,7 +763,7 @@ void RadixSort(std::vector<int>& arr) {
 }
 ```
 
-## 参考
+## 3. 参考
 
 - [1] [10大经典排序算法动图演示，看这篇就够了！（配相应代码）](https://www.cnblogs.com/aishangJava/p/10092341.html)
 - [2] [十大经典排序算法（动图演示）](https://www.cnblogs.com/onepixel/p/7674659.html)

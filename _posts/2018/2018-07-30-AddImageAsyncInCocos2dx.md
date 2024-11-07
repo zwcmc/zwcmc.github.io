@@ -5,11 +5,11 @@ date:   2018-07-30 16:25:18 +800
 category: Cocos2d-x
 ---
 
-- [说明](#说明)
-- [开始之前先了解一下C/C++一些关于thread的基本知识吧](#开始之前先了解一下cc一些关于thread的基本知识吧)
-- [下面开始直接开始贴Cocos2d-x的源码（Cocos2d-x 3.17）了](#下面开始直接开始贴cocos2d-x的源码cocos2d-x-317了)
+- [1. 说明](#1-说明)
+- [2. 开始之前先了解一下C/C++一些关于thread的基本知识吧](#2-开始之前先了解一下cc一些关于thread的基本知识吧)
+- [3. 下面开始直接开始贴Cocos2d-x的源码（Cocos2d-x 3.17）了](#3-下面开始直接开始贴cocos2d-x的源码cocos2d-x-317了)
 
-## 说明
+## 1. 说明
 
 最近在看项目代码，看到异步加载纹理的时候正好看到Cocos2d-x底层源码那里去了，这里正好写一篇文件来记录加深一下印象吧，照理说都做这么久了现在才真正开始认真看源码也是浪费了太多的时间了啊。
 
@@ -17,7 +17,7 @@ category: Cocos2d-x
 
 ![00_difference_between_syn_and_asy](/assets/images/2018/2018-07-30-AddImageAsyncInCocos2dx/00_difference_between_syn_and_asy.jpg)
 
-## 开始之前先了解一下C/C++一些关于thread的基本知识吧
+## 2. 开始之前先了解一下C/C++一些关于thread的基本知识吧
 
 - [std::thread](https://en.cppreference.com/w/cpp/thread/thread)
 
@@ -386,7 +386,7 @@ Notifying...
 finished waiting, i: 1
 ```
 
-## 下面开始直接开始贴Cocos2d-x的源码（Cocos2d-x 3.17）了
+## 3. 下面开始直接开始贴Cocos2d-x的源码（Cocos2d-x 3.17）了
 
 ```cpp
 auto textureCache = Director::getInstance()->getTextureCache();

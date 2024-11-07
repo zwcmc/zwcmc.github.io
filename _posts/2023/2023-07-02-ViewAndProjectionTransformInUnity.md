@@ -5,12 +5,12 @@ date:   2023-07-02 16:16:00 +800
 category: Unity
 ---
 
-- [观察矩阵](#观察矩阵)
-- [正交投影和透视投影](#正交投影和透视投影)
-  - [正交投影](#正交投影)
-  - [透视投影](#透视投影)
+- [1. 观察矩阵](#1-观察矩阵)
+- [2. 正交投影和透视投影](#2-正交投影和透视投影)
+  - [2.1. 正交投影](#21-正交投影)
+  - [2.2. 透视投影](#22-透视投影)
 
-## 观察矩阵
+## 1. 观察矩阵
 
 在Unity中，约定使用的是 **左手坐标系** ，即 $\text{+x}$ 方向指向右方， $\text{+y}$ 方向指向上方， $\text{+z}$ 方向指向的是物体的前方。如下图所示， 相机的世界坐标为 `(0, 0, 0)` ，Cube的世界坐标为 `(0, 0, 1.5)` ：
 
@@ -97,7 +97,7 @@ Debug.LogError(finalViewMatrix);
 
 ![05_gpu_view_matrix](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/05_gpu_view_matrix.png)
 
-## 正交投影和透视投影
+## 2. 正交投影和透视投影
 
 下面再来看投影矩阵，先来看正交投影。
 
@@ -105,7 +105,7 @@ Debug.LogError(finalViewMatrix);
 
 其中在 DirectX，Vulkan 和 Metal 下，Unity 使用了 **反向Z（Reversed-Z）技术**，也就是 Near 近平面 `z` 为 `1`，Far 远平面 `z` 为 `0`，这样可以使远离相机的位置有更好的 `z` 值精度，这样能更好的避免 **z-fighting** 的问题。可以通过 `UNITY_REVERSED_Z` 宏来判断是否有使用反向Z，此宏定义在 D3D11.hlsl、Vulkan.hlsl 等文件中。
 
-### 正交投影
+### 2.1. 正交投影
 
 相机参数如下：
 
@@ -238,7 +238,7 @@ $$
 
 ![10_negative_y_not_opengl](/assets/images/2023/2023-07-02-ViewAndProjectionTransformInUnity/10_negative_y_not_opengl.png)
 
-### 透视投影
+### 2.2. 透视投影
 
 相机参数如下：
 

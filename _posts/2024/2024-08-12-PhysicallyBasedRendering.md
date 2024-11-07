@@ -5,53 +5,53 @@ date:   2024-08-12 16:16:00 +800
 category: Rendering
 ---
 
-- [PBR 核心理论总结](#pbr-核心理论总结)
-- [一些基本的知识准备](#一些基本的知识准备)
-  - [人眼视觉](#人眼视觉)
-  - [相速度与折射率](#相速度与折射率)
-  - [复折射率](#复折射率)
-  - [折射的发生条件](#折射的发生条件)
-  - [物质对光的吸收和散射的特性决定其外观](#物质对光的吸收和散射的特性决定其外观)
-  - [辐射度量学（Basic Radiometry）](#辐射度量学basic-radiometry)
-    - [**辐射能量（Radiant Energy）**](#辐射能量radiant-energy)
-    - [**辐射通量（Radiant Flux）**](#辐射通量radiant-flux)
-    - [**立体角（Solid Angle）**](#立体角solid-angle)
-    - [**单位立体角（Unit Solid Angle）**](#单位立体角unit-solid-angle)
-    - [**辐射强度（Radiant Intensity）、辐照度（Irradiance）和辐射率（Radiance）**](#辐射强度radiant-intensity辐照度irradiance和辐射率radiance)
-- [微表面理论](#微表面理论)
-  - [光与介质边界的交互类型总结](#光与介质边界的交互类型总结)
-  - [不同物质与光的交互总结](#不同物质与光的交互总结)
-- [菲涅尔反射（Fresnel Reflectance）](#菲涅尔反射fresnel-reflectance)
-  - [菲涅尔效应（Fresnel Effect）](#菲涅尔效应fresnel-effect)
-  - [菲涅尔方程（Fresnel Equation）](#菲涅尔方程fresnel-equation)
-  - [F0：0° 角入射时的菲涅尔反射率](#f00-角入射时的菲涅尔反射率)
-  - [折射率与 F0 的关系](#折射率与-f0-的关系)
-- [渲染方程与反射方程](#渲染方程与反射方程)
-  - [渲染方程（The Rendering Equation）](#渲染方程the-rendering-equation)
-  - [反射方程 BxDF](#反射方程-bxdf)
-- [迪士尼原则的 BRDF（Disney Principled BRDF）](#迪士尼原则的-brdfdisney-principled-brdf)
-  - [Disney 采用的 BRDF 可视化方案和工具](#disney-采用的-brdf-可视化方案和工具)
-  - [Disney 对 MERL 材质数据库的观察结论](#disney-对-merl-材质数据库的观察结论)
-  - [Disney 原则的 BRDF 的理念](#disney-原则的-brdf-的理念)
-  - [Disney 原则的 BRDF 的参数](#disney-原则的-brdf-的参数)
-  - [Disney 原则的 BRDF 的着色模型](#disney-原则的-brdf-的着色模型)
-    - [**核心 BRDF 模型**](#核心-brdf-模型)
-    - [**漫反射项（Diffuse）：Disney Diffuse**](#漫反射项diffusedisney-diffuse)
-    - [**法线分布项（Specular D）：GTR**](#法线分布项specular-dgtr)
-    - [**菲涅尔项（Specular F）：Schlick Fresnel**](#菲涅尔项specular-fschlick-fresnel)
-    - [**几何项（Specular G）：Smith-GGX**](#几何项specular-gsmith-ggx)
-- [基于物理的环境光照（Physically-based Environment Lighting）](#基于物理的环境光照physically-based-environment-lighting)
-  - [求解积分相关的数学知识](#求解积分相关的数学知识)
-    - [**一些概率论的概念**](#一些概率论的概念)
-    - [**蒙特卡罗积分（Monte Carlo Integration）**](#蒙特卡罗积分monte-carlo-integration)
-    - [**低差异序列（low-discrepancy sequence）：Hammersley序列（Hammersley Sequence）**](#低差异序列low-discrepancy-sequencehammersley序列hammersley-sequence)
-    - [**重要性采样（Importance Sampling）**](#重要性采样importance-sampling)
-  - [实时渲染中的环境光照](#实时渲染中的环境光照)
-    - [**漫反射环境光**](#漫反射环境光)
-    - [**镜面反射环境光**](#镜面反射环境光)
-- [参考](#参考)
+- [1. PBR 核心理论总结](#1-pbr-核心理论总结)
+- [2. 一些基本的知识准备](#2-一些基本的知识准备)
+  - [2.1. 人眼视觉](#21-人眼视觉)
+  - [2.2. 相速度与折射率](#22-相速度与折射率)
+  - [2.3. 复折射率](#23-复折射率)
+  - [2.4. 折射的发生条件](#24-折射的发生条件)
+  - [2.5. 物质对光的吸收和散射的特性决定其外观](#25-物质对光的吸收和散射的特性决定其外观)
+  - [2.6. 辐射度量学（Basic Radiometry）](#26-辐射度量学basic-radiometry)
+    - [2.6.1. 辐射能量（Radiant Energy）](#261-辐射能量radiant-energy)
+    - [2.6.2. 辐射通量（Radiant Flux）](#262-辐射通量radiant-flux)
+    - [2.6.3. 立体角（Solid Angle）](#263-立体角solid-angle)
+    - [2.6.4. 单位立体角（Unit Solid Angle）](#264-单位立体角unit-solid-angle)
+    - [2.6.5. 辐射强度（Radiant Intensity）、辐照度（Irradiance）和辐射率（Radiance）](#265-辐射强度radiant-intensity辐照度irradiance和辐射率radiance)
+- [3. 微表面理论](#3-微表面理论)
+  - [3.1. 光与介质边界的交互类型总结](#31-光与介质边界的交互类型总结)
+  - [3.2. 不同物质与光的交互总结](#32-不同物质与光的交互总结)
+- [4. 菲涅尔反射（Fresnel Reflectance）](#4-菲涅尔反射fresnel-reflectance)
+  - [4.1. 菲涅尔效应（Fresnel Effect）](#41-菲涅尔效应fresnel-effect)
+  - [4.2. 菲涅尔方程（Fresnel Equation）](#42-菲涅尔方程fresnel-equation)
+  - [4.3. F0：0° 角入射时的菲涅尔反射率](#43-f00-角入射时的菲涅尔反射率)
+  - [4.4. 折射率与 F0 的关系](#44-折射率与-f0-的关系)
+- [5. 渲染方程与反射方程](#5-渲染方程与反射方程)
+  - [5.1. 渲染方程（The Rendering Equation）](#51-渲染方程the-rendering-equation)
+  - [5.2. 反射方程 BxDF](#52-反射方程-bxdf)
+- [6. 迪士尼原则的 BRDF（Disney Principled BRDF）](#6-迪士尼原则的-brdfdisney-principled-brdf)
+  - [6.1. Disney 采用的 BRDF 可视化方案和工具](#61-disney-采用的-brdf-可视化方案和工具)
+  - [6.2. Disney 对 MERL 材质数据库的观察结论](#62-disney-对-merl-材质数据库的观察结论)
+  - [6.3. Disney 原则的 BRDF 的理念](#63-disney-原则的-brdf-的理念)
+  - [6.4. Disney 原则的 BRDF 的参数](#64-disney-原则的-brdf-的参数)
+  - [6.5. Disney 原则的 BRDF 的着色模型](#65-disney-原则的-brdf-的着色模型)
+    - [6.5.1. 核心 BRDF 模型](#651-核心-brdf-模型)
+    - [6.5.2. 漫反射项（Diffuse）：Disney Diffuse](#652-漫反射项diffusedisney-diffuse)
+    - [6.5.3. 法线分布项（Specular D）：GTR](#653-法线分布项specular-dgtr)
+    - [6.5.4. 菲涅尔项（Specular F）：Schlick Fresnel](#654-菲涅尔项specular-fschlick-fresnel)
+    - [6.5.5. 几何项（Specular G）：Smith-GGX](#655-几何项specular-gsmith-ggx)
+- [7. 基于物理的环境光照（Physically-based Environment Lighting）](#7-基于物理的环境光照physically-based-environment-lighting)
+  - [7.1. 求解积分相关的数学知识](#71-求解积分相关的数学知识)
+    - [7.1.1. 一些概率论的概念](#711-一些概率论的概念)
+    - [7.1.2. 蒙特卡罗积分（Monte Carlo Integration）](#712-蒙特卡罗积分monte-carlo-integration)
+    - [7.1.3. 低差异序列（low-discrepancy sequence）：Hammersley序列（Hammersley Sequence）](#713-低差异序列low-discrepancy-sequencehammersley序列hammersley-sequence)
+    - [7.1.4. 重要性采样（Importance Sampling）](#714-重要性采样importance-sampling)
+  - [7.2. 实时渲染中的环境光照](#72-实时渲染中的环境光照)
+    - [7.2.1. 漫反射环境光](#721-漫反射环境光)
+    - [7.2.2. 镜面反射环境光](#722-镜面反射环境光)
+- [8. 参考](#8-参考)
 
-## PBR 核心理论总结
+## 1. PBR 核心理论总结
 
 基于物理的渲染（Physically Based Rendering，PBR）是指使用基于物理原理和微表面理论建模的着色/光照模型，以及使用从真实世界中测量的表面参数来准确表示真实世界材质的渲染理念。
 
@@ -64,13 +64,13 @@ PBR 基础理念主要包含以下几点：
 - **色调映射（Tone Mapping）**：也称色调复制（Tone Reproduction）。在图形学中，色调映射表示将高动态范围（HDR）的光照结果转换到低动态范围（LDR）。因为通过 HDR 渲染出来的亮度值会超过传统显示设备（如显示器、电视）能够显示的最大亮度，所以需要结合色调映射将光照结果能正常显示在传统显示设备上。
 - **基于真实世界测量的材质参数（Real-World Measurement Based Substance Properties）**：PBR 的正统材质参数往往都基于真实世界测量。真实世界中的物质可以分为三大类：绝缘体（Insulator）、半导体（Semiconductor）和导体（Conductor）。在渲染和游戏领域，一般只对其中的两个感兴趣：导体（金属，Metal）和电介质（Dielectric，绝缘体/非金属）。菲涅尔反射率代表材质的镜面反射与强度，是真实世界材质的核心测量数值。其中电介质具有非彩色的镜面反射颜色，而金属具有彩色的镜面反射颜色，即电介质的 `F0` 是一个 `float`，而金属的 `F0` 是一个 `float3`。
 
-## 一些基本的知识准备
+## 2. 一些基本的知识准备
 
-### 人眼视觉
+### 2.1. 人眼视觉
 
 在现实生活中，人眼看到某一物体的颜色其实并不是这个物体本身的颜色，而是其反射和散射的颜色。也就是，**那些不能被物体吸收（Absorption）的颜色，也就是被反射或散射到人眼中的可见光波长代表的颜色，就是人眼能够感知到的物体的颜色**。
 
-### 相速度与折射率
+### 2.2. 相速度与折射率
 
 波动光学（Wave Optics）又称物理光学（Physical Optics）。在波动光学中，光被建模为一种电磁横波（Transverse Wave），即是电场和磁场垂直于其传播方向振荡的波。下图展示了一种最简单的光波，电场和磁场矢量以 90° 相互振荡并同时向传播方向振荡，它既是单色的（具有单一波长 $\lambda$ ）又是线性极化的（电场和磁场各自沿单向振荡）：
 
@@ -103,7 +103,7 @@ $$
 - $\text{c}$ 是光在真空中的速度，约为 $3 \times 10^8$ m/s。
 - $v_p$ 是光在介质中的相速度。
 
-### 复折射率
+### 2.3. 复折射率
 
 复折射率（Complex Index of Refraction），是一个用于描述介质光学性质的参数。它不仅考虑了光在介质中的传播速度（通过折射率），还考虑了介质对光的吸收性。复折射率通常表示为一个复数的形式： $\tilde{n} = n + ik$ ，其分为实部和虚部两部分：
 
@@ -114,7 +114,7 @@ $$
 
 ![01_light_absorb](/assets/images/2024/2024-08-12-PhysicallyBasedRendering/01_light_absorb.jpg)
 
-### 折射的发生条件
+### 2.4. 折射的发生条件
 
 折射的发生条件主要包括：
 
@@ -130,7 +130,7 @@ $$
 
 ![03_heat_distortion](/assets/images/2024/2024-08-12-PhysicallyBasedRendering/03_heat_distortion.jpg)
 
-### 物质对光的吸收和散射的特性决定其外观
+### 2.5. 物质对光的吸收和散射的特性决定其外观
 
 光与物质之间的两种相互作用为散射（Scattering）和吸收（Absorption）。其中：
 
@@ -145,17 +145,17 @@ $$
 
 **当然，除了折射的光线，材质的外观还与反射有关，所以，可以理解为材质的最终外观由镜面反射以及物质对折射光线的吸收和散射的特性组合综合决定**。
 
-### 辐射度量学（Basic Radiometry）
+### 2.6. 辐射度量学（Basic Radiometry）
 
-#### **辐射能量（Radiant Energy）**
+#### 2.6.1. 辐射能量（Radiant Energy）
 
 光源辐射出来的能量，叫做辐射能量，以 **焦耳（Joule）** 为单位进行测量。并用符号 $Q_e$ 来表示。
 
-#### **辐射通量（Radiant Flux）**
+#### 2.6.2. 辐射通量（Radiant Flux）
 
 单位时间的辐射能量叫做辐射通量，单位是瓦特，或者流明。 $\phi_e=\frac{dQ_e}{dt}$
 
-#### **立体角（Solid Angle）**
+#### 2.6.3. 立体角（Solid Angle）
 
 先看一个二维的角，对于圆上的一个角，它的定义是这个角对应的圆上的弧长和圆半径的比值：
 
@@ -169,11 +169,11 @@ $$
 
 一个球对应的立体角是 $4\pi$ 。
 
-#### **单位立体角（Unit Solid Angle）**
+#### 2.6.4. 单位立体角（Unit Solid Angle）
 
 单位立体角则指的是一个球面上截取面积与球半径平方相等的部分所对应的立体角。
 
-#### **辐射强度（Radiant Intensity）、辐照度（Irradiance）和辐射率（Radiance）**
+#### 2.6.5. 辐射强度（Radiant Intensity）、辐照度（Irradiance）和辐射率（Radiance）
 
 ![20_radiantintensity_irradiance_radiance](/assets/images/2024/2024-08-12-PhysicallyBasedRendering/20_radiantintensity_irradiance_radiance.jpeg)
 
@@ -181,7 +181,7 @@ $$
 - 辐照度（Irradiance）：在物体表面任何一个点（每单位面积上），所接收到的辐射通量。
 - 辐射亮度（Radiance）：光源在每单位投影面积、每单位立体角所辐射出去的辐射通量。它是一个方向性量，描述了某个方向上的辐射强度。单位是 `W/(m²·sr)`。
 
-## 微表面理论
+## 3. 微表面理论
 
 大多数真实世界的表面不是光学上光滑的，具有比光波长大的多但比像素小的尺度的不规则性。这种微观几何变化导致每个表面点反射（和折射）不同方向的光，材质的部分外观是这些反射和折射方向的聚合结果。
 
@@ -218,7 +218,7 @@ $$
 
 如果像素大小（绿色部分）远大于光线离开表面之前所经过的距离（左上角的示意图），在这种情况下，次表面散射可以当作漫反射来处理；如果像素大小小于散射距离，则不能忽略这些距离的存在，需当作次表面散射现象进行处理。
 
-### 光与介质边界的交互类型总结
+### 3.1. 光与介质边界的交互类型总结
 
 下面是一张经典的光与表面的交互示意图：
 
@@ -234,7 +234,7 @@ $$
     - **透射（Transmission）**：入射光经过折射穿过物体后的出射现象。透射为次表面散射的特例。
   - **吸收（Absorption）**：具有复折射率的物质区域会引起吸收，具体原理是光波频率与该材质原子中的电子振动的频率相匹配。复折射率（complex number）的虚部（imaginary part）确定了光在传播时是否被吸收（转换成其他形式的能量）。发生吸收的介质的光量会随传播的距离而减小（如果吸收优先发生于某些波长，则可能也会改变光的颜色），而光的方向不会因为吸收而改变。任何颜色色调通常都是由吸收的波长相关性引起的。
 
-### 不同物质与光的交互总结
+### 3.2. 不同物质与光的交互总结
 
 金属和电介质与光的交互总结如下：
 
@@ -248,9 +248,9 @@ $$
       - **半透明介质（Translucent Media）**：半透明介质具有强散射，散射方向完全随机化。根据组成的不同，具有复数折射率的物质区域引起吸收。
       - **不透明介质（Opaque Media）**：不透明介质和半透明介质一致。具有强散射，散射方向完全随机化。根据组成的不同，具有复数折射率的物质区域引起吸收。
 
-## 菲涅尔反射（Fresnel Reflectance）
+## 4. 菲涅尔反射（Fresnel Reflectance）
 
-### 菲涅尔效应（Fresnel Effect）
+### 4.1. 菲涅尔效应（Fresnel Effect）
 
 菲涅尔效应是光学中的一个现象，描述了光在不同介质的界面上发生反射和折射时，其反射率随入射角的变化规律。这个效应由法国物理学家奥古斯丁·菲涅尔（Augustin-Jean Fresnel）的名字命名。菲涅尔效应指出，反射率（即反射光的强度相对于入射光的强度）会随着入射角的增大而增加，通过这个反射率和能量守恒原则，又可以直接获得折射率（光总的能量为 1，菲涅尔效应描述了反射的部分，剩下的就是折射的部分了）。如下图：
 
@@ -265,7 +265,7 @@ $$
 
 不同材质的菲涅尔效应的强弱是不同的，金属的菲涅尔效应一般很弱，主要是因为金属本身的反射率就已经很强，就拿铝来说，其反射率在所有角度下几乎都保持86%以上，随角度变化很小。而电介质的菲涅尔效应就很明显，比如折射率为 1.5 的玻璃，在表面法向量方向的反射率仅为 4%，但当视线与表面法向量夹角很大的时候，反射率可以接近 100%，这一现象也导致了金属与电介质外观上的不同。
 
-### 菲涅尔方程（Fresnel Equation）
+### 4.2. 菲涅尔方程（Fresnel Equation）
 
 菲涅尔方程用以描述光在两种不同介质的界面上反射和折射时，反射光的强度如何随入射角的变化而变化。菲涅尔方程描述的光的反射现象称之为 **菲涅尔反射**。
 
@@ -277,7 +277,7 @@ $$
 
 上图展示了各种物质的菲涅尔反射率（Y 轴）作为入射角（X 轴）的函数。由于铜（copper）和铝（aluminum）在可见光谱上的反射率有明显变化，所以它们的反射率显示为 R、G 和 B 的三条独立曲线，铜的 R 曲线最高，其次是 G，最后是 B（因此它的红色）；铝的 B 曲线最高，其次是 G，最后是 R。上图选择的材质代表了各种各样的材质，虽然每条曲线值都不同，但是它们也有一些共同的地方：**对于每种材质来说， 在入射角为 0° 和 45° 之间时，反射率几乎是恒定的；在入射角为 45° 和 75° 之间时，反射率变化明显（通常但不总是有所增加）；最后，在入射角为 75° 和 90° 之间时，反射率总是迅速变为 1**。由此，可以将 `F0` , 即 0° 角入射时的菲涅尔反射率作为材质的特征反射率，用它来对该材质的反射属性进行建模。
 
-### F0：0° 角入射时的菲涅尔反射率
+### 4.3. F0：0° 角入射时的菲涅尔反射率
 
 当光线垂直（以 0° 角）入射当表面时，该光线被反射为镜面反射光的比率被称为 `F0`，即 `F0` 是 0° 角入射时的菲涅尔反射率，而又因为能量守恒原则，所以折射率则为 `1.0 - F0`。
 
@@ -289,7 +289,7 @@ $$
 
 ![16_f0_s](/assets/images/2024/2024-08-12-PhysicallyBasedRendering/16_f0_s.png)
 
-### 折射率与 F0 的关系
+### 4.4. 折射率与 F0 的关系
 
 通用的折射率与 `F0` 的关系式如下：
 
@@ -305,9 +305,9 @@ $$
 
 这就是通常看到的 `F0` 和折射率之间的转换公式。这里[pixelandpoly.com](https://pixelandpoly.com/ior.html)可以查询各种物质折射率数值，对于一般仅有实数部，虚数部可以忽略不计的电介质而言，可以通过查询到的物质折射率和上面的公式，计算出其 `F0`。
 
-## 渲染方程与反射方程
+## 5. 渲染方程与反射方程
 
-### 渲染方程（The Rendering Equation）
+### 5.1. 渲染方程（The Rendering Equation）
 
 渲染方程（The Rendering Equation）作为渲染领域中的重要理论，其描述了光线在场景中的传播和相互作用。渲染方程由詹姆斯·卡吉亚（James Kajiya）在1986年提出。渲染方程在理论上给出了一个完美的结果，而各种各样的渲染技术，都是对这个理想结果的一个近似。
 
@@ -328,7 +328,7 @@ $$
 
 ![17_rendering_equation](/assets/images/2024/2024-08-12-PhysicallyBasedRendering/17_rendering_equation.jpeg)
 
-### 反射方程 BxDF
+### 5.2. 反射方程 BxDF
 
 BxDF 一般而言是对 BRDF、BTDF、BSDF、BSSDF等几种双向分布函数的一个统一表示。它就是渲染方程中的 $f_r(\mathbf{p}, \omega_i, \omega_o)$ 项。
 
@@ -347,13 +347,13 @@ BxDF 一般而言是对 BRDF、BTDF、BSDF、BSSDF等几种双向分布函数的
 
 在上述这些 BxDF 中，BRDF 最为简单，也最为常用。因为游戏和电影中的大多数物体都是不透明的，用 BRDF 就完全足够。而 BSDF、BTDF、BSSRDF 往往更多用于半透明材质和次表面散射材质。
 
-## 迪士尼原则的 BRDF（Disney Principled BRDF）
+## 6. 迪士尼原则的 BRDF（Disney Principled BRDF）
 
 基于物理的渲染，其实早在20世纪就已经在图形学业界有了一些讨论，2010年在 SIGGRAPH 上就已经有公开讨论的 Course 《SIGGRAPH 2010 Course: Physically-Based Shading Models in Film and Game Production》，而直到 2012~2013 年，才正式进入大众的视野，渐渐被电影和游戏业界广泛使用。
 
 Disney 动画工作室则是这次 PBR 革命的重要推动者。Disney 的 Brent Burley 于 SIGGRAPH 2012 上进行了著名的 Talk《Physically-based shading at Disney》，提出了 Disney 原则的 BRDF（Disney Principled BRDF）， 由于其高度的通用性，将材质复杂的物理属性，用非常直观的少量变量表达了出来（如金属度 metallic 和粗糙度 roughness），在电影业界和游戏业界引起了不小的轰动。从此，基于物理的渲染正式进入大众的视野。Disney 原则的 BRDF 奠定了后续游戏行业和电影行业 PBR 的方向和标准。
 
-### Disney 采用的 BRDF 可视化方案和工具
+### 6.1. Disney 采用的 BRDF 可视化方案和工具
 
 在BRDF可视化方面，Disney 在分享中提出了三个方面的工具与资源，可以总结如下：
 
@@ -368,7 +368,7 @@ Disney 动画工作室则是这次 PBR 革命的重要推动者。Disney 的 Bre
 
 ![23_brdf_image_slice](/assets/images/2024/2024-08-12-PhysicallyBasedRendering/23_brdf_image_slice.jpeg)
 
-### Disney 对 MERL 材质数据库的观察结论
+### 6.2. Disney 对 MERL 材质数据库的观察结论
 
 Disney 对数据库大量的材质进行观察和理论分析，总结了以下 6 个部分的结论：
 
@@ -413,7 +413,7 @@ Disney 对数据库大量的材质进行观察和理论分析，总结了以下 
    - 彩虹色远离镜面峰值的反射率非常小，所以可以将彩虹色理解为一种镜面反射现象。
    - 可以将镜面色调调制为 $\theta h$ 和 $\theta d$ 的函数，配合小尺寸纹理贴图对彩虹色进行建模。
 
-### Disney 原则的 BRDF 的理念
+### 6.3. Disney 原则的 BRDF 的理念
 
 在 2012 年 Disney 原则的BRDF被提出之前，基于物理的渲染都需要大量复杂而不直观的参数，此时PBR的优势，并没有那么明显。2012 年 Disney 提出，他们的着色模型是艺术导向（Art Directable）的，而不一定要是完全物理正确(Physically Correct) 的，并且对微表面BRDF的各项都进行了严谨的调查，并提出了清晰明确而简单的解决方案。
 
@@ -436,7 +436,7 @@ Disney 原则的BRDF（Disney Principled BRDF）核心理念如下：
 - 对金属而言，是反射率值。
 - 对电介质而言，是漫反射颜色。
 
-### Disney 原则的 BRDF 的参数
+### 6.4. Disney 原则的 BRDF 的参数
 
 以上述理念为基础，Disney 动画工作室对每个参数的添加进行了把关，最终得到了一个颜色参数（baseColor）和下面描述的十个标量参数：
 
@@ -456,9 +456,9 @@ Disney 原则的BRDF（Disney Principled BRDF）核心理念如下：
 
 ![27_disney_principled_brdf_params](/assets/images/2024/2024-08-12-PhysicallyBasedRendering/27_disney_principled_brdf_params.jpeg)
 
-### Disney 原则的 BRDF 的着色模型
+### 6.5. Disney 原则的 BRDF 的着色模型
 
-#### **核心 BRDF 模型**
+#### 6.5.1. 核心 BRDF 模型
 
 Disney 采用了通用的 Microfacet Cook-Torrance BRDF 着色模型：
 
@@ -472,7 +472,7 @@ $$
 - $\frac{D(\theta_h)F(\theta_d)G(\theta_l, \theta_v)}{4\cos{\theta_l}\cos{\theta_v}}$ 为镜面反射项。
 - $\theta_l$ 表示的是入射光线 $\mathbf{l}$ 与法线 $\mathbf{n}$ 之间的的夹角， $\theta_v$ 表示的是观察方向 $\mathbf{v}$ 与法线 $\mathbf{n}$ 之间的的夹角， $\theta_h$ 表示的是法线 $\mathbf{n}$ 与半程向量 $\mathbf{h}$ 之间的夹角，而 $\theta_d$ 表示的是入射光线 $\mathbf{l}$ 与半程向量（Half Vector， $\mathbf{h} = \text{normalize}(\mathbf{l} + \mathbf{v})$ ）之间的的夹角。
 
-#### **漫反射项（Diffuse）：Disney Diffuse**
+#### 6.5.2. 漫反射项（Diffuse）：Disney Diffuse
 
 Disney 表示，Lambert漫反射模型在边缘上通常太暗，而通过尝试添加菲涅尔因子以使其在物理上更合理，但会导致其更暗。所以，根据对 Merl 100 材质库的观察，Disney 开发了一种用于漫反射的新的经验模型，以在光滑表面的漫反射菲涅尔阴影和粗糙表面之间进行平滑过渡。思路方面，Disney 使用了 Schlick Fresnel 近似，并对掠射逆反射（Grazing Retroreflection）进行了修改，以根据粗糙度来确定其特定反射强度，而不是简单的将其设为 0（在传统的漫反射模型中，掠射角度下的反射通常被简单地设为 0。然而，现实世界中许多材料在掠射角度下会表现出显著的反射。为了解决这个问题，Disney 的 BRDF 模型引入了粗糙度参数来调整掠射逆反射的强度）。
 
@@ -501,7 +501,7 @@ float3 Diffuse_Burley_Disney(float3 baseColor, float roughness, float NdotV, flo
 }
 ```
 
-#### **法线分布项（Specular D）：GTR**
+#### 6.5.3. 法线分布项（Specular D）：GTR
 
 在流行的模型中，GGX 拥有最长的尾部。而 GGX 其实与 Blinn（1977）推崇的 Trowbridge-Reitz（1975）分布函数模型的分布相同。然而，对于许多材质而言，即便是 GGX 分布，仍然没有足够长的尾部。
 
@@ -604,7 +604,7 @@ float GTR2_aniso(float NdotH, float HdotX, float HdotY, float ax, float ay)
 
 需要注意的是，`ax` 和 `ay` 分别表示沿切线方向 $\mathbf{t}$ 和副切线方向 $\mathbf{b}$ 的粗糙度。一般 Shader 的写法，会将切线方向 $\mathbf{t}$ 写作 `X`，副切线 $\mathbf{b}$ 写作 Y。
 
-#### **菲涅尔项（Specular F）：Schlick Fresnel**
+#### 6.5.4. 菲涅尔项（Specular F）：Schlick Fresnel
 
 菲涅尔项（Specular F）方面，Disney 表示 Schlick Fresnel 近似已经足够精确，且比完整的菲涅尔方程简单的多。这种近似引入的误差远小于其它因素引起的误差。Schlick Fresnel 近似公式如下：
 
@@ -630,7 +630,7 @@ float SchlickFresnel(float u)
 
 可以看到上面的代码避免了 pow(xx, 5.0) 的调用，以省去 pow 函数带来的稍昂贵的性能开销。
 
-#### **几何项（Specular G）：Smith-GGX**
+#### 6.5.5. 几何项（Specular G）：Smith-GGX
 
 几何项方面，对于主镜面波瓣（Primary Specular Lobe），Disney 参考了 Walter 为 GGX 推导的 G 项，并将粗糙度参数重新映射以减少光亮表面的极端增益，即将 $\text{a}$ 从 `[0, 1]` 重映射到 `[0.5, 1]`，从而使几何项的粗糙度变化更加平滑，更便于艺术家们的使用。需要注意的是，对粗糙度重映射是在前面提到的对其平方操作之前进行的，因此最终的 $\text{a}$ 值为： $(0.5 + \text{roughness}/2)^2$ 。
 
@@ -686,7 +686,7 @@ $$
 
 所以在 Shader 的代码中，直接提前约掉了 G 项中分子的部分，这样在最终计算渲染结果的方程中， $D(\theta_h)F(\theta_d)G(\theta_l, \theta_v)$ 的结果也不需要再除以 $4(\mathbf{n} \cdot \mathbf{l})(\mathbf{n} \cdot \mathbf{v})$ 了。
 
-## 基于物理的环境光照（Physically-based Environment Lighting）
+## 7. 基于物理的环境光照（Physically-based Environment Lighting）
 
 渲染方程和反射方程描述的是直接光部分，而在实际的渲染中，还需要环境光。基于物理的环境光照，一般直接默认说的是 **基于图像的光照（Image-based Lighting，IBL）**，这也是真正让基于物理的渲染画质提升的主要贡献者。
 
@@ -709,9 +709,9 @@ $$
 
 第一个要求很好满足，在渲染中使用立方体贴图来表示环境光照，可以将立方体贴图的每一个纹素视为一个单独发光的光源，通过使用任何方向向量 $\omega_i$ 来采样这个立方体贴图，就可以获取该方向的环境辐射度。而对于第二个要求，就需要先了解一些求解积分相关的数学知识了。
 
-### 求解积分相关的数学知识
+### 7.1. 求解积分相关的数学知识
 
-#### **一些概率论的概念**
+#### 7.1.1. 一些概率论的概念
 
 - **随机变量**：用于表示一组潜在值得分布，随机变量得分布描述了如何将概率分配给随机变量可能取的值。随机变量一般用大写字母表示（如 $X$ ），具体的取值用小写字母表示（如 $x$ ）。随机变量分为离散随机变量和连续随机变量：
   - **离散随机变量**：取值可能为有限个或可数无限个。例如掷一枚骰子，可能点数为 1 到 6，这些都是离散的取值。
@@ -724,7 +724,7 @@ $$
   - 而对于一个随机变量的函数 $Y = f(X)$ ，其中： $X$ ~ $p(x)$ ，那么函数 $Y$ 的期望可以表示为： $E[Y] = E[f(X)] = \int{}^{}f(x)p(x)dx$ 。
 - **累积分布函数（Cumulative Distribution Function，CDF）**：用以描述随机变量的分布情况。对于一个给定的随机变量 $X$ ，其累积分布函数 $F_X(x) = P(X \leq x)$ ，其中 $P(X \leq x)$ 表示随机变量 $X$ 取值小于或等于 $x$ 的概率。
 
-#### **蒙特卡罗积分（Monte Carlo Integration）**
+#### 7.1.2. 蒙特卡罗积分（Monte Carlo Integration）
 
 蒙特卡罗积分是一种利用随机采样来估算定积分的方法，它基于概率和统计学原理，通过在积分区域内生成大量随机点来近似积分的值。假设要对一个一维函数 $f(x)$ 从 `a` 到 `b` 进行积分，函数如下：
 
@@ -762,7 +762,7 @@ $$
 
 通过上面的了解可以知道，蒙特卡罗积分是通过生成随机样本，并对每个样本的贡献进行加权平均求和以得到最终的结果。
 
-#### **低差异序列（low-discrepancy sequence）：Hammersley序列（Hammersley Sequence）**
+#### 7.1.3. 低差异序列（low-discrepancy sequence）：Hammersley序列（Hammersley Sequence）
 
 默认情况下，蒙特卡罗积分的每个样本是完全（伪）随机的，但这样会造成一个问题，叫做 **样本聚集（Sample Clumping）**，当随机生成样本时，其中一些可能非常接近，它们形成了聚集，由于样本的数量有限，所以需要通过随机样本更多地收集被积函数的信息，如果两个（或多个）样本彼此非常接近，它们提供的信息（多多少少）是相同的，因此其中一个是有用的，而其它的则浪费了。这种样本聚集的问题会造成最终结果的偏差。下图展示了样本聚集的一个例子：
 
@@ -792,7 +792,7 @@ vec2 Hammersley2d(uint i, uint N)
 }
 ```
 
-#### **重要性采样（Importance Sampling）**
+#### 7.1.4. 重要性采样（Importance Sampling）
 
 对于蒙特卡罗积分和准蒙特卡罗积分，还有一个性质可以用来实现更快的收敛速度，那就是 **重要性采样（Importance Sampling）**。重要性采样，即通过现有的一些已经条件（分布函数），想办法集中于被积函数分布可能性较高的区域进行采样，进而可高效的计算准确的估算结果的一种策略。
 
@@ -839,7 +839,7 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 }
 ```
 
-### 实时渲染中的环境光照
+### 7.2. 实时渲染中的环境光照
 
 渲染方程是一切光照计算的基础，所以再次回顾一下渲染方程
 
@@ -862,7 +862,7 @@ $$
 
 通过这样的变换，把环境光照拆分为两部分的积分，漫反射部分和镜面反射部分。
 
-#### **漫反射环境光**
+#### 7.2.1. 漫反射环境光
 
 对于漫反射部分的环境光，先看看上面总结的积分公式：
 
@@ -946,7 +946,7 @@ void main()
 }
 ```
 
-#### **镜面反射环境光**
+#### 7.2.2. 镜面反射环境光
 
 而对于镜面反射部分的环境光。先将蒙特卡罗积分公式带入方程可得：
 
@@ -1049,7 +1049,7 @@ $$
 
   上式中的 `specularColor` 即 `F0`。Environment BRDF 函数的输入参数分别为光泽度 `gloss`，`NdotV`，`F0`。和 UE4 的做法有异曲同工之妙，但 COD：Black Ops 2 的做法不需要额外的贴图采样，这在进行移动端优化时，是不错的选择。
 
-## 参考
+## 8. 参考
 
 - https://github.com/QianMo/PBR-White-Paper/blob/master/content/part%201/README.md
 - https://learnopengl.com/PBR/Theory
