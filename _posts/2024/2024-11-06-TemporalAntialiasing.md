@@ -176,7 +176,7 @@ $$
 
 ### 3.5. 采样滤波的选择
 
-在进行多个样本点的采样时，每个样本点的权重是一样的，这相当于是一个 Box filter ，而 Box filter 在运动的场景中表现不稳定，[[3]](https://de45xmedrsdbp.cloudfront.net/Resources/files/TemporalAA_small-59732822.pdf) 中提出使用 3.3-wide Blackman-Harris 高斯拟合权重来进行滤波：
+在进行多个样本点的采样时，每个样本点的权重是一样的，这相当于是一个 Box filter ，而 Box filter 在运动的场景中表现不稳定，[[3]](https://de45xmedrsdbp.cloudfront.net/Resources/files/TemporalAA_small-59732822.pdf) 中提出使用 3.3 宽 Blackman-Harris 窗口的高斯拟合（Gaussian fit of a 3.3-wide Blackman-Harris window）权重来进行滤波：
 
 ![11_blackman_harris](/assets/images/2024/2024-11-06-TemporalAntialiasing/11_blackman_harris.jpg)
 
