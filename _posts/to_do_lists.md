@@ -2,8 +2,6 @@
 
 ## SSR
 
-## TAA
-
 ## 计算法线变换矩阵的另一种方法
 
 ## RenderTexture.memorylessMode
