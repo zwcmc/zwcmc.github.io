@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "数学笔记"
-date:   2024-07-31 16:16:00 +800
+date:   2018-08-05 16:16:00 +800
 category: Math
 ---
 
