@@ -5,7 +5,7 @@ date:   2024-11-06 6:16:00 +800
 category: Rendering
 ---
 
-- [1. 时域抗锯齿（Temporal Antialiasing, TAA）](#1-时域抗锯齿temporal-antialiasing-taa)
+- [1. 时间抗锯齿（Temporal Antialiasing, TAA）](#1-时间抗锯齿temporal-antialiasing-taa)
 - [2. 核心算法介绍](#2-核心算法介绍)
 - [3. 实现 TAA 的关键技术解析](#3-实现-taa-的关键技术解析)
   - [3.1. 抖动偏移（Jitter offset）](#31-抖动偏移jitter-offset)
@@ -19,9 +19,9 @@ category: Rendering
 - [4. TAA 效果展示](#4-taa-效果展示)
 - [5. 参考](#5-参考)
 
-## 1. 时域抗锯齿（Temporal Antialiasing, TAA）
+## 1. 时间抗锯齿（Temporal Antialiasing, TAA）
 
-传统上， **时域抗锯齿（Temporal Antialiasing, TAA）（以下简称为 TAA ）** 是指用于减少 时域锯齿（例如旋转的车轮）的技术，但在实时渲染中， TAA 是指一种 **利用多个帧的数据进行空间抗锯齿** 的技术，所以它也被叫做 **时域均摊超级采样（Temporally-amortized Supersampling）** 。
+传统上， **时间抗锯齿（Temporal Antialiasing, TAA）（以下简称为 TAA ）** 是指用于减少 时间锯齿（例如旋转的车轮）的技术，但在实时渲染中， TAA 是指一种 **利用多个帧的数据进行空间抗锯齿** 的技术，所以它也被叫做 **时间均摊超级采样（Temporally-amortized Supersampling）** 。
 
 ## 2. 核心算法介绍
 
@@ -84,7 +84,7 @@ $\mathbf{p}_{n} = (\frac{2x}{w} - 1, \frac{2y}{h} - 1, z, 1)$
 
 ### 3.3. 验证（Validate）
 
-从上一帧重投影的历史像素数据可能由于场景遮挡变化、光照变化或者着色变化而变的过时，并且与当前帧像素的数据不一致。在这种情况下，直接使用过时的历史像素数据会导致明显的 时域伪影（Temporal Artifact） ，例如 鬼影（Ghosting） 现象：
+从上一帧重投影的历史像素数据可能由于场景遮挡变化、光照变化或者着色变化而变的过时，并且与当前帧像素的数据不一致。在这种情况下，直接使用过时的历史像素数据会导致明显的 时间伪影（Temporal Artifact） ，例如 鬼影（Ghosting） 现象：
 
 ![03_ghosting](/assets/images/2024/2024-11-06-TemporalAntialiasing/03_ghosting.jpg)
 
@@ -96,7 +96,7 @@ $\mathbf{p}_{n} = (\frac{2x}{w} - 1, \frac{2y}{h} - 1, z, 1)$
 
 几何数据通常用于识别由于场景遮挡变化从而导致历史像素数据无效的情况，通过将当前帧深度与重投影的上一帧深度进行比较，并超过某个设定的小的阈值来判断场景遮挡变化的情况，为了是验证结果更准确还可以使用法线和物体ID 等信息作为额外的判断指标。而颜色数据对于由光照变化或着色变化导致的历史像素数据无效，或由于重采样误差和不正确的 Motion Vector 导致的 失真伪影（ Distortion Artifact ） 很有用。
 
-需要注意的是，拒绝过时或无效的历史像素数据会重置每个像素样本累积的过程，可能会导致 时域伪影（Temporal Artifact） 增加，这会使 TAA 的效果大打折扣。一种更好的方法是 **修正** 历史像素数据，而不是直接拒绝该数据。
+需要注意的是，拒绝过时或无效的历史像素数据会重置每个像素样本累积的过程，可能会导致 时间伪影（Temporal Artifact） 增加，这会使 TAA 的效果大打折扣。一种更好的方法是 **修正** 历史像素数据，而不是直接拒绝该数据。
 
 #### 3.3.2. 修正（Rectification）
 
