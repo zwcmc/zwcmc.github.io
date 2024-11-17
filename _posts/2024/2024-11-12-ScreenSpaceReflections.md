@@ -5,7 +5,7 @@ date:   2024-11-12 16:16:00 +800
 category: Rendering
 ---
 
-本篇笔记是对我在 [Tiny RP](https://github.com/zwcmc/TinyRenderPipeline) 项目中实现屏幕空间反射（ Screen Space Reflection, SSR 以下简称为 SSR ）的总结，主要包含一些技术细节和原理的分析。[[2]](#ref2)
+本篇笔记是对我在 [Tiny RP](https://github.com/zwcmc/TinyRenderPipeline) 项目中实现屏幕空间反射（ Screen Space Reflection, SSR 以下简称为 SSR ）的总结，主要包含一些技术细节和原理的分析。
 
 - [1. SSR 简介](#1-ssr-简介)
 - [2. 实现 SSR 的总结](#2-实现-ssr-的总结)
