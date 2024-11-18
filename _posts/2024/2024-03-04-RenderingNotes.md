@@ -6,7 +6,8 @@ category: Rendering
 ---
 
 - [1. 法线变换矩阵（Normal Matrix）](#1-法线变换矩阵normal-matrix)
-- [2. Alpha-to-coverage](#2-alpha-to-coverage)
+- [2. Alpha To Coverage](#2-alpha-to-coverage)
+  - [2.1. 参考](#21-参考)
 - [3. 通过一个四元数存储基础法线向量 `(0,0,1)` 、基础切线向量 `(1,0,0)` 与基础副切线向量 `(0,1,0)`](#3-通过一个四元数存储基础法线向量-001-基础切线向量-100-与基础副切线向量-010)
 - [4. 3D 空间中的平面方程](#4-3d-空间中的平面方程)
   - [4.1. 平面方程表达式](#41-平面方程表达式)
@@ -133,38 +134,52 @@ $$
 - [The Normal Matrix](http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/)
 - [Unity Shaders Book Chapter 4](https://candycat1992.github.io/unity_shaders_book/unity_shaders_book_chapter_4.pdf)
 
-## 2. Alpha-to-coverage
+## 2. Alpha To Coverage
 
-在渲染树叶、草和头发等这种部分透明部分不透明的物体时，常用的方法有 2 种： Alpha Test 和 Alpha Blend 。 Alpha Test 原理很简单，在像素着色器种，alpha 低于设定阈值的像素将直接被丢弃，而 Alpha Blend 就是常见的透明像素的颜色混合。下图是使用这 2 个方法渲染同一个草的对比图：
+Alpha Test 是一种常见的渲染技术，它的原理也很简单：在片元着色器中， `alpha` 值低于设定阈值的像素将直接被丢弃。下图是一个使用 Alpha Test 渲染一个灌木丛的例子：
 
-![03_alphatest_alphablend](/assets/images/2024/2024-03-04-RenderingNotes/03_alphatest_alphablend.png)
+![03_a2c_bushes](/assets/images/2024/2024-03-04-RenderingNotes/03_a2c_bushes.webp)
 
-可以看到 Alpha Test 因为是根据一个阈值直接丢弃像素，所以边缘会出现一个个的锯齿，而 Alpha Blend 是做的颜色混合，所以效果上要比 Alpha Test 好很多，但是为什么实际使用中都是使用 Alpha Test 来渲染这些物体的呢？因为 Alpha Test 相比于 Alpha Blend 有以下几个优点：
+可以看到，因为 Alpha Test 是根据像素的 `alpha` 值直接丢弃掉像素，所以边缘会有很明显的锯齿走样。而 Alpha To Coverage （一般称作 A2C 或 ATOC ， 以下简称为 A2C ）就是一种通过 MSAA 来对 Alpha Test 做抗锯齿的技术。
 
-- 因为 Alpha Test 实际渲染的还是不透明像素，它不会有 OverDraw 的问题
-- 当渲染一些比较复杂的灌木丛时(茂密的灌木丛往往都是错综复杂，相互穿插生长)，Alpha Blend 不能像不透明和 Alpha Test 那样使用深度进行排序，所以排序是个很大的问题，有些多边形相互交叉的情况很难排序，错误的渲染顺序会导致错误的颜色混合，最终也会渲染出错误的结果
+首先简单介绍一下 MSAA ，在光栅化阶段， MSAA 对每个像素采样 N 个子样本（例如 MSAA 2x2 就是每个像素 4 个样本），在每个子样本上测试三角形图元的对这个像素的覆盖（Coverage）情况，只有在三角形图元至少覆盖了一个子采样点的情况下才会执行一次片元着色器（这意味着启用 MSAA 时，片元着色器的成本不会显著增加，这是 MSAA 相对于 SSAA 的主要优势），最后将被覆盖的子采样点的颜色更新为此次片元着色器输出的结果，如下图所示：
 
-而 Alpha-to-coverage 就是针对解决 Alpha Test 渲染锯齿的问题。 Alpha-to-coverage 一般简称为 `A2C` 或者 `ATOC` (后续都称ATOC)，它就是利用 MSAA 来对 Alpha Test 结果做抗锯齿的技术。
+![05_msaa_subsamples](/assets/images/2024/2024-03-04-RenderingNotes/05_msaa_subsamples.webp)
 
-首先来简单说说 MSAA ， MSAA 开启后，每个 pixel 会对应多个 subsample ，光栅化阶段会基于这些 subsample 的位置，去计算图元(例如三角形图元)的 coverage 情况，也就是计算当前图元覆盖了哪些 subsample ，只有那些被覆盖了的 subsample 的颜色，才会被更新为当前图元的颜色。画完所有图元之后，最终每个 pixel 的颜色，是它对应的所有 sample 的颜色的平均值。
+而像素最终的输出颜色，会通过一个 1 像素宽的 box filter 进行过滤（也就是对像素内所有的子采样点进行平均）输出。
 
-而开启 ATOC 之后，会基于像素着色器输出的 alpha 值生成一个 coverage mask ，这个生成的 coverage mask 会去跟原始流程得到的结果(被图元覆盖到的 subsamples )做 **与操作（AND）** 。举个例子，假设 1 个三角形覆盖了 4 个 subsamples ，启用 ATOC 且像素着色器输出的 alpha 值为 0.5 时，则最终只有一半的 subsamples 将储存颜色，最后 pixel 颜色计算就会变成本来颜色的 1/2，也就是有点类似 Alpha Blend 的方式。实际的 coverage mask 计算方式和具体硬件实现有关。
+另外，在开启 MSAA 的情况下，因为每个子采样点可能被不同的三角形图元覆盖，所以渲染目标的每个像素需要支持存储 N 个子采样点的颜色；对于深度测试也是一样的，因为每个子采样点都需要进行深度测试，这意味着在开启 N 个样本的 MSAA 的情况下，深度缓冲区的大小是没有开启 MSAA 的情况下的 N 倍。
 
-**总结** ：
+而在开启 A2C 之后，片元着色器输出的 `alpha` 值会改变 MSAA 中被覆盖子样本的颜色更新比例。举个例子，在开启 MSAA 的情况下， 假设 1 个三角形片元覆盖了一个像素的 4 个子样本，那么这 4 个子样本都会存储片元着色器的颜色输出；但如果开启了 A2C 并且片元着色器输出颜色的 alpha 为 0.5 ，那么只有一半的子样本会存储片元着色器的颜色输出，最终只有 1/2 的子样本对像素的颜色产生贡献，也就达到了类似 0.5 透明度的 Alpha Blend 效果。
 
-ATOC 使得 MSAA 针对图元边缘做抗锯齿的时候，会基于像素着色器输出的 alpha 值去修改图元颜色在 1 个 pixel 里面所占的 coverage ，从某种程度上来说，是在修改这个图元在这个pixel 里的“透明度”，实现了类似 Alpha Blend 的效果。下图展示了 ATOC 的效果：
+那么这 4 个样本的颜色将被更新为片元着色器的颜色输出结果，而当开启 A2C 之后，且片元着色器的输出颜色的 alpha 为 0.5 时，那么只有一半可能的子样本的颜色会被更新，最终像素的输出颜色就是原本输出颜色的 1/2 ，这样达到了类似 Alpha Blend 的效果：
 
-![04_alpha_to_coverage](/assets/images/2024/2024-03-04-RenderingNotes/04_alpha_to_coverage.png)
+![04_alpha_to_coverage](/assets/images/2024/2024-03-04-RenderingNotes/04_alpha_to_coverage.jpeg)
 
-**参考** ：
+从上图可以看到，虽然 A2C 使 Alpha Test 的边缘锯齿效果减轻了，但是最终的效果却很糟糕，这是因为 **A2C 对 MSAA 子样本覆盖率的修改只会生效一次，并且修改后的子样本覆盖率会影响后续所有三角形图元对此像素的覆盖率** 。还是上面的例子，假如 1 个三角形片元覆盖了一个像素的 4 个子样本，在开启 4xMSAA 并且此时片元着色器输出的颜色的 alpha 为 0.5 的情况下，此时片元着色器输出的颜色只会写入 2 个被覆盖的子样本，但是，后续所有三角形片元对此像素的子样本覆盖率都将变成 50% ，也就是说此时每个像素的通过 A2C 达到的透明度是离散的（例如，一个像素的 A2C 覆盖率是 0.5 ，相邻的像素的 A2C 覆盖率跳变为 0.25），这也就是最终效果如此糟糕的原因。
 
-- [Anti-aliased Alpha Test: The Esoteric Alpha To Coverage](https://bgolus.medium.com/anti-aliased-alpha-test-the-esoteric-alpha-to-coverage-8b177335ae4f)
-- [A Quick Overview of MSAA](https://therealmjp.github.io/posts/msaa-overview/)
-- [Multisampling](https://www.khronos.org/opengl/wiki/Multisampling)
-- [UE426终于实现了Alpha to Coverage](https://zhuanlan.zhihu.com/p/388513281)
-- [Alpha compositing](https://developer.arm.com/documentation/102073/0100/Alpha-compositing)
-- [Alpha to coverage](https://www.humus.name/index.php?page=3D&ID=61)
-- [ShaderLab command: AlphaToMask](https://docs.unity3d.com/2023.2/Documentation/Manual/SL-AlphaToMask.html)
+一种解决方案是通过将片元着色器输出颜色 alpha 值锐化（ Sharpen ）为单个像素的宽度，从而产生与 MSAA 在实际几何边缘上生成的类似抗锯齿边缘：
+
+```hlsl
+col.a = (col.a - _Cutoff) / max(fwidth(col.a), 0.0001) + 0.5;
+```
+
+其中 `fwidth(col.a)` 函数计算的是 alpha 值每个像素的变化，等同于 `abs(ddx(col.a)) + abs(ddy(col.a))` 。通过将片元着色器输出的 alpha 锐化，可以大大改善 A2C 的效果：
+
+![06_a2c_sharpened](/assets/images/2024/2024-03-04-RenderingNotes/06_a2c_sharpened.jpg)
+
+最后补充一个更影响 Alpha Test 的效果的问题，那就是 Mipmap，默认的 Mipmap 生成方式是对相邻的 4 个像素就平均，也就是一个 Box Filter，对于颜色来说，这样做没问题，但是对于 Alpha Test 中的 alpha 值来说却是有问题的，因为 Alpha Test 是根据 alpha 值来做 clip 的，当 alpha 值因为 Mipmap 被平均的越来越小时，会导致在某个 Mipmap 层级的 alpha 值因为小于 Alpha Test 的阈值而大片像素直接全部被 clip 掉：
+
+![07_alpha_test_mipmap](/assets/images/2024/2024-03-04-RenderingNotes/07_alpha_test_mipmap.gif)
+
+解决此问题的办法也很简单，就是在生成 Mipmap 时对 alpha 值单独进行处理，2010 年，Ignacio Castaño 在 [[4]](#a2c_ref1) 提出了一种重新计算每个 Mip 的 alpha 值的方法，在 Unity 中，可以通过纹理导入设置中的 `Preserve Coverage` 选项来使用此方法。
+
+### 2.1. 参考
+
+- [1] [Anti-aliased Alpha Test: The Esoteric Alpha To Coverage](https://bgolus.medium.com/anti-aliased-alpha-test-the-esoteric-alpha-to-coverage-8b177335ae4f)
+- [2] [A Quick Overview of MSAA](https://therealmjp.github.io/posts/msaa-overview/)
+- [3] [UE426终于实现了Alpha to Coverage](https://zhuanlan.zhihu.com/p/388513281)
+- <a id="a2c_ref1"></a>[4] [Computing Alpha Mipmaps](http://the-witness.net/news/2010/09/computing-alpha-mipmaps/?source=post_page-----8b177335ae4f--------------------------------)
 
 ## 3. 通过一个四元数存储基础法线向量 `(0,0,1)` 、基础切线向量 `(1,0,0)` 与基础副切线向量 `(0,1,0)`
 
@@ -362,131 +377,3 @@ $$ Ax + By + Cz + D = 0 $$
 - 如果 $ Ax + By + Cz + D = 0 $ ，则这个点在平面上
 
 在做视锥体剔除时，视锥体可以看作是 6 个平面，通过计算某个点距离分别距离这 6 个平面的距离来判断这个点是否在视锥体内。通过这个方法可以扩展到视锥体与球体、AABB等的求交。
-
-<!-- ## (5) Normal Mapping without Precomputed Tangents
-
-在使用法线纹理时，因为法线纹理中存储的法线方向是在切线空间中的，所谓的切线空间如下图所示，其中，原点对应了顶点坐标，红色向量是切线方向（Tangent），绿色向量是副切线方向（Bitangent），蓝色向量是法线方向（Normal），这 3 个向量是正交的，它们之前互相垂直：
-
-![05_Tangent_Space](/assets/images/2024/2024-03-04-RenderingNotes/05_Tangent_Space.png)
-
-一般情况下，模型文件的顶点数据中会存有法线和切线的信息，在实际的渲染中，首先将模型数据中存储的的法线和切线转换到世界空间，因为切线，副切线和法线是正交的，所以可以通过叉积计算出世界空间下的副切线。在计算出副切线后，通过构建 TBN 矩阵就可以将法线纹理中存储在切线空间中的法线变换到世界空间中。有了世界空间下的法线，就可以进行光照计算了。
-
-上面说的是一般情况下，如果没有切线信息呢？其实可以通过顶点和纹理坐标计算出切线，下面看下是如何推导的：
-
-首先来看下面一张图，它展示了一个表面的 T，B 和 N 这 3 个向量：
-
-![06_Tangent_Calculation_0](/assets/images/2024/2024-03-04-RenderingNotes/06_Tangent_Calculation_0.jpeg)
-
-在这个表面上，取 3 个点， $P_{1}$ ， $P_{2}$ 和 $P_{3}$ ，如下图所示：
-
-![07_Tangent_Calculation_1](/assets/images/2024/2024-03-04-RenderingNotes/07_Tangent_Calculation_1.jpeg)
-
-其中， $\Delta{U_{2}}$ 与切线向量 `T` 方向相同， $\Delta{V_{2}}$ 与副切线向量 `B` 方向相同。也就是说，可以将上图中的三角形的边 $E_{1}$ 和 $E_{2}$ 表示成向量 `T` 和向量 `B` 的线性组合：
-
-$$ E_{1} = \Delta{U_{1}}T + \Delta{V_{1}}B $$
-
-$$ E_{2} = \Delta{U_{2}}T + \Delta{V_{2}}B $$
-
-也可以写成这样：
-
-$$
-(E_{1x}, E_{1y}, E_{1z}) = \Delta{U_{1}}(T_{x}, T_{y}, T_{z}) + \Delta{V_{1}}(B_{x}, B_{y}, B_{z})
-$$
-
-$$ (E_{2x}, E_{2y}, E_{2z}) = \Delta{U_{2}}(T_{x}, T_{y}, T_{z}) + \Delta{V_{2}}(B_{x}, B_{y}, B_{z}) $$
-
-$E$ 是 2 个顶点坐标的差，而 $\Delta{U}$ 和 $\Delta{V}$ 是这 2 个顶点 `UV` 坐标的差。观察这 2 个等式，顶点坐标的差和顶点 `UV` 的差都是已知的，所以可以根据这 2 个等式来求需要的 2 个向量 `T` 和 `B`。上面的这 2 个等式可以写成矩阵的形式：
-
-$$
-\begin{bmatrix}
-    E_{1x} & E_{1y} & E_{1z} \\
-    E_{2x} & E_{2y} & E_{2z}
-\end{bmatrix} =
-\begin{bmatrix}
-    \Delta{U_{1}} & \Delta{V_{1}} \\
-    \Delta{U_{2}} & \Delta{V_{2}}
-\end{bmatrix}
-\begin{bmatrix}
-    T_{x} & T_{y} & T_{z} \\
-    B_{x} & B_{y} & B_{z}
-\end{bmatrix}
-$$
-
-等式 2 边都乘以 $\Delta{U}\Delta{V}$ 矩阵的逆矩阵，因为一个矩阵乘以它的逆矩阵等于单位矩阵，所以可以得到：
-
-$$
-{\begin{bmatrix}
-    \Delta{U_{1}} & \Delta{V_{1}} \\
-    \Delta{U_{2}} & \Delta{V_{2}}
-\end{bmatrix}}^{-1}
-\begin{bmatrix}
-    E_{1x} & E_{1y} & E_{1z} \\
-    E_{2x} & E_{2y} & E_{2z}
-\end{bmatrix} =
-({\begin{bmatrix}
-    \Delta{U_{1}} & \Delta{V_{1}} \\
-    \Delta{U_{2}} & \Delta{V_{2}}
-\end{bmatrix}}^{-1}
-\begin{bmatrix}
-    \Delta{U_{1}} & \Delta{V_{1}} \\
-    \Delta{U_{2}} & \Delta{V_{2}}
-\end{bmatrix})
-\begin{bmatrix}
-    T_{x} & T_{y} & T_{z} \\
-    B_{x} & B_{y} & B_{z}
-\end{bmatrix} =
-\begin{bmatrix}
-    T_{x} & T_{y} & T_{z} \\
-    B_{x} & B_{y} & B_{z}
-\end{bmatrix}
-$$
-
-对于 `2x2` 的小矩阵 $\Delta{U}\Delta{V}$，可以使用 **伴随矩阵法（把此矩阵变化为：1 除以此矩阵的行列式，再乘以它的伴随矩阵（Adjugate Matrix））** 来求它的逆矩阵，最终可以得到表示要求的切线向量 `T` 和副切线向量 `B`：
-
-$$
-\begin{bmatrix}
-    T_{x} & T_{y} & T_{z} \\
-    B_{x} & B_{y} & B_{z}
-\end{bmatrix} =
-\frac{1}{\Delta{U_{1}}\Delta{V_{2}} - \Delta{V_{1}}\Delta{U_{2}}}
-\begin{bmatrix}
-    \Delta{V_{2}} & -\Delta{V_{1}} \\
-    -\Delta{U_{2}} & \Delta{U_{1}}
-\end{bmatrix}
-\begin{bmatrix}
-    E_{1x} & E_{1y} & E_{1z} \\
-    E_{2x} & E_{2y} & E_{2z}
-\end{bmatrix}
-$$
-
-最后是一个在 OpenGL 实时渲染中，通过顶点坐标和顶点 `UV` 坐标在 $x$ 和 $y$ 方向上梯度的变化计算切线向量和副切线向量的例子：
-
-```glsl
-vec3 getNormal()
-{
-    // 采样法线贴图，并将法线向量从 [0, 1] 转换到 [-1, 1]
-    vec3 tangentNormal = texture(uNormalMap, fs_in.UV0).xyz * 2.0 - 1.0;
-
-    // 计算当前像素世界坐标在 x 方向的梯度变化
-    vec3 ddxPos = dFdx(fs_in.WorldPos);
-    // 计算当前像素世界坐标在 y 方向的梯度变化
-    vec3 ddyPos = dFdy(fs_in.WorldPos);
-
-    // 计算当前像素 UV 坐标在 x 方向的偏梯度变化
-    vec2 ddxUV = dFdx(fs_in.UV0);
-    // 计算当前像素 UV 坐标在 y 方向的梯度变化
-    vec2 ddyUV = dFdy(fs_in.UV0);
-
-    // 法线
-    vec3 N = normalize(fs_in.Normal);
-    // 切线
-    vec3 T = normalize(ddxPos * ddyUV.y - ddyPos * ddxUV.y);
-    // 副切线
-    vec3 B = normalize(ddyPos * ddxUV.x - ddyPos * ddyUV.x);
-
-    // 构建 TBN 矩阵
-    mat3 TBN = mat3(T, B, N);
-
-    return normalize(TBN * tangentNormal);
-}
-``` -->
