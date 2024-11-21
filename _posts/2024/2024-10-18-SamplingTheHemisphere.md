@@ -15,6 +15,7 @@ category: Rendering
   - [3.1. 均匀采样半球（Uniformly Sampling a Hemisphere）](#31-均匀采样半球uniformly-sampling-a-hemisphere)
   - [3.2. 余弦加权半球采样（Cosine-Weighted Hemisphere Sampling）](#32-余弦加权半球采样cosine-weighted-hemisphere-sampling)
   - [3.3. 微表面 BRDF 半球采样（Microfacet BRDF Hemisphere Sampling）](#33-微表面-brdf-半球采样microfacet-brdf-hemisphere-sampling)
+    - [3.3.0. 法线分布函数](#330-法线分布函数)
     - [3.3.1. 基于 GGX 法线分布的半球采样](#331-基于-ggx-法线分布的半球采样)
 - [4. 参考](#4-参考)
 
@@ -280,21 +281,45 @@ $$
 f_r(\omega_i, \omega_o, p) = \frac{F(\omega_i, h)G(\omega_i, \omega_o, h)D(h)}{4\cos(\theta_i)\cos(\theta_o)}
 $$
 
-其中 $F(\omega_i, h)$ 是菲涅尔项（Fresnel Term），它描述了光线在物体表面反射的强度变化，反射的强度取决于入射方向 $\omega_i$ 与物体材质的折射率； $G(\omega_i, \omega_o, h)$ 是几何项（G Term），它描述了微平面自阴影的属性，具体来说就是具有半程向量法线 $h$ 的微平面中，能同时被入射方向 $\omega_i$ 和反射方向 $\omega_o$ 可见的比例；最后一项 $D(h)$ 是法线分布函数（Normal Distribution Function, NDF），它描述了在所有微平面中，具有半程向量法线 $h$ 的微表面法线的分布情况。法线分布函数 NDF 通常是占主导地位的，它决定了反射波瓣的形状和强度。
+其中 $F(\omega_i, h)$ 是菲涅尔项（Fresnel Term），它描述了光线在物体表面反射的强度变化，反射的强度取决于入射方向 $\omega_i$ 与物体材质的折射率； $G(\omega_i, \omega_o, h)$ 是几何项（G Term），它描述了微平面自阴影的属性，具体来说就是具有半程向量法线 $h$ 的微平面中，能同时被入射方向 $\omega_i$ 和反射方向 $\omega_o$ 可见的比例；最后一项 $D(h)$ 是法线分布函数（Normal Distribution Function, NDF），它描述了在所有微平面中，朝向为半程向量 $h$ 的微表面的分布情况，也就是有多少比例的微表面的法线方向与半程向量 $h$ 对齐。
+
+#### 3.3.0. 法线分布函数
+
+法线分布函数 $D(m)$ 描述了微表面上的法线向量的统计分布，对于 $D(h)$ 也就是上面描述的微表面法线向量 $m$ 与半程向量 $h$ 对齐的统计分布（比例）。它的性质如下：
+
+- 正值：
+
+$$
+0 \leq D(m) \leq \infty
+$$
+
+- 总的微表面面积至少为相应的宏观表面面积：
+
+$$
+1 \leq \int D(m) \mathrm{d}\omega_{m}
+$$
+
+- 有符号的微表面投影面积等于宏观的投影面积：
+
+$$
+(v \cdot n) = \int D(m) (v \cdot m) \mathrm{d}\omega_{m}
+$$
+
+- 对于特殊方向 $v = n$ ，有：
+
+$$
+1 = \int D(m) (n \cdot m) \mathrm{d}\omega_{m}
+$$
+
+因此， $D(m) (n \cdot m)$ **可以用作概率密度函数** 。
+
+NDF 的类型有很多种，有各向同性的也有各向异性的，常见的各向同性的 NDF 有： GGX 、 Beckmann 、 Blinn 等。
 
 为了对微表面 BRDF 模型进行采样，通常的步骤是：
 
 - 首先对 NDF 进行采样，获取一个符合 NDF 的随机微表面法线方向
 - 然后根据生成出的微表面法线方向与反射方向（也就是观察方向）计算出入射方向
 - 最后将微表面法线方向、反射方向和入射方向代入微表面 BRDF 中计算反射
-
-NDF 的类型有很多种，有各向同性的也有各向异性的，常见的各向同性的 NDF 有： GGX 、 Beckmann 、 Blinn 等。
-
-需要注意的是， NDF 必须满足以下方程来计算在立体角上的 PDF ，其中 $h$ 表示的是半程向量（ `normalize(L + V)` ）， $\theta$ 表示的是宏观表面法线 $n$ 与半程向量 $h$ 之间的夹角：
-
-$$
-\int_{H^2} D(h) \cos\theta \mathrm{d}\omega = 1
-$$
 
 #### 3.3.1. 基于 GGX 法线分布的半球采样
 
@@ -309,10 +334,7 @@ $$
 那么立体角上的 PDF 可以表示为：
 
 $$
-\begin{align*}
-\int_{H^2} \frac{a^2}{\pi((a^2 - 1)\cos^{2}\theta + 1)^2} \cos\theta \mathrm{d}\omega = 1 \\
-p_h(\omega) = \frac{a^2 \cos\theta}{\pi((a^2 - 1)\cos^{2}\theta + 1)^2}
-\end{align*}
+p_h(\omega) = D(h)\cos\theta = \frac{a^2 \cos\theta}{\pi((a^2 - 1)\cos^{2}\theta + 1)^2}
 $$
 
 相对于 $\theta$ 和 $\phi$ 的联合 PDF 可以表示为：
@@ -375,7 +397,9 @@ $$
 
 ## 4. 参考
 
+- [0] [离线渲染 | 毛玻璃材质](https://zhuanlan.zhihu.com/p/58647788)
 - [1] [2D Sampling with Multidimensional Transformations](https://www.pbr-book.org/3ed-2018/Monte_Carlo_Integration/2D_Sampling_with_Multidimensional_Transformations)
 - [2] [Sampling the hemisphere](https://ameye.dev/notes/sampling-the-hemisphere/#)
 - [3] [Sampling Microfacet BRDF](https://agraphicsguynotes.com/posts/sample_microfacet_brdf/)
 - [4] [Notes on importance sampling](https://www.blog.tobias-franke.eu/2014/03/30/notes_on_importance_sampling.html)
+- [5] [How Is The NDF Really Defined?](https://www.reedbeta.com/blog/hows-the-ndf-really-defined/)
