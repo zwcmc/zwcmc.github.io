@@ -87,9 +87,9 @@ category: Rendering
   - [19.3. 立体角（Solid Angle）](#193-立体角solid-angle)
   - [19.4. 微分立体角（Differential Solid Angles）](#194-微分立体角differential-solid-angles)
   - [19.5. 辐射强度（Radiant Intensity）](#195-辐射强度radiant-intensity)
-  - [19.6. 辐射照度（Irradiance）](#196-辐射照度irradiance)
-  - [19.7. 辐射亮度（Radiance）](#197-辐射亮度radiance)
-  - [19.8. 辐射照度（Irradiance）与辐射亮度（Radiance）](#198-辐射照度irradiance与辐射亮度radiance)
+  - [19.6. 辐射照度（ Irradiance ）](#196-辐射照度-irradiance-)
+  - [19.7. 辐射亮度（ Radiance ）](#197-辐射亮度-radiance-)
+  - [19.8. 辐射照度（ Irradiance ）与辐射亮度（ Radiance ）](#198-辐射照度-irradiance-与辐射亮度-radiance-)
 - [20. BRDF 、反射方程（The Reflection Equation）和渲染方程（The Rendering Equation）](#20-brdf-反射方程the-reflection-equation和渲染方程the-rendering-equation)
   - [20.1. BRDF](#201-brdf)
   - [20.2. 反射方程（The Reflection Equation）](#202-反射方程the-reflection-equation)
@@ -1664,7 +1664,7 @@ $$ \phi = 4\pi I $$
 
 $$ I = \frac{\phi}{4\pi} $$
 
-### 19.6. 辐射照度（Irradiance）
+### 19.6. 辐射照度（ Irradiance ）
 
 **每单位面积所接收到的辐射通量** ，叫做辐射照度。它的单位是 `W / m^2` ，使用符号 $E$ 来表示：
 
@@ -1684,7 +1684,7 @@ $$ E = \frac{\phi}{A} \cos{\theta} $$
 
 如上图所示，因为辐射通量 $\phi$ 是固定的，而随着距离光源越来越远，单位面积上所接收到的能量也就越来越少。
 
-### 19.7. 辐射亮度（Radiance）
+### 19.7. 辐射亮度（ Radiance ）
 
 **每单位立体角每单位垂直面积的辐射通量** ，叫做辐射亮度。它的单位是 `W / (sr⋅m^2)` ，使用符号 $L$ 来表示：
 
@@ -1698,16 +1698,16 @@ $$
 
 上图中， $\mathrm{d}A$ 是辐射照度中所定义的单位面积，而 $\mathrm{d}A^{\perp}$ 才是辐射亮度中所定义的单位垂直面积，$\mathrm{d}A^{\perp}$ 可以通过 $\mathrm{d}A$ 与光线与表面法线之间夹角的余弦来表示，也就是： $\mathrm{d}A^{\perp} = \mathrm{d}A \cos{\theta}$ 。
 
-### 19.8. 辐射照度（Irradiance）与辐射亮度（Radiance）
+### 19.8. 辐射照度（ Irradiance ）与辐射亮度（ Radiance ）
 
 再次复习一下：
 
-- 辐射亮度（Radiance）描述的是 **单位立体角单位垂直面积的辐射通量**
-- 而辐射照度（Irradiance）描述的是 **单位面积所接收到的辐射通量** ，也就是**单位面积从整个单位半球 $\Omega^{+}$ 接收到的所有辐射通量**
+- 辐射亮度（ Radiance ）描述的是 **单位立体角单位垂直面积的辐射通量**
+- 而辐射照度（ Irradiance ）描述的是 **单位面积所接收到的辐射通量** ，也就是**单位面积从整个单位半球 $\Omega^{+}$ 接收到的所有辐射通量**
 
 ![88_indicent_radiance](/assets/images/2024/2024-07-23-TheEssenceOfGAMES101/88_indicent_radiance.jpg)
 
-那么，对于上图所示的 **从某个单位立体角入射的辐射亮度（Radiance）** 可以表示为：
+那么，对于上图所示的 **入射的辐射亮度（Incident Radiance）** 可以理解为是 **单位垂直面积、从某个单位立体角方向上接收到的辐射照度（ Irradiance ）** ，可以表示为：
 
 $$
 L_i(p,\omega) = \frac{\mathrm{d}E(p)}{\mathrm{d}\omega \cos{\theta}}
@@ -1715,13 +1715,13 @@ $$
 
 其中， $p$ 是物体表面上的某一点， $\omega$ 是入射方向的单位立体角， $\theta$ 是入射方向与物体表面法线的夹角。
 
-也就是说， **从某个单位立体角入射的辐射照度（Irradiance）** 是：
+也就是说， **从某个单位立体角方向上接收到的辐射照度（ Irradiance ）** 是：
 
 $$
 \mathrm{d}E(p) = L_i(p,\omega) \cos{\theta} \mathrm{d}\omega
 $$
 
-对单位半球 $\Omega^{+}$ 所有入射单位立体角积分就可以得到单位面积所接收到的辐射通量，也就是辐射照度（Irradiance） $E(p)$ ：
+对单位半球 $\Omega^{+}$ 所有入射单位立体角积分就可以得到单位面积所接收到的辐射通量，也就是辐射照度（ Irradiance ） $E(p)$ ：
 
 $$
 E(p) = \int_{\Omega^{+}} L_i(p,\omega) \cos{\theta} \mathrm{d}\omega
@@ -1731,7 +1731,7 @@ $$
 
 ### 20.1. BRDF
 
-BRDF 全称是 Bidirectional Reflectance Distribution Function ，中文叫做： **双向反射分布函数** 。 BRDF 描述的是物体表面上的一个点，接收了某一个方向上的辐射照度（Irradiance）后，将其反射到另外一个方向上的比例。也就是 **反射光的辐射亮度（Radiance）与某个方向入射光的辐射照度（Irradiance）的比值** 。BRDF 表示为：
+BRDF 全称是 Bidirectional Reflectance Distribution Function ，中文叫做： **双向反射分布函数** 。 BRDF 本质上描述的是：对于物体表面上的一个点，接收了从某一个立体角方向上入射的辐射照度（ Irradiance ）后，将其反射到某一个出射立体角方向上的比例，也就是 **反射光的辐射亮度（ Radiance ）与从某个方向入射光的辐射照度（ Irradiance ）的比值** 。 BRDF 表示为：
 
 $$
 f_r(\omega_{i} \to \omega_{r}) = \frac{\mathrm{d}L_r(\omega_{r})}{\mathrm{d}E_i(\omega_{i})} = \frac{\mathrm{d}L_r(\omega_{r})}{L_i(\omega_{i}) \cos{\theta_{i}} \mathrm{d}\omega_{i}}
@@ -1739,13 +1739,13 @@ $$
 
 ### 20.2. 反射方程（The Reflection Equation）
 
-对于某一个入射方向 $\omega_{i}$ 的入射光，对反射方向 $\omega_{r}$ 的辐射亮度（Radiance）的贡献为：
+对于某一个入射方向 $\omega_{i}$ 的入射光，对反射方向 $\omega_{r}$ 的辐射亮度（ Radiance ）的贡献为：
 
 $$
 \mathrm{d}L_r{\omega_{r}} = f_r(\omega_{i} \to \omega_{r}) L_i(\omega_{i}) \cos{\theta_{i}} \mathrm{d}\omega_{i}
 $$
 
-那么，将整个单位半球 $\Omega^{+}$ 上所有入射光对反射方向 $\omega_{r}$ 的辐射亮度（Radiance）的贡献积分出来就是最终反射光的辐射亮度（Radiance），这就是反射方程。对于物体表面某个点 $p$ ，反射方向为 $\omega_{r}$ ，反射方程可以表示为：
+那么，将整个单位半球 $\Omega^{+}$ 上所有入射光对反射方向 $\omega_{r}$ 的辐射亮度（ Radiance ）的贡献积分出来就是最终反射光的辐射亮度（ Radiance ），这就是反射方程。对于物体表面某个点 $p$ ，反射方向为 $\omega_{r}$ ，反射方程可以表示为：
 
 $$
 L_r(p,\omega_{r}) = \int_{\Omega^{+}} f_r(p,\omega_{i} \to \omega_{r}) L_i(p,\omega_{i}) \cos{\theta_{i}} \mathrm{d}\omega_{i}
