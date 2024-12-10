@@ -339,3 +339,20 @@
     width: calc(50% - (#{$spacing-unit} / 2));
   }
 }
+
+
+/**
+ * Posts 中 Header 部分显示的类别样式
+ */
+.post-category {
+  font-weight: bold;
+  /* 让类别名称加粗 */
+  color: #007acc;
+  /* 设置文本颜色 */
+  background-color: #f0f8ff;
+  /* 设置背景颜色 */
+  padding: 2px 6px;
+  /* 添加内边距 */
+  border-radius: 4px;
+  /* 圆角边框 */
+}
