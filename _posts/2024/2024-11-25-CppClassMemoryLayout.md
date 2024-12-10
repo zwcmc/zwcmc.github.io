@@ -2,7 +2,7 @@
 layout: post
 title:  "C++ 中类的内存布局"
 date:   2024-11-25 16:26:00 +800
-category: C++
+category: C/C++
 ---
 
 本篇笔记使用 Clang 编译器的：
