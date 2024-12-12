@@ -5,6 +5,16 @@ date:   2024-11-25 16:26:00 +800
 category: C/C++
 ---
 
+- [1. 空的类](#1-空的类)
+- [2. 静态成员变量](#2-静态成员变量)
+- [3. 虚函数](#3-虚函数)
+- [4. 单继承](#4-单继承)
+- [5. 多继承](#5-多继承)
+  - [5.1. 多继承中的菱形继承问题](#51-多继承中的菱形继承问题)
+- [6. 子类中重写了父类的虚函数](#6-子类中重写了父类的虚函数)
+- [7. 父类中没有虚函数，而子类中有虚函数](#7-父类中没有虚函数而子类中有虚函数)
+
+
 本篇笔记使用 Clang 编译器的：
 
 ```zsh
@@ -198,6 +208,93 @@ int main() {
         24 |     int i_b
         28 |   float f_c
            | [sizeof=32, dsize=32, align=8,
+           |  nvsize=32, nvalign=8]
+```
+
+### 5.1. 多继承中的菱形继承问题
+
+当一个类从两个父类继承，而这两个父类又从同一个父类继承时，会导致菱形继承的问题。如下面的例子，类 `B` 和类 `C` 都继承自类 `A` ，类 `D` 继承自类 `B` 和类 `C` ：
+
+```cpp
+#include <iostream>
+
+class A {
+public:
+    int a;
+};
+
+class B : public A {
+public:
+    int b;
+};
+
+class C : public A {
+public:
+    int c;
+};
+
+class D : public B, public C {
+public:
+    int d;
+};
+
+int main() {
+    std::cout << sizeof(D) << std::endl;
+    return 0;
+}
+```
+
+那么类 `D` 的内存布局如下：
+
+```zsh
+*** Dumping AST Record Layout
+         0 | class D
+         0 |   class B (base)
+         0 |     class A (base)
+         0 |       int a
+         4 |     int b
+         8 |   class C (base)
+         8 |     class A (base)
+         8 |       int a
+        12 |     int c
+        16 |   int d
+           | [sizeof=20, dsize=20, align=4,
+           |  nvsize=20, nvalign=4]
+```
+
+可以看到，在类 `D` 的内存布局中，存在两份父类 `A` 的成员变量 `int a` ，**菱形继承会导致冗余数据和二义性的问题**。通过在继承中通过 `virtual` 关键字使用**虚继承**可以解决菱形继承的问题：
+
+```cpp
+...
+
+class B : virtual public A {
+public:
+    int b;
+};
+
+class C : virtual public A {
+public:
+    int c;
+};
+
+...
+```
+
+类 `D` 的内存布局如下：
+
+```zsh
+*** Dumping AST Record Layout
+         0 | class D
+         0 |   class B (primary base)
+         0 |     (B vtable pointer)
+         8 |     int b
+        16 |   class C (base)
+        16 |     (C vtable pointer)
+        24 |     int c
+        28 |   int d
+        32 |   class A (virtual base)
+        32 |     int a
+           | [sizeof=40, dsize=36, align=8,
            |  nvsize=32, nvalign=8]
 ```
 
